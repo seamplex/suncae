@@ -39,9 +39,9 @@ function update_mesh_in_fee() {
       while (($line = fgets($current)) !== false) {
         if (strncmp("READ_MESH", $line, 9) == 0) {
           if ($mesh_order[$problem] == 1) {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}.msh;\n");
+            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}.msh\n");
           } else {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}-{$mesh_order[$problem]}.msh;\n");
+            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}-{$mesh_order[$problem]}.msh\n");
           }
         } else {
           fwrite($new, $line);
