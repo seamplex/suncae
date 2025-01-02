@@ -54,7 +54,7 @@ yaml_emit_file("case.yaml", $case);
 solver_input_write_initial("case.fee", $case["problem"]);
 
 $gitignore = fopen(".gitignore", "w");
-fprintf($gitignore, "run");
+fprintf($gitignore, "run\n");
 fclose($gitignore);
 
 # TODO: create a local user
