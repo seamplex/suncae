@@ -64,23 +64,26 @@ if ($field == "E" ||
         fprintf($new, "q(x,y,z) = %s\n", $value);
 
       } else if (strncmp("BC ", $line, 3) == 0 || strncmp("BC\t", $line, 3) == 0) {
-
+        
         // let's parse the existing BC
         $bc_group = array();
         $bc_value = array();
         $n_values = 0;
         $n_groups = 0;
-        $line_exploded = explode(" ", $line);
+        $line_exploded = explode(" ", rtrim($line));
         $bc_name = $line_exploded[1];
         $i = 2;
+        $explicit_group = false;
         while (isset($line_exploded[$i])) {
           if ($line_exploded[$i] == "GROUPS") {
+            $explicit_group = true;
             while (isset($line_exploded[$i+1])) {
               $i++;
               sscanf($line_exploded[$i], "%s", $bc_group[$n_groups++]);
             }
             break;
           } else if ($line_exploded[$i] == "GROUP") {
+            $explicit_group = true;
             $i++;
             sscanf($line_exploded[$i], "%s", $bc_group[$n_groups++]);
           } else {
@@ -90,7 +93,7 @@ if ($field == "E" ||
         }
 
         if ($bc_n == $bc_i) {
-          if ($n_groups == 0) {
+          if ($explicit_group == true && $n_groups == 0) {
             $bc_group[0] = $bc_name;
             $n_groups = 1;
           }
