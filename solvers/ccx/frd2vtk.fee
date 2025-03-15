@@ -1,0 +1,29 @@
+READ_MESH $1.frd DIM 3 {
+ READ_FIELD D1 AS displacements1
+ READ_FIELD D2 AS displacements2
+ READ_FIELD D3 AS displacements3
+#  READ_FUNCTION EXX 
+#  READ_FUNCTION EYY
+#  READ_FUNCTION EZZ 
+#  READ_FUNCTION EXY 
+#  READ_FUNCTION EYZ 
+#  READ_FUNCTION EZX
+ READ_FUNCTION SXX 
+ READ_FUNCTION SYY
+ READ_FUNCTION SZZ 
+ READ_FUNCTION SXY 
+ READ_FUNCTION SYZ 
+ READ_FUNCTION SZX
+}
+
+sigma(x,y,z) = sqrt(0.5*((SXX(x,y,z)-SYY(x,y,z))^2 + \
+                         (SYY(x,y,z)-SZZ(x,y,z))^2 + \
+                         (SZZ(x,y,z)-SXX(x,y,z))^2 + \
+                         6*(SXY(x,y,z)^2 + SYZ(x,y,z)^2 + SZX(x,y,z)^2)))
+
+WRITE_MESH $1.vtk {
+ displacements1 displacements2 displacements3
+ sigma
+#  EXX EYY EZZ EXY EYZ EZX
+#  SXX SYY SZZ SXY SYZ SZX
+}

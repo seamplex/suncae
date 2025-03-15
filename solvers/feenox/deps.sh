@@ -1,6 +1,6 @@
 #!/bin/false
 
-feenox_version=1.0.97
+feenox_version=1.0.152
 
 # feenox
 echo -n "solvers/feenox... "
@@ -11,7 +11,8 @@ if [ $force = 1 ] || [ ! -x  bin/feenox ]; then
     wget -c https://www.seamplex.com/feenox/dist/linux/${feenox_tarball}.tar.gz
   fi
   tar xzf ${feenox_tarball}.tar.gz
-  cp ${feenox_tarball}/bin/feenox ../bin/feenox
+  cp ${feenox_tarball}/bin/feenox  ../bin
+  cp ${feenox_tarball}/bin/fee2ccx ../bin
   echo "done"
   cd ..
 else

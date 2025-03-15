@@ -32,6 +32,7 @@ if ($current_step == 1 && $has_mesh_attempt == false) {
 
 switch ($next_step) {
   case 1:
+    // TODO: per-mesher
     chdir($case_dir);
     if (file_exists("mesh.geo") == false) {
       $geo = fopen("mesh.geo", "w");
@@ -66,21 +67,11 @@ switch ($next_step) {
     $response["results"] = ($has_results) ? $problem_hash : "";
     $response["has_results_attempt"] = $has_results_attempt;
     if ($has_results_attempt == false) {
-      if (chdir($case_dir) == false) {
-        $response["status"] = "error";
-        $response["error"] = "cannot chdir to case dir";
-      }
-      exec("../../../../bin/feenox -c case.fee 2> run/{$problem_hash}-check.2", $output, $result);
-      if ($result == 0) {
-        exec("../../../../solvers/feenox/solve.sh {$problem} > run/solving.log 2>&1 & echo $! > run/solving.pid");
-        $results_meta["status"] = "running";
-        suncae_log("{$id} problem running");
-      } else {
-        $results_meta["status"] = "syntax_error";
-        suncae_log("{$id} problem syntax error");
-      }
+      
+      include("../solvers/{$solver}/change_step_solve.php");
       file_put_contents("run/{$problem_hash}.json", json_encode($results_meta));
       suncae_log("{$id} change_step {$current_step} -> {$next_step}");
+      
     }
     if (isset($results_meta)) {
       $next_step *= ($results_meta["status"] != "running") ? (+1) : (-1);

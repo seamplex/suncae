@@ -31,5 +31,6 @@ mkdir -p deps
 . uxs/faster-than-quick/deps.sh
 . meshers/gmsh/deps.sh
 . solvers/feenox/deps.sh
+. solvers/ccx/deps.sh
 
 

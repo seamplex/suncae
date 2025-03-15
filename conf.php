@@ -9,5 +9,3 @@ $cadimporter = "upload";
 $mesher = "gmsh";
 $post = "paraview";
 $runner = "local";
-$solver = "feenox";
-$mesher = "gmsh";
