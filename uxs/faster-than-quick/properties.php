@@ -39,7 +39,9 @@ row_form_ro("text_type", "Type", ucfirst($problem));
    </div> 
 
 <?php
-row_form_ro("text_created", "Created", date($case["date"]));
+row_form_ro("text_created", "Created", date(DATE_RFC2822, $case["date"]));
+row_form_ro("text_solver", "Mesher", $case["mesher"]);
+row_form_ro("text_solver", "Solver", $case["solver"]);
 pop_accordion_item();
 
  // chdir("../data/{$username}/cases/{$id}");

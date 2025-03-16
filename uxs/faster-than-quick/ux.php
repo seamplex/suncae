@@ -49,12 +49,12 @@ function row_set_width($width) {
   $row_width = $width;
 }
 
-function row_ro($label, $value) {
+function row_ro($label, $value, $condition = true) {
   global $row_width;
 ?>
    <div class="row mb-1 mx-0">
     <div class="col-<?=$row_width?> text-end text-primary"><?=$label?></div>
-    <div class="col-<?=(12-$row_width)?>"><?=$value?></div>
+    <div class="col-<?=(12-$row_width)?> <?=($condition == false) ? "text-danger" : "" ?>"><?=$value?></div>
    </div>
 <?php
 }

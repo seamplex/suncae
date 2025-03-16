@@ -27,11 +27,11 @@ title_left("Customize mesh");
 push_accordion("mesh");
 // TODO: if coming from another step, show this one otherwise show the other one first
 push_accordion_item("currentmesh", "mesh", "Current mesh <span class=\"badge badge-light\">".substr($mesh_hash,0,7)."</span>", true); 
-row_set_width(4);
+row_set_width(5);
 
 if ($has_mesh_valid) {
   if (isset($mesh_meta["nodes"])) {
-    row_ro("Nodes", number_format($mesh_meta["nodes"]));
+    row_ro("First-order nodes", number_format($mesh_meta["nodes"]), $mesh_meta["nodes"] < 25e3);
   }
   if (isset($mesh_meta["tetrahedra"])) {
     row_ro("Tetrahedra", number_format($mesh_meta["tetrahedra"]));
@@ -359,7 +359,7 @@ pop_accordion_item();
 push_accordion_item("meshhistory", "mesh", "Meshing history", false);
 ?>
 
-Clean up cached meshes
+To be done
 
 <?php
 pop_accordion_item();
