@@ -7,9 +7,9 @@ pandoc_version=3.5
 
 # boostrap (we only need the js, the css comes from bootswatch)
 echo -n "uxs/faster-than-quick/bootstrap.js... "
-if [ ! -e uxs/faster-than-quick/js/bootstrap.min.js ]; then
+bootstrap_tarball=bootstrap-${bootstrap_version}-dist
+if [ $force = 1 ] || [ ! -e uxs/faster-than-quick/js/bootstrap.min.js ] || [ ! -f deps/${bootstrap_tarball}.zip ]; then
   cd deps
-  bootstrap_tarball=bootstrap-${bootstrap_version}-dist
   if [ ! -e ${bootstrap_tarball}.zip ]; then
     wget https://github.com/twbs/bootstrap/releases/download/v${bootstrap_version}/${bootstrap_tarball}.zip
   fi
@@ -27,9 +27,10 @@ fi
 
 # boostrap icons
 echo -n "uxs/faster-than-quick/bootstrap icons... "
-if [ ! -e uxs/faster-than-quick/css/bootstrap-icons.min.css ]; then
+bootstrap_icons_tarball=bootstrap-icons-${bootstrap_icons_version}
+
+if [ $force = 1 ] || [ ! -e uxs/faster-than-quick/css/bootstrap-icons.min.css ] || [ ! -f deps/${bootstrap_icons_tarball}.zip ]; then
   cd deps
-  bootstrap_icons_tarball=bootstrap-icons-${bootstrap_icons_version}
   if [ ! -e ${bootstrap_icons_tarball}.zip ]; then
     wget https://github.com/twbs/icons/releases/download/v${bootstrap_icons_version}/${bootstrap_icons_tarball}.zip
   fi
@@ -52,7 +53,7 @@ fi
 
 # katex
 echo -n "uxs/faster-than-quick/katex... "
-if [ ! -e uxs/faster-than-quick/css/katex.min.css ]; then
+if [ $force = 1 ] ||  [ ! -e uxs/faster-than-quick/css/katex.min.css ]; then
   cd deps
   if [ ! -e katex.tar.gz ]; then
     wget https://github.com/KaTeX/KaTeX/releases/download/v${katex_version}/katex.tar.gz
@@ -71,9 +72,9 @@ fi
 
 # pandoc
 echo -n "uxs/faster-than-quick/pandoc... "
-if [ ! -e bin/pandoc ]; then
+pandoc_tarball=pandoc-${pandoc_version}-linux-amd64
+if [ $force = 1 ] || [ ! -e bin/pandoc ] || [ ! -f deps/${pandoc_tarball}.tar.gz ]; then
   cd deps
-  pandoc_tarball=pandoc-${pandoc_version}-linux-amd64
   if [ ! -e ${pandoc_tarball}.tar.gz ]; then
     wget https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${pandoc_tarball}.tar.gz
   fi
@@ -88,7 +89,4 @@ else
 fi
 
 # TODO: gnuplot?
-
-# TODO: katex 
-# https://github.com/KaTeX/KaTeX/releases/download/v0.16.9/katex.tar.gz
 

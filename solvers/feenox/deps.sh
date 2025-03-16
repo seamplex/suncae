@@ -4,9 +4,9 @@ feenox_version=1.0.152
 
 # feenox
 echo -n "solvers/feenox... "
-if [ $force = 1 ] || [ ! -x  bin/feenox ]; then
+feenox_tarball=feenox-${feenox_version}-linux-amd64
+if [ $force = 1 ] || [ ! -x  bin/feenox ] || [ ! -f deps/${feenox_tarball}.tar.gz ]; then
   cd deps
-  feenox_tarball=feenox-${feenox_version}-linux-amd64
   if [ ! -e  ${feenox_tarball}.tar.gz ]; then
     wget -c https://www.seamplex.com/feenox/dist/linux/${feenox_tarball}.tar.gz
   fi
