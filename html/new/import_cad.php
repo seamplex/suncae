@@ -6,4 +6,4 @@
 include("../../conf.php");
 include("../../auths/{$auth}/auth.php");
 include("../common.php");
-include("../../cadimporters/{$cadimporter}/upload.php");
+include("../../cadimporters/{$cadimporter}/import_cad.php");

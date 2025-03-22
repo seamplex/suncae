@@ -47,7 +47,7 @@ include("about.php");
   <div class="container">
    <div class="row">
     <div class="col-lg-6">
-     <?php include("new_{$cadimporter}_x3dom.php"); ?>
+     <?php include("importers/{$cadimporter}.php"); ?>
     </div>
 
     <div class="col-lg-6">
@@ -192,7 +192,7 @@ include("about.php");
 
    <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
     <p>
-     &copy; 2024 <a href="https://www.seamplex.com" target="_blank">Seamplex</a>.
+     &copy; 2025 <a href="https://www.seamplex.com" target="_blank">Seamplex</a>.
      <a href="https://www.seamplex.com/suncae" target="_blank">SunCAE</a> is licensed under the
      <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" target="_blank">GNU AGPL.</a>
      You can get the source code from <a href="https://github.com/seamplex/suncae">Github</a>.
@@ -268,7 +268,7 @@ function upload_file() {
     div_progress.style.width = progress + "%";
   }, false);
 
-  fileupload.open("POST", "upload.php", true);
+  fileupload.open("POST", "import_cad.php", true);
   fileupload.setRequestHeader("X_FILENAME", files[0].name.replace(/[^a-zA-Z0-9\-]/gi, ''));
   fileupload.send(files[0]);
 }
