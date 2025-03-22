@@ -6,5 +6,5 @@
 $auth = "single-user";
 $ux = "faster-than-quick";
 $cadimporter = "upload";
-$mesher = "gmsh";  // this is the one used for the first mesh even before creating the case
+$cadprocessor = "gmsh";
 $runner = "local";

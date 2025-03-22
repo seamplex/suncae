@@ -35,6 +35,7 @@ if (($case = yaml_parse($case_yaml)) == null) {
 }
 $problem = $case["problem"];
 $solver = $case["solver"];
+$mesher = $case["mesher"];
 
 $cad_dir = "../data/{$username}/cads/{$case["cad"]}";
 if (is_dir("{$cad_dir}/meshes") == false) {

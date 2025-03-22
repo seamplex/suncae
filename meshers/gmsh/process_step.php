@@ -1,7 +1,7 @@
 <?php
 
 if (file_exists("original.json") === false) {
-  exec("../../../../cadimporters/upload/cadcheck.py", $output, $error_level);
+  exec("../../../../cadprocessors/gmsh/cadcheck.py", $output, $error_level);
   
   // TODO: keep output
   if ($error_level != 0) {
@@ -12,7 +12,7 @@ if (file_exists("original.json") === false) {
     } else if ($error_level == 2) {
       $response["error"] = "Invalid CAD file.";
     } else {
-      $response["error"] = "Unknown error {$error_level} when checking CAD.";
+      $response["error"] = "Unknown zzz error {$error_level} when checking CAD.";
     }
     for ($i = 0; $i < count($output); $i++) {
       $response["error"] .= $output[$i];

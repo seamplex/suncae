@@ -17,12 +17,12 @@ chdir($cad_dir);
 
 // ------------------------------------------------------------
 if (file_exists("cad.json") === false) {
-  exec("../../../../cadimporters/upload/cadimport.py 2>&1", $output, $error_level);
+  exec("../../../../cadprocessors/gmsh/cadimport.py 2>&1", $output, $error_level);
   
   // TODO: keep output
   if ($error_level != 0) {
     $response["status"] = "error";
-    $response["error"] = "Unknown error {$error_level} when importing CAD.";
+    $response["error"] = "Unknown yyy error {$error_level} when importing CAD.";
     for ($i = 0; $i < count($output); $i++) {
       $response["error"] .= $output[$i];
     }
@@ -49,7 +49,7 @@ if (file_exists("cad.json")) {
 
 // ------------------------------------------------------------
 // leave running the mesher in the background
-exec("../../../../meshers/{$mesher}/initial.sh > cadmesh.log 2>&1 &");
+exec("../../../../cadprocessors/gmsh/initial_mesh.sh > cadmesh.log 2>&1 &");
 
 suncae_log("CAD {$cad_hash} process {$response["status"]} {$response["error"]}");
 
