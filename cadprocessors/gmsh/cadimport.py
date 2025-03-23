@@ -60,6 +60,13 @@ def main():
 
   gmsh.write("cad.xao")
   gmsh.finalize()
+  
+  # TODO: this removes the custom names of surfaces, which we need empty
+  # there should be a way of doing it inside Gmsh
+  os.system("sed -i '/<vertex[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
+  os.system("sed -i '/<edge[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
+  os.system("sed -i '/<face[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
+  os.system("sed -i '/<solid[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
 
   # xao to x3d + json
   gmsh.initialize()
