@@ -5,4 +5,6 @@
 
 include("../conf.php");
 include("../auths/{$auth}/auth.php");
+include("common.php");
+include("case.php");
 include("../meshers/{$mesher}/mesh_graph.php");

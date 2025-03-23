@@ -1,3 +1,3 @@
-Mesh.MeshSizeFromCurvature = 10;
+Mesh.MeshSizeFromCurvature = 12;
 Mesh.AlgorithmSwitchOnFailure = 1;
 Mesh.Algorithm = 2;

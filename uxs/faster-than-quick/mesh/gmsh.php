@@ -105,33 +105,52 @@ push_accordion_item("updatemesh", "mesh", "Customize &amp; update mesh");
 // TODO: structures/classes
 $desc["MeshSizeMax"] = "Target element size [mm]";
 $type["MeshSizeMax"] = "float";  // TODO: enums
-$lc = isset($mesh_geo["MeshSizeMax"]["value"]) ? $mesh_geo["MeshSizeMax"]["value"] : (isset($mesh_meta["e_mean"]) ? round($mesh_meta["e_mean"], 1) : 0);
-if ($lc == 0) {
-  if (($cad_json = file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"))) {
-    if ($cad = json_decode($cad_json, true)) {
-      $lc = 4*$cad["volume"]/$cad["area"];
-    }
+
+$cad = json_decode(file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"), true);
+$length_order = pow(10, floor(log10($cad["max_length"])));
+$length_precision = 1e-2 * $length_order;
+$length_char = 4 * $cad["volume"]/$cad["area"];
+
+$lc = 0;
+$lc_min = 0; 
+foreach($mesh_geo as $mesh_var) {
+  if ($mesh_var["variable"] == "MeshSizeMax") {
+    $lc = $mesh_var["value"];
+  } else if ($mesh_var["variable"] == "MeshSizeMin") {
+    $lc_min = $mesh_var["value"];
   }
 }
 
-// $lc = 1e-2 * floor($lc * 1e2);
-$lc = pow(10, ceil(log10($lc)));
+if ($lc == 0) {
+  if (isset($mesh_meta["e_mean"])) {
+    // TODO: make a round_to_p() function
+    $lc = ceil($mesh_meta["e_mean"] / $length_precision) * $length_precision;
+  } else {
+    $lc = ceil($length_char / $length_precision) * $length_precision;
+  }
+}
+
+$lc_rounded = ceil($lc / $length_precision) * $length_precision;
+
+
 $default["MeshSizeMax"] = $lc;
-$min["MeshSizeMax"] = 0.1*$lc;
-$max["MeshSizeMax"] = 2.0*$lc;
-$step["MeshSizeMax"] = 1e-2 * pow(10, ceil(log10($lc)));
+$min["MeshSizeMax"] = 0.1*$lc_rounded;
+$max["MeshSizeMax"] = 2.0*$lc_rounded;
+$step["MeshSizeMax"] = 0.1*$length_precision;
 
 // --------------------------
 
 $desc["MeshSizeMin"] = "Minimum element size [mm]";
 $type["MeshSizeMin"] = "float";  // TODO: enums
 
+if ($lc_min == 0) {
+  $lc_min = 1e-2*$lc;
+}
 
-$lc_min_factor = 0.1;
-$default["MeshSizeMin"] = $lc_min_factor*$lc;
-$min["MeshSizeMin"] = 1e-2*floor(0.1*$lc_min_factor*$lc * 1e2);
-$max["MeshSizeMin"] = 1e-2*floor(2.0*$lc_min_factor*$lc * 1e2);
-$step["MeshSizeMin"] = 0.1*$step["MeshSizeMax"];
+$default["MeshSizeMin"] = $lc_min;
+$min["MeshSizeMin"] = 0.1*$lc_min;
+$max["MeshSizeMin"] = 2.0*$lc_min;
+$step["MeshSizeMin"] = 0.001*$length_precision;
 
 // -------------------
 

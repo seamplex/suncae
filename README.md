@@ -4,7 +4,26 @@
 
 > A free and open source web-based platform for performing CAE in the cloud.
 
-## Quickstart
+## What
+
+SunCAE is a web-based front end and a cloud-based back end to perform finite-element calculations directly on the browser.
+
+ * The front end is an HTML client with plain vanilla javascript code (i.e. no Angular, no React, not even jQuery) that provide interactivity by sending JSON-based AJAX request to the server backe end. 
+ * The back end is written in PHP and responds to the client requests by creating the necesary files, executing the necesary binaries and returning back 3D data to the client.
+
+Both fron end and back ends are free software, released under the terms of the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). See [licensing](#licensing) below for more information.
+
+
+## Why
+
+ #. No need to install. You can use it [online](https://www.caeplex.com/suncae) because it is web-based.
+ #. Single source of truth. All your data is in a single location because it is cloud-first.
+ #. Increased traceability. All changes are tracked using Git.
+ #. Collaborative. Many users can access the same case, and Git keeps track of who changed what when.
+ #. Mobile-friendly. Access your simulation project from your phone or tablet.
+
+
+## How
 
 You can use SunCAE either by...
 
@@ -14,6 +33,8 @@ You can use SunCAE either by...
      * check out these Youtube videos to learn how to use it
        - [Tutorial #1: Overview](https://youtu.be/MYl7-tcCAfE) (4 min)
        - [Tutorial #2: NAFEMS LE10](https://youtu.be/ANQX0EZI_q8) (4 min)
+       - [Tutorial #3: Heat conduction](https://youtu.be/WeEeZ5BVm8I) (3.5 min)
+
 
  2. hosting your own server (it can be your laptop!) so you (or other people) can use it:
 
@@ -43,31 +64,33 @@ You can use SunCAE either by...
 
 For more detailed instructions including setting up production web servers and using virtualization tools (e.g. docker and/or virtual machines) read the [installation guide](doc/INSTALL.md).
 
-## Configuration
+
+### Configuration
 
 With SunCAE---as with sundae ice creams---you get to choose the toppings:
 
- 1. [authenticators](auths) (e.g. single-user)
- 2. [UXs](uxs) (e.g. faster-than-quick)
- 3. [CAD importers](cadimporters) (e.g. upload)
- 4. [Meshers](meshers) (e.g. gmsh)
- 5. [Solvers](solvers) (e.g. feenox)
- 6. Runners (to be done, e.g. local, ssh, aws, ...)
- 7. Post processors (to be done, e.g. paraview, glvis, ...)
+ 1. [Authenticators](auths)
+     * [single-user](auths/single-user)
+     * [htpasswd](auths/htpasswd)
+     * ...
+ 2. [UXs](uxs)
+     * [faster-than-quick](uxs/faster-than-quick)
+     * ...
+ 3. [CAD importers](cadimporters)
+     * [upload](cadimporters/upload)
+     * ...
+ 4. [CAD processors](cadprocessors)
+     * [gmsh](cadprocessors/gmsh)
+     * ...
+ 5. Runners (to be done, e.g. local, ssh, aws, ...)
+ 6. Post processors (to be done, e.g. paraview, glvis, ...)
+
+Moreover, for each case users can choose the combination of
+
+ * [Meshers](meshers) (e.g. [gmsh](meshers/gmsh, ...)
+ * [Solvers](solvers) (e.g. [feenox](solvers/feenox), [calculix](solvers/calculix), ...)
 
 
-## Features
-
- * Free and open source. Free both as in "free beer" and in "free speech"
- * Mobile-friendly
- * Cloud-first
-
-## Support
-
- * Tutorials (To be done)
- * FAQs (To be done)
- * [Forum](https://github.com/seamplex/suncae/discussions/)
- 
 ## Licensing
 
 The content of this SunCAE repository is licensed under the terms of the [GNU Affero General Public License version 3](https://www.gnu.org/licenses/agpl-3.0.en.html), or at your option, any later version (AGPLv3+). 

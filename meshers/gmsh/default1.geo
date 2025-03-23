@@ -1,0 +1,1 @@
+Mesh.MeshSizeFromCurvature = 5;

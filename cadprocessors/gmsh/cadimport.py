@@ -96,8 +96,12 @@ def main():
   gmsh.option.setNumber("Print.X3dVertices", 1)
 
   # TODO: elegir por commandline
-  gmsh.option.setNumber("Mesh.StlLinearDeflection", 3e-3*max_delta);
-  gmsh.option.setNumber("Mesh.StlAngularDeflection", 1);
+  # gmsh.option.setNumber("Mesh.StlLinearDeflection", 3e-3*max_delta);
+  # gmsh.option.setNumber("Mesh.StlAngularDeflection", 1);
+
+  gmsh.option.setNumber("Mesh.StlLinearDeflection", 1e-2*max_length);
+  gmsh.option.setNumber("Mesh.StlLinearDeflectionRelative", 1e-1); 
+  # gmsh.option.setNumber("Mesh.StlAngularDeflection", 1);
 
   gmsh.write("cad.x3d")
 

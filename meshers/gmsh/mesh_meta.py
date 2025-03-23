@@ -86,16 +86,16 @@ if os.path.exists(mesh_file):
   # meta["elements"] = len(elements);
 
   if error == 0:
-  
+
     # quality
     quality_type = "gamma"
     N = 10
     _, eleTags , _ = gmsh.model.mesh.getElements(dim=3)
-  
+
     # qualities
     q = gmsh.model.mesh.getElementQualities(eleTags[0], quality_type)
     q_n = len(q)
-  
+
     q_hist = [0]*(N+1)
     q_mean = 0
     q_var = 0
@@ -106,21 +106,21 @@ if os.path.exists(mesh_file):
         q_min = q[i]
       if q[i] > q_max:
         q_max = q[i]
-      
+
       delta = q[i] - q_mean
       q_mean += delta / (i+1)
       delta2 = q[i] - q_mean
       q_var += delta * delta2
-  
+
       q_hist[int(math.floor(q[i]*N))] += 1
-  
+
     meta["q_mean"] = q_mean
     meta["q_dev"] = math.sqrt(q_var/q_n)
     meta["q_min"] = q_min
     meta["q_max"] = q_max
-    
+
     q_dat = open("%s-quality.dat" % mesh_hash, "w") 
-  
+
     # qualities = 1  go to N so we move them to N-1
     q_hist[N-1] += q_hist[N]
     q_y_max = -1.0
@@ -130,9 +130,9 @@ if os.path.exists(mesh_file):
       if q_y > q_y_max:
         q_y_max = q_y
       q_dat.write("%g\t%g\n" % (q_x, q_y))
-  
+
     q_dat.close() 
-  
+
     # size
     emin = gmsh.model.mesh.getElementQualities(eleTags[0], "minEdge")
     emax = gmsh.model.mesh.getElementQualities(eleTags[0], "maxEdge")
@@ -176,16 +176,16 @@ if os.path.exists(mesh_file):
       if e_y > e_y_max:
         e_y_max = e_y
       e_dat.write("%g\t%g\n" % (e_x, e_y))
-  
+
     e_dat.close() 
-  
-  
+
+
     gp = open("%s.gp" % mesh_hash, "w") 
     # gp.write("set terminal svg size 160,120\n")
     gp.write("set terminal svg size 240,240\n")
     gp.write("set margins 4,2,4,1\n")
     gp.write("set tics scale 0.4\n")
-  
+
     # quality
     # gp.write("set style fill solid 0.8 border -1 lc 1\n")
     gp.write("set yrange [0:%.3f]\n" % (1.25*q_y_max))
@@ -197,7 +197,7 @@ if os.path.exists(mesh_file):
     gp.write("set ytics 0.1\n")
     gp.write("set output \"%s-quality.svg\"\n" % mesh_hash)
     gp.write("plot \"%s-quality.dat\" with boxes  fillcolor \"dark-green\" fs solid border linecolor \"black\"    ti \"\"\n" % mesh_hash)
-  
+
     # sizes
     # gp.write("set style fill solid 0.8 border -1 lc 2\n")
     gp.write("set yrange [0:%.3f]\n" % (1.25*e_y_max))
@@ -208,7 +208,7 @@ if os.path.exists(mesh_file):
     gp.write("set ytics 0.1\n")
     gp.write("set output \"%s-size.svg\"\n" % mesh_hash)
     gp.write("plot \"%s-size.dat\" with boxes  fillcolor \"dark-cyan\" fs solid border linecolor \"black\"   ti \"\"\n" % mesh_hash)
-  
+
     gp.close()
 
   gmsh.finalize()
