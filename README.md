@@ -16,13 +16,13 @@ Both fron end and back ends are free software, released under the terms of the [
 
 ## Why
 
- #. **No need to install.** You can use it [online](https://www.caeplex.com/suncae) because it is web-based.
- #. **Single source of truth.** All your data is in a single location because it is cloud-first.
- #. **Increased traceability.** All changes are tracked using Git.
- #. **Collaboration.** Many users can access the same case. And Git keeps track of who changed what when.
- #. **Mobile-friendly.** Access your simulation project from your phone or tablet.
- #. **Free and open source.** As in "free speech." You fully get the four freedoms.
- #. **Extensible.** Add more meshers, solvers, UXs, etc. Join the community!
+ 1. **No need to install.** You can use it [online](https://www.caeplex.com/suncae) because it is web-based.
+ 2. **Single source of truth.** All your data is in a single location because it is cloud-first.
+ 3. **Increased traceability.** All changes are tracked using Git.
+ 4. **Collaboration.** Many users can access the same case. And Git keeps track of who changed what when.
+ 5. **Mobile-friendly.** Access your simulation project from your phone or tablet.
+ 6. **Free and open source.** As in "free speech." You fully get the four freedoms.
+ 7. **Extensible.** Add more meshers, solvers, UXs, etc. Join the community!
 
 
 ## How
