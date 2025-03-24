@@ -48,26 +48,23 @@ def main():
   for i in range(vertices):
     gmsh.model.addPhysicalGroup(0, [1+i], 1+i)
     gmsh.model.setPhysicalName(0, 1+i, "vertex%d" % (1+i))
+    gmsh.model.setEntityName(0, 1+i, "vertex%d" % (1+i))
   for i in range(edges):
     gmsh.model.addPhysicalGroup(1, [1+i], 1+i)
     gmsh.model.setPhysicalName(1, 1+i, "edge%d" % (1+i))
+    gmsh.model.setEntityName(1, 1+i, "edge%d" % (1+i))
   for i in range(faces):
     gmsh.model.addPhysicalGroup(2, [1+i], 1+i)
     gmsh.model.setPhysicalName(2, 1+i, "face%d" % (1+i))
+    gmsh.model.setEntityName(2, 1+i, "face%d" % (1+i))
   for i in range(solids):
     gmsh.model.addPhysicalGroup(3, [1+i], 1+i)
     gmsh.model.setPhysicalName(3, 1+i, "solid%d" % (1+i))
+    gmsh.model.setEntityName(3, 1+i, "solid%d" % (1+i))
 
   gmsh.write("cad.xao")
   gmsh.finalize()
   
-  # TODO: this removes the custom names of surfaces, which we need empty
-  # there should be a way of doing it inside Gmsh
-  os.system("sed -i '/<vertex[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
-  os.system("sed -i '/<edge[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
-  os.system("sed -i '/<face[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
-  os.system("sed -i '/<solid[^>]*index=\"[^\"]*\"[^>]*reference=\"[^\"]*\"/ s/ name=\"[^\"]*\"/ name=\"\"/' cad.xao");
-
   # xao to x3d + json
   gmsh.initialize()
   gmsh.option.setNumber("General.Terminal", 0)
