@@ -6,6 +6,14 @@
 $permissions = 0755;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 
+function suncae_error($error) {
+  echo "<p><br>SunCAE found a fatal error:</br>";
+  echo $error;
+  echo "</p>";
+  exit();
+}
+  
+
 function return_back_html($response) {
   header("Content-Type: text/html");
   echo $response;
