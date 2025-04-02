@@ -7,7 +7,7 @@ $permissions = 0755;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 
 function suncae_error($error) {
-  echo "<p><br>SunCAE found a fatal error:</br>";
+  echo "<p><b>SunCAE found a fatal error:</b>";
   echo $error;
   echo "</p>";
   exit();

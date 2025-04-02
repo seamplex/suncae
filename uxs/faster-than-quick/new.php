@@ -218,14 +218,14 @@ include("about.php");
    </header>
   </div>
 
-  <div class="container">
-   <div class="row">
-    <div class="col-lg-6">
-     <?php include("importers/{$cadimporter}.php"); ?>
-    </div>
+  <form action="create.php" method="post">
+   <div class="container">
+    <div class="row">
+     <div class="col-lg-6">
+      <?php include("importers/{$cadimporter}.php"); ?>
+     </div>
 
-    <div class="col-lg-6">
-     <form action="create.php" method="post">
+     <div class="col-lg-6">
 <!--
       <div class="col mb-3">
        <label for="name" class="form-label">Case name</label>
@@ -261,7 +261,6 @@ include("about.php");
       </div> 
 
       <div class="row mb-3">
-
        <div class="col-lg-6">
         <label for="solver" class="form-label">
          <span class="badge text-bg-primary" id="badge_solver">4</span>&nbsp;Solver
@@ -298,16 +297,15 @@ include("about.php");
       </div>
 
       <div class="row mt-3">
-
        <div class="col alert alert-warning d-none" id="div_unsupported">
         The selected problem is not yet available.
         <a href="#" class="alert-link">Contact us</a> for more information.
        </div>
       </div>
-     </form>
+     </div> 
     </div> 
-   </div> 
-  </div>
+   </div>
+  </form> 
  </main>
 
  <footer class="py-5">
