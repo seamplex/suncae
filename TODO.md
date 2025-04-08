@@ -11,20 +11,26 @@
 ## General
 
  * unit tests
- * choose units
+ * choose units (SI, etc.)
  * choose points for BCs (and eventually refinements)
  * name in the BC should reflect the content
  * dashboard with case list
  * real-time collaboration
  * detect changes in CAD
- * git history in the ux
+ * git history in the UX
  * show face id when hovering
  * screenshots
  * once a minute refresh the axes, faces, edges, etc. (take a snapshot?)
  * investigate defeature operation in OCC through Gmsh (would we need a separate UX?)
- * show SunCAE version in about (mind the fact that the owner of `.git` might not be the one running, maybe we should create a `txt` when running `deps.sh`?)
+ * re-implement how to show SunCAE version in about (when running `deps.sh`)
+ * check that everything is fine when running `deps.sh`:
+   - that executables work
+   - that permissions are fine
+   - create a `txt` with versions with `git log -1` + `git status --porcelain`
  * ability to take notes in markdown
  * help ballons, markdown + pandoc
+ * limit DOFs: in conf? somewhere in auth? like `limits.php`?
+ * remove visibility, everything is public
 
 
 ## Gmsh
