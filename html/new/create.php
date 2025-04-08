@@ -7,6 +7,7 @@ include("../../conf.php");
 include("../../auths/{$auth}/auth.php");
 include("../common.php");
 
+// TODO: check isset()
 $problem = $_POST["problem"];
 $mesher = $_POST["mesher"];
 $solver = $_POST["solver"];
@@ -34,6 +35,9 @@ $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 // }
 
 
+if (file_exists($id) === true) {
+  suncae_error("Project {$id} already exists");
+}
 mkdir($id, $permissions, true);
 chdir($id);
 
