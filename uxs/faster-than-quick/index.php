@@ -741,17 +741,21 @@ function geo_ready() {
 
 for ($i = 1; $i <= $cad["faces"]; $i++) {
 ?>
-cad__face<?=$i?>.onmouseover = function() { face_over(<?=$i?>) };
-cad__face<?=$i?>.onmouseout  = function() { face_out(<?=$i?>) };
-cad__face<?=$i?>.onclick  = function() { face_click(<?=$i?>) };
+if (typeof cad__face<?=$i?> != "undefined") {
+  cad__face<?=$i?>.onmouseover = function() { face_over(<?=$i?>) };
+  cad__face<?=$i?>.onmouseout  = function() { face_out(<?=$i?>) };
+  cad__face<?=$i?>.onclick  = function() { face_click(<?=$i?>) };
+}
 <?php
 }
 
 for ($i = 1; $i <= $cad["edges"]; $i++) {
 ?>
-cad__edge<?=$i?>.onmouseover = function() { edge_over(<?=$i?>) };
-cad__edge<?=$i?>.onmouseout  = function() { edge_out(<?=$i?>) };
-cad__edge<?=$i?>.onclick  = function() { edge_click(<?=$i?>) };
+if (typeof cad__edge<?=$i?> != "undefined") {
+  cad__edge<?=$i?>.onmouseover = function() { edge_over(<?=$i?>) };
+  cad__edge<?=$i?>.onmouseout  = function() { edge_out(<?=$i?>) };
+  cad__edge<?=$i?>.onclick  = function() { edge_click(<?=$i?>) };
+}
 <?php
 }
 
