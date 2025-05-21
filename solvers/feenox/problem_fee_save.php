@@ -7,14 +7,17 @@ chdir("../data/{$username}/cases/{$id}");
 $fee = fopen("case.fee", "w");
 
 // TODO: this does not allow to choose PETSc solvers and that kind of things
-fwrite($fee, "PROBLEM {$problem_name[$problem]}\n");
+//fwrite($fee, "PROBLEM {$problem_name[$problem]} PC mumps\n");
 
+// TODO: unify READ_MESH into PROBLEM
+/*
 $mesh_hash = mesh_hash();
 if ($mesh_order[$problem] == 1) {
   fwrite($fee, "READ_MESH meshes/{$mesh_hash}.msh\n");
 } else {
   fwrite($fee, "READ_MESH meshes/{$mesh_hash}-{$mesh_order[$problem]}.msh\n");
 }
+*/
 fwrite($fee, $_POST["fee"]);
 fclose($fee);
 

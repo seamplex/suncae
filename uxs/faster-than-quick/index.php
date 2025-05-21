@@ -116,7 +116,7 @@ include("about.php");
 
     <div id="div_fee_edit" class="form-floating d-none">
      <textarea class="form-control" id="text_fee_edit" style="height: 400px; font-family:monospace;"></textarea>
-     <label for="text_fee_edit" id="text_fee_edit_header" style="font-family:monospace"></label>
+<!--      <label for="text_fee_edit" id="text_fee_edit_header" style="font-family:monospace"></label> -->
     </div>
 
     <div id="fee_error_message" class="small alert alert-danger d-none"></div>

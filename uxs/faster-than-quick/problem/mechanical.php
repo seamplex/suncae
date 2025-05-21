@@ -1,10 +1,11 @@
-<?php
+`<?php
 // This file is part of SunCAE.
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 include("../uxs/faster-than-quick/labels.php");
 
+$pc = "gamg";
 $E = "200";
 $nu = "0.3";
 $alpha = "0";
@@ -15,7 +16,17 @@ if ($fee) {
   $bc_i = 0;
   // TODO: allow spacing, spaces in regexps?
   while (($line = fgets($fee)) !== false) {
-    if (strncmp("E(x,y,z) = ", $line, 4) == 0) {
+    $line_exploded = explode(" ", $line);
+
+    $i = 0;
+    if ($line_exploded[0] == "PROBLEM") {
+      while (isset($line_exploded[$i])) {
+        if ($line_exploded[$i] == "PC") {
+          $pc = trim($line_exploded[++$i]);
+        }
+        $i++;
+      }
+    } else if (strncmp("E(x,y,z) = ", $line, 4) == 0) {
       preg_match('/E\(x,y,z\) = \((.*)\)\*1e3/', $line, $matches);
       if (count($matches) == 2) {
         $E = $matches[1];
@@ -25,11 +36,10 @@ if ($fee) {
     } else if (strncmp("nu = ", $line, 5) == 0) {
       $nu = substr($line, 5);
 
-    } else if (strncmp("BC ", $line, 3) == 0) {
+    } else if ($line_exploded[0] == "BC") {
 
       // TODO: make a function      
       // let's parse the existing BC
-      $line_exploded = explode(" ", $line);
       $bc_name = $line_exploded[1];
       $i = 2;
       $n_values = 0;
@@ -164,9 +174,9 @@ for ($i = 0; $i < 10; $i++) {
     <div class="row mb-1">
      <div class="col-4">
       <select class="form-select" id="bc_what_<?=$i+1?>" onchange="bc_change_filter(<?=$i+1?>, this.value)">
-       <option value="2"<?=($i < count($bc) && $bc[$i]["entities"] == "face") ? " selected" : ""?>>Faces</a>
-       <option value="1"<?=($i < count($bc) && $bc[$i]["entities"] == "edge") ? " selected" : ""?>>Edges</a>
-       <option value="0"<?=($i < count($bc) && $bc[$i]["entities"] == "point") ? " selected" : ""?>>Vertices</a>
+       <option value="2"<?=($i < count($bc) && $bc[$i]["entities"] == "face") ? " selected" : ""?>>Faces</option>
+       <option value="1"<?=($i < count($bc) && $bc[$i]["entities"] == "edge") ? " selected" : ""?>>Edges</option>
+       <option value="0"<?=($i < count($bc) && $bc[$i]["entities"] == "point") ? " selected" : ""?>>Vertices</option>
       </select>
      </div> 
 
@@ -212,9 +222,9 @@ for ($i = 0; $i < 10; $i++) {
     <div class="row mb-1">
      <div class="col-4">
       <select class="form-select" id="bc_what_<?=$i+1?>" onchange="bc_update_type(<?=$i+1?>, this.value)">
-       <option value="custom"   <?=($bc_type == "custom")?"selected":""?>>Custom</a>
-       <option value="fixture"  <?=($bc_type == "fixture")?"selected":""?>>Fixture</a>
-       <option value="pressure" <?=($bc_type == "pressure")?"selected":""?>>Pressure</a>
+       <option value="custom"   <?=($bc_type == "custom")?"selected":""?>>Custom</option>
+       <option value="fixture"  <?=($bc_type == "fixture")?"selected":""?>>Fixture</option>
+       <option value="pressure" <?=($bc_type == "pressure")?"selected":""?>>Pressure</option>
       </select>
      </div> 
 
@@ -272,11 +282,14 @@ for ($i = 0; $i < 10; $i++) {
 pop_accordion_item();
 push_accordion_item("materialproperties", "problem", "Material properties", false);
 ?>
+
     <div class="row mt-2 mb-1">
      <label for="material_model" class="col-4 col-form-label text-end">Mechanical model</label>
      <div class="col-8">
       <select class="form-select" id="material_model" onchange="">
-       <option value="linear_elastic_isotropic">Linear elastic isotropic</a>
+       <option value="linear_elastic_isotropic">Linear elastic isotropic</option>
+<!--        <option value="linear_elastic_orthotropic">Linear elastic orthotropic</option> -->
+<!--        <option value="hyperelastic_neohookean">Hyperelastic neo-hookean</option> -->
       </select>
      </div> 
     </div> 
@@ -320,12 +333,23 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
      <label for="material_model" class="col-4 col-form-label text-end">Thermal expansion</label>
      <div class="col-8">
       <select class="form-select" id="material_model" onchange="">
-       <option value="thermal_none">None</a>
-<!--        <option value="thermal_isotropic">Isotropic</a> -->
-<!--        <option value="thermal_orthotropic">Orthotropic</a> -->
+       <option value="thermal_none">None</option>
+<!--        <option value="thermal_isotropic">Isotropic</option> -->
+<!--        <option value="thermal_orthotropic">Orthotropic</option> -->
       </select>
      </div> 
     </div> 
+    
+    <div class="row mt-2 mb-1">
+     <label for="material_model" class="col-4 col-form-label text-end">Deformations</label>
+     <div class="col-8">
+      <select class="form-select" id="defromation_model" onchange="">
+       <option value="small_deformation">Small (linear)</option>
+<!--        <option value="large_deformation">Large (non-linear)</option> -->
+      </select>
+     </div> 
+    </div> 
+    
 
 <!-- TODO: tip: this is the man coefficient, edit the input to enter non-uniform coefficients -->
     <div class="row mt-2 mb-1 d-none">
@@ -356,8 +380,19 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
  
 <?php
 pop_accordion_item();
-push_accordion_item("input", "problem", "Solver input", false); 
+push_accordion_item("input", "problem", "Solver settings", false); 
 ?>
+ 
+    <div class="row mt-2 mb-1">
+     <label for="material_model" class="col-4 col-form-label text-end">Preconditioner</label>
+     <div class="col-8">
+      <select class="form-select" id="PC" onchange="ajax2problem(this.id, this.value);">
+       <option value=""></option>
+       <option value="gamg"   <?=($pc == "gamg")?"selected":""?>>GAMG</option>
+       <option value="mumps"  <?=($pc == "mumps")?"selected":""?>>MUMPS</option>
+      </select>
+     </div> 
+    </div> 
  
     <div class="row m-1 p-1">
      <div class="btn-group" role="group">

@@ -1628,7 +1628,7 @@ function fee_show() {
     theseus_log(request_fee.responseText);
     try {
       response = JSON.parse(request_fee.responseText);
-      text_fee_edit_header.innerHTML = response["header"];
+//      text_fee_edit_header.innerHTML = response["header"];
       div_fee_html.innerHTML = response["html"];
       plain_fee = response["plain"];
       

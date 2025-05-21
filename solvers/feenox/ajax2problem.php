@@ -16,7 +16,8 @@ if (chdir("../data/{$username}/cases/{$id}") === false) {
 // ---- case.fee ----------------------------
 // first we update the material properties & bcs
 // TODO: per-physics
-if ($field == "E" ||
+if ($field == "PC" ||
+    $field == "E" ||
     $field == "nu" ||
     $field == "k" ||
     $field == "q" ||
@@ -36,8 +37,29 @@ if ($field == "E" ||
   $bc_written = false;
   if ($current && $new) {
     while (($line = fgets($current)) !== false) {
-      // TODO: see if the value is a constant and use E = in that case
-      if ($field == "E" && strncmp("E(x,y,z) = ", $line, 11) == 0) {
+      if ($field == "PC" && strncmp("PROBLEM", $line, 7) == 0) {
+        $line_exploded = explode(" ", rtrim($line));
+        $i = 0;
+        $pc_written = false;
+        while (isset($line_exploded[$i])) {
+          if ($line_exploded[$i] == "PROBLEM") {
+            fprintf($new, "PROBLEM %s", $case["problem"]);
+            $i++;
+          } else if ($line_exploded[$i] == "PC") {
+            fprintf($new, " PC %s", $value);
+            $pc_written = true;
+            $i++;
+          } else {
+            fprintf($new, " %s", $line_exploded[$i]);
+          }
+          $i++;
+        }
+        if ($pc_written == false) {
+          fprintf($new, " PC %s", $value);
+        }
+        fprintf($new, "\n");
+      } else if ($field == "E" && strncmp("E(x,y,z) = ", $line, 11) == 0) {
+        // TODO: see if the value is a constant and use E = in that case
         // TODO: see if it is a constant, expression, etc.
         // if it is 2000000000 then replace it with 2e9
         if (strpos($value, ",") !== false) {
