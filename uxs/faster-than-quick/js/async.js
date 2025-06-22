@@ -108,7 +108,7 @@ async function ajax2yaml(field, value) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 1, see console.");
+    set_error("Error 1, see console.");
     theseus_log(exception);
     return;
   }
@@ -142,7 +142,7 @@ async function ajax2problem(field, value) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 2, see console.");
+    set_error("Error 2, see console.");
     theseus_log(exception);
     return;
   }
@@ -176,7 +176,7 @@ async function ajax2mesh(field, value) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 3, see console.");
+    set_error("Error 3, see console.");
     theseus_log(exception);
     return;
   }
@@ -235,8 +235,8 @@ async function ajax_change_step() {
       set_current_step(ajax_step);
     } catch (exception) {
       theseus_log(exception);
-      html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Internal error 4, see console.</div>';
-      set_error("Internal error 4, see console.");
+      html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Error 4, see console.</div>';
+      set_error("Error 4, see console.");
       return;
     }
   } else if (ajax_step.error !== undefined) {
@@ -283,8 +283,8 @@ async function ajax_change_step() {
       set_current_step(ajax_step);
     } catch (exception) {
       theseus_log(exception);
-      html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Internal error 4, see console.</div>';
-      set_error("Internal error 4, see console.");
+      html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Error 4, see console.</div>';
+      set_error("Error 4, see console.");
       return;
     }
   } else if (ajax_step.error !== undefined) {
@@ -307,7 +307,7 @@ async function update_mesh_status(mesh_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 5, see console.");
+    set_error("Error 5, see console.");
     theseus_log(exception);
     return false;
   }
@@ -361,7 +361,7 @@ async function cancel_meshing(mesh_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 6, see console.");
+    set_error("Error 6, see console.");
     theseus_log(exception);
     return false;
   }
@@ -376,7 +376,7 @@ async function relaunch_meshing(mesh_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 7, see console.");
+    set_error("Error 7, see console.");
     theseus_log(exception);
     return false;
   }
@@ -391,7 +391,7 @@ async function cancel_solving(problem_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 6, see console.");
+    set_error("Error 6, see console.");
     theseus_log(exception);
     return false;
   }
@@ -407,7 +407,7 @@ async function relaunch_solving(problem_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 8, see console.");
+    set_error("Error 8, see console.");
     theseus_log(exception);
     return false;
   }
@@ -423,7 +423,7 @@ async function update_problem_status(problem_hash) {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
-    set_error("Internal error 9, see console.");
+    set_error("Error 9, see console.");
     theseus_log(exception);
     return false;
   }
@@ -462,7 +462,7 @@ async function update_problem_status(problem_hash) {
     }
     setTimeout(() => update_problem_status(problem_hash), 1000);
   } else {
-    set_error("Internal error 10, see console.");
+    set_error("Error 10, see console.");
     return false;
     setTimeout(() => change_step(3), 1000);
   }
@@ -546,7 +546,7 @@ function update_problem_status(problem_hash) {
     }
 
   } else {
-    set_error("Internal error, see console.");
+    set_error("Error, see console.");
     return false;
   }  
   return true;
@@ -564,7 +564,7 @@ async function geo_show() {
     bs_modal_geo.show();
     return true;
   } catch (exception) {
-    set_error("Internal error 11, see console.");
+    set_error("Error 11, see console.");
     theseus_log(exception);
     return false;
   }
@@ -585,7 +585,7 @@ async function geo_log(mesh_hash) {
     bs_modal_log.show();
     return true;
   } catch (exception) {
-    set_error("Internal error 12, see console.");
+    set_error("Error 12, see console.");
     theseus_log(exception);
     return false;
   }
@@ -612,7 +612,7 @@ async function geo_save() {
     }
     return true;
   } catch (exception) {
-    set_error("Internal error 13, see console.");
+    set_error("Error 13, see console.");
     theseus_log(exception);
     return false;
   }
@@ -627,11 +627,12 @@ async function fee_show() {
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
     div_fee_html.innerHTML = response["html"];
+    text_fee_edit_header.innerHTML = response["header"];
     plain_fee = response["plain"];
     bs_modal_fee.show();
     return true;
   } catch (exception) {
-    set_error("Internal error 14, see console.");
+    set_error("Error 14, see console.");
     theseus_log(exception);
     return false;
   }
@@ -657,7 +658,7 @@ async function fee_save() {
     }
     return true;
   } catch (exception) {
-    set_error("Internal error 15, see console.");
+    set_error("Error 15, see console.");
     theseus_log(exception);
     return false;
   }

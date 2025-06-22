@@ -34,30 +34,19 @@ if ($field == "PC" ||
   $current = fopen("case.fee", "r");
   $new = fopen("new.fee", "w");
   $bc_i = 1;
-  $bc_written = false;
+  $written_bc = false;
+  $written_pc = false;
   if ($current && $new) {
     while (($line = fgets($current)) !== false) {
       if ($field == "PC" && strncmp("PROBLEM", $line, 7) == 0) {
-        $line_exploded = explode(" ", rtrim($line));
-        $i = 0;
-        $pc_written = false;
-        while (isset($line_exploded[$i])) {
-          if ($line_exploded[$i] == "PROBLEM") {
-            fprintf($new, "PROBLEM %s", $case["problem"]);
-            $i++;
-          } else if ($line_exploded[$i] == "PC") {
-            fprintf($new, " PC %s", $value);
-            $pc_written = true;
-            $i++;
-          } else {
-            fprintf($new, " %s", $line_exploded[$i]);
+        if ($written_pc == false) {
+          if (strncmp("PROBLEM PC", $line, 10) != 0) {
+            fprintf($new, "%s", $line);
           }
-          $i++;
+          fprintf($new, "PROBLEM PC %s\n\n", $value);
+          $written_pc = true;
         }
-        if ($pc_written == false) {
-          fprintf($new, " PC %s", $value);
-        }
-        fprintf($new, "\n");
+
       } else if ($field == "E" && strncmp("E(x,y,z) = ", $line, 11) == 0) {
         // TODO: see if the value is a constant and use E = in that case
         // TODO: see if it is a constant, expression, etc.
@@ -137,7 +126,7 @@ if ($field == "PC" ||
               $bc_value[$n_values++] = $val;
             }
           }
-          $bc_written = true;
+          $written_bc = true;
         }
 
         $bc_name = sprintf("bc%d", $bc_i);
@@ -155,7 +144,7 @@ if ($field == "PC" ||
         }
         $bc_i++;
       } else if (strncmp("SOLVE_PROBLEM", $line, 13) == 0) {
-        if (isset($bc_field) && $bc_field != "" && $bc_written == false) {
+        if (isset($bc_field) && $bc_field != "" && $written_bc == false) {
           $bc_name = sprintf("bc%d", $bc_n);
           $bc_group = array();
           $bc_value = array();

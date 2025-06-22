@@ -5,7 +5,7 @@
 
 chdir("../data/{$username}/cases/{$id}");
 $fee = fopen("case.fee", "w");
-fprintf($fee, "PROBLEM {$problem_name[$problem]} MESH {$mesh_hash}%s.msh", ($mesh_order[$problem] == 1) ? "", $mesh_order[$problem]);
+fprintf($fee, "PROBLEM {$problem_name[$problem]} MESH {$mesh_hash}%s.msh", ($mesh_order[$problem] == 1) ? "" : $mesh_order[$problem]);
 fwrite($fee, $_POST["fee"]);
 fclose($fee);
 

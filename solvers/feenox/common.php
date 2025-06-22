@@ -35,10 +35,11 @@ function update_mesh_in_fee() {
   if ($real_mesh_hash != $mesh_hash) {
     $current = fopen("../data/{$username}/cases/{$id}/case.fee", "r");
     $new = fopen("../data/{$username}/cases/{$id}/new.fee", "w");
+    $p = $problem_name[$problem];
     if ($current && $new) {
       while (($line = fgets($current)) !== false) {
-        if (strncmp("PROBLEM", $line, 7) == 0) {
-          fprintf($new, "PROBLEM %s MESH meshes/%s%s.msh\n", $problem_name[$problem], $real_mesh_hash, ($mesh_order[$problem] == 1) ? "" : "-{$mesh_order[$problem]}");
+        if (strncmp("PROBLEM {$p}", $line, 7+strlen($p)) == 0) {
+          fprintf($new, "PROBLEM %s MESH meshes/%s%s.msh\n", $p, $real_mesh_hash, ($mesh_order[$problem] == 1) ? "" : "-{$mesh_order[$problem]}");
         } else {
           fwrite($new, $line);
         }

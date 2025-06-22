@@ -1,6 +1,6 @@
 #!/bin/false
 
-feenox_version=1.0.152
+feenox_version=1.1.62
 
 # feenox
 echo -n "solvers/feenox... "
