@@ -17,7 +17,7 @@ if [ "x${status}" == "xrunning" ]; then
   fi
   
   mesh=0
-  meshfile=$(grep READ_MESH case.fee | awk '{print $2}' | tail -n1)
+  meshfile=$(grep MESH case.fee | awk '{print $2}' | tail -n1)
   meshname=$(basename ${meshfile} .msh)
   if [ -e run/meshes/${meshname}.1 ]; then
     mesh=$(grep % run/meshes/${meshname}.1 | tr -d [] | awk '{print $3}' | tr -d % | tail -n1)

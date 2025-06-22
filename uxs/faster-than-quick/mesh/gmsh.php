@@ -29,9 +29,9 @@ push_accordion("mesh");
 push_accordion_item("currentmesh", "mesh", "Current mesh <span class=\"badge badge-light\">".substr($mesh_hash,0,7)."</span>", true); 
 row_set_width(5);
 
-if ($has_mesh_valid) {
+if ($mesh_meta["status"] == "success") {
   if (isset($mesh_meta["nodes"])) {
-    row_ro("First-order nodes", number_format($mesh_meta["nodes"]), $mesh_meta["nodes"] < 25e3);
+    row_ro("First-order nodes", number_format($mesh_meta["nodes"]), $mesh_meta["nodes"] < $max_nodes);
   }
   if (isset($mesh_meta["tetrahedra"])) {
     row_ro("Tetrahedra", number_format($mesh_meta["tetrahedra"]));
@@ -42,7 +42,7 @@ if ($has_mesh_valid) {
 
   if (isset($mesh_meta["q_mean"])) {
     row_ro("Mesh quality", sprintf("<span class=\"math inline\">%.2g ± %.2g</span>", $mesh_meta["q_mean"], $mesh_meta["q_dev"]));
-  
+
     // TODO: check the svgs exist
 ?>
     <div class="row p-0 m-0">
@@ -64,7 +64,7 @@ if ($has_mesh_valid) {
     </div> 
     
     <button class="btn btn-lg btn-outline-success w-100" onclick="relaunch_meshing('<?=$mesh_hash?>')">
-     <i class="bi bi-arrow-repeat me-2"></i>&nbsp;Re-launch meshing
+     <i class="bi bi-arrow-repeat me-2"></i>&nbsp;Re-launch mesher
     </button>
 <?php
   } else if ($mesh_meta["status"] == "syntax_error") {
@@ -384,10 +384,9 @@ To be done
 pop_accordion_item();
 pop_accordion();
 ?>
-
 <div class="d-grid mx-2 mt-4">
  <div class="btn-group w-100" role="group">
-  <button class="btn w-100 btn-secondary" type="button" id="button_back" onclick="change_step(2)">
+  <button class="btn w-100 btn-secondary <?=($mesh_meta["nodes"] > $max_nodes)?"disabled":""?>" type="button" id="button_back" onclick="change_step(2)">
    <i class="bi bi-arrow-right-short mx-1"></i>
    Problem
   </button>

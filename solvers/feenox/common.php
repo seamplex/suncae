@@ -30,19 +30,15 @@ function update_mesh_in_fee() {
   global $mesh_hash;
   global $problem;
   global $mesh_order;
+  global $problem_name;
   $real_mesh_hash = mesh_hash();
   if ($real_mesh_hash != $mesh_hash) {
-    // TODO: lock
     $current = fopen("../data/{$username}/cases/{$id}/case.fee", "r");
     $new = fopen("../data/{$username}/cases/{$id}/new.fee", "w");
     if ($current && $new) {
       while (($line = fgets($current)) !== false) {
-        if (strncmp("READ_MESH", $line, 9) == 0) {
-          if ($mesh_order[$problem] == 1) {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}.msh\n");
-          } else {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}-{$mesh_order[$problem]}.msh\n");
-          }
+        if (strncmp("PROBLEM", $line, 7) == 0) {
+          fprintf($new, "PROBLEM %s MESH meshes/%s%s.msh\n", $problem_name[$problem], $real_mesh_hash, ($mesh_order[$problem] == 1) ? "" : "-{$mesh_order[$problem]}");
         } else {
           fwrite($new, $line);
         }

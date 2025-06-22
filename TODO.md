@@ -1,3 +1,8 @@
+- pc default
+- prescribed displacement
+- force
+- replace python with c++ to "process" msh
+
 # Roadmap
 
  * more problems (non-linear mechanics, transient thermal, modal, cfd, etc.)

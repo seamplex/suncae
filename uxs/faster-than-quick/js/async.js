@@ -383,6 +383,22 @@ async function relaunch_meshing(mesh_hash) {
   return change_step(1);
 }
 
+async function cancel_solving(problem_hash) {
+  theseus_log("cancel_solving("+problem_hash+")");
+  let response;
+  try {
+    let res = await fetch("solving_cancel.php?id="+id+"&problem_hash="+problem_hash);
+    if (!res.ok) throw new Error("Network error");
+    response = await res.json();
+  } catch (exception) {
+    set_error("Internal error 6, see console.");
+    theseus_log(exception);
+    return false;
+  }
+  return change_step(1);
+}
+
+
 async function relaunch_solving(problem_hash) {
   theseus_log("relaunch_solving("+problem_hash+")");
   let response;

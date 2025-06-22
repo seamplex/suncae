@@ -8,3 +8,4 @@ $ux = "faster-than-quick";
 $cadimporter = "upload";
 $cadprocessor = "gmsh";
 $runner = "local";
+$max_nodes = 100e3;

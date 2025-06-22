@@ -51,7 +51,6 @@ if (file_exists("{$case_dir}/run/meshes") == false) {
 
 include("../solvers/{$solver}/common.php");
 
-  
 if ($mesh_hash == "") {
   update_mesh_in_fee();
   $mesh_hash = mesh_hash();
@@ -68,7 +67,7 @@ $has_mesh = file_exists($mesh_path);
 $has_mesh_valid = false;
 $has_mesh_attempt = file_exists($mesh_meta_path);
 if ($has_mesh_attempt && ($mesh_meta = json_decode(file_get_contents($mesh_meta_path), true)) != null) {
-  if ($mesh_meta["status"] == "success") {
+  if ($mesh_meta["status"] == "success" && ($mesh_meta["nodes"] <= $max_nodes)) {
     $has_mesh_valid = true;
   } else if ($mesh_meta["status"] == "running") {
     if (isset($mesh_meta["pid"]) == false || posix_getpgid($mesh_meta["pid"]) == false) {

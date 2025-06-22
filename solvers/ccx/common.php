@@ -27,29 +27,10 @@ function update_mesh_in_fee() {
   global $mesh_order;
   $real_mesh_hash = mesh_hash();
   if ($real_mesh_hash != $mesh_hash) {
-    // TODO: lock
-    $current = fopen("../data/{$username}/cases/{$id}/case.fee", "r");
-    $new = fopen("../data/{$username}/cases/{$id}/new.fee", "w");
-    if ($current && $new) {
-      while (($line = fgets($current)) !== false) {
-        if (strncmp("READ_MESH", $line, 9) == 0) {
-          if ($mesh_order[$problem] == 1) {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}.msh\n");
-          } else {
-            fwrite($new, "READ_MESH meshes/{$real_mesh_hash}-{$mesh_order[$problem]}.msh\n");
-          }
-        } else {
-          fwrite($new, $line);
-        }
-      }
-      fclose($current);
-      fclose($new);
-
-      if (rename("../data/{$username}/cases/{$id}/new.fee", "../data/{$username}/cases/{$id}/case.fee") !== true) {
-        return_error_json("Cannot update fee");
-      }
+    if ($mesh_order[$problem] == 1) {
+      shell_exec("sed -i s/{$mesh_hash}.msh/{$real_mesh_hash}\.msh/ ../data/{$username}/cases/{$id}/case.fee");
     } else {
-      return_error_json("cannot open case.fee");
+      shell_exec("sed -i s/{$mesh_hash}.msh/{$real_mesh_hash}{$mesh_order[$problem]}\.msh/ ../data/{$username}/cases/{$id}/case.fee");
     }
   }
 }

@@ -10,30 +10,30 @@ include("case.php");
 
 chdir($case_dir);
 
-// first, see if the mesh is finished or running
-$mesh_json_path = "run/meshes/{$mesh_hash}.json";
-if (file_exists($mesh_json_path) === false) {
+// first, see if the problem is finished or running
+$problem_json_path = "run/{$problem_hash}.json";
+if (file_exists($problem_json_path) === false) {
   // maybe there's some locking thing here
   usleep(200);
-  if (file_exists($mesh_json_path) === false) {
-    return_error_json("mesh meta json {$mesh_json_path} does not exist");
+  if (file_exists($problem_json_path) === false) {
+    return_error_json("problem meta json {$problem_json_path} does not exist");
     exit();
   }
 }
-if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
+if (($problem_status = json_decode(file_get_contents($problem_json_path), true)) == null) {
   // maybe there's some locking thing here
   usleep(200);
-  if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
-    return_error_json("cannot decode mesh meta json");
+  if (($problem_status = json_decode(file_get_contents($problem_json_path), true)) == null) {
+    return_error_json("cannot decode problem meta json");
     exit();
   }
 }
 
-if (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"])) {
-  posix_kill($mesh_status["pid"], 15);
+if (isset($problem_status["pid"]) && posix_getpgid($problem_status["pid"])) {
+  posix_kill($problem_status["pid"], 15);
   sleep(1);
-  $mesh_meta["status"] = "canceled";
-  file_put_contents($mesh_json_path, json_encode($mesh_meta));
+  $problem_meta["status"] = "canceled";
+  file_put_contents($problem_json_path, json_encode($problem_meta));
 }
 
-return_back_json($mesh_meta);
+return_back_json($problem_meta);
