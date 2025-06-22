@@ -201,6 +201,7 @@ async function ajax2mesh(field, value) {
 }
 
 // ajax_change_step: this function has multiple XHRs, all replaced with fetch
+/*
 async function ajax_change_step() {
   html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
   let ajax_step;
@@ -247,6 +248,55 @@ async function ajax_change_step() {
   }
   bs_loading.hide();
 }
+*/
+// ajax_change_step: this function has multiple XHRs, all replaced with fetch
+async function ajax_change_step() {
+  html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
+  let ajax_step;
+  try {
+    let res = await fetch("change_step.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "id=" + id + "&next_step=" + next_step + "&current_step=" + current_step
+    });
+    if (!res.ok) throw new Error("Network error");
+    ajax_step = await res.json();
+    theseus_log(ajax_step);
+  } catch (exception) {
+    theseus_log(exception);
+    html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">' + exception + "</div>";
+    set_error(exception);
+    bs_loading.hide();
+    return;
+  }
+
+  if (ajax_step.url !== undefined && ajax_step.step !== undefined) {
+    try {
+      let res = await fetch(ajax_step.url);
+      if (!res.ok) throw new Error(ajax_step.url + ": " + res.statusText);
+      let html = await res.text();
+      html_leftcol.innerHTML = html;
+    } catch (e) {
+      set_error(e);
+    }
+    try {
+      set_current_step(ajax_step);
+    } catch (exception) {
+      theseus_log(exception);
+      html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Internal error 4, see console.</div>';
+      set_error("Internal error 4, see console.");
+      return;
+    }
+  } else if (ajax_step.error !== undefined) {
+    html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">' +  ajax_step.error + "</div>";
+    set_error(ajax_step.error)
+  } else {
+    html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Unknown response: ' +  JSON.stringify(ajax_step) + "</div>";
+    set_error('Unknown response: ' +  JSON.stringify(ajax_step))
+  }
+  bs_loading.hide();
+}
+
 
 
 async function update_mesh_status(mesh_hash) {

@@ -78,8 +78,8 @@ function upload_cad_file() {
 
       <div id="cad_error" class="invalid-feedback d-none"></div>
       <div id="cad_again" class="d-none">
-       <button id="btn_again" class="btn btn-primary" onclick="choose_another_cad()">
+       <a href="#" class="btn btn-primary" id="btn_again" class="btn btn-primary" onclick="choose_another_cad()">
         <i class="bi bi-arrow-left-circle"></i>&nbsp;Choose another CAD
-       </button>
+       </a>
       </div>
      </div>
