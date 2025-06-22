@@ -729,6 +729,7 @@ include("small_axes.html");
 <script type="text/javascript" src="js/faster-than-quick/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="js/faster-than-quick/x3dom.js"></script>
 <script type="text/javascript" src="js/faster-than-quick/ftq.js"></script>
+<script type="text/javascript" src="js/faster-than-quick/async.js"></script>
 <script type="text/javascript" src="js/faster-than-quick/<?=$problem?>.js"></script>
 <script>
 var id = "<?=$id?>";
