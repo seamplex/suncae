@@ -89,8 +89,13 @@ With SunCAE---as with sundae ice creams---you get to choose the toppings:
 
 Moreover, for each case users can choose the combination of
 
- * [Meshers](meshers) (e.g. [gmsh](meshers/gmsh, ...)
- * [Solvers](solvers) (e.g. [feenox](solvers/feenox), [calculix](solvers/calculix), ...)
+ * [Meshers](meshers)
+   - [Gmsh](meshers/gmsh)
+   - ...
+ * [Solvers](solvers)
+   - [FeenoX](solvers/feenox)
+   - [Calculi](solvers/calculix)
+   - ...
 
 
 ## Licensing

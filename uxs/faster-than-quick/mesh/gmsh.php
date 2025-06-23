@@ -386,7 +386,7 @@ pop_accordion();
 ?>
 <div class="d-grid mx-2 mt-4">
  <div class="btn-group w-100" role="group">
-  <button class="btn w-100 btn-secondary <?=($mesh_meta["nodes"] > $max_nodes)?"disabled":""?>" type="button" id="button_back" onclick="change_step(2)">
+  <button class="btn w-100 btn-secondary <?=(isset($mesh_meta["nodes"]) == false || $mesh_meta["nodes"] > $max_nodes)?"disabled":""?>" type="button" id="button_back" onclick="change_step(2)">
    <i class="bi bi-arrow-right-short mx-1"></i>
    Problem
   </button>

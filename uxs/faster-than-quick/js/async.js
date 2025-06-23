@@ -414,7 +414,6 @@ async function relaunch_solving(problem_hash) {
   return change_step(3);
 }
 
-/*
 async function update_problem_status(problem_hash) {
   theseus_log(problem_hash);
   let response;
@@ -462,93 +461,8 @@ async function update_problem_status(problem_hash) {
     }
     setTimeout(() => update_problem_status(problem_hash), 1000);
   } else {
-    set_error("Error 10, see console.");
-    return false;
     setTimeout(() => change_step(3), 1000);
   }
-  return true;
-}
-*/
-
-
-function update_problem_status(problem_hash) {
-  // console.log("update problem status " + (++counter ))
-  theseus_log(problem_hash);
-  
-  var request_problem_status = new XMLHttpRequest();
-  request_problem_status.open("GET", "solving_status.php?id="+id+"&problem_hash="+problem_hash, false);
-  request_problem_status.send(null);
-
-  if (request_problem_status.status === 200) {
-    theseus_log(request_problem_status.responseText);
-    try {
-      response = JSON.parse(request_problem_status.responseText);
-    } catch (exception) {
-      theseus_log(request_problem_status.responseText);
-      theseus_log(exception);
-      set_error(request_problem_status.responseText);
-      return false;
-    }
-
-    // warnings & errors
-    set_warning((response["warning"] === undefined) ? "" : response["warning"]);
-    set_error((response["error"] === undefined) ? "" : response["error"]);
-    
-    if (response["status"] == "running") {
-      
-      if (response["done_mesh"]) {
-        progress_mesh.classList.remove("bg-info");
-        progress_mesh.classList.add("bg-success");
-        progress_mesh.style.width = "100%";
-      } else {
-        progress_mesh.style.width = response["mesh"] + "%";
-      }
-
-      if (response["done_build"]) {
-        progress_build.classList.remove("bg-info");
-        progress_build.classList.add("bg-success");
-        progress_build.style.width = "100%";
-      } else {
-        progress_build.style.width = response["build"] + "%";
-      }
-      
-      if (response["done_solve"]) {
-        progress_solve.classList.remove("bg-info");
-        progress_solve.classList.add("bg-success");
-        progress_solve.style.width = "100%";
-      } else {
-        progress_solve.style.width = response["solve"] + "%";
-      }
-      
-      if (response["done_post"]) {
-        progress_post.classList.remove("bg-info");
-        progress_post.classList.add("bg-success");
-        progress_post.style.width = "100%";
-      } else {
-        progress_post.style.width = response["post"] + "%";
-      }
-/*
-      if (response["done_data"]) {
-        progress_data.classList.remove("bg-info");
-        progress_data.classList.add("bg-success");
-        progress_data.style.width = "100%";
-      } else {
-        progress_data.style.width = response["data"] + "%";
-      }
-*/
-      setTimeout(function() {
-        return update_problem_status(problem_hash);
-      }, 1000);
-    } else {
-      setTimeout(function() {
-        return change_step(3);
-      }, 1000);
-    }
-
-  } else {
-    set_error("Error, see console.");
-    return false;
-  }  
   return true;
 }
 
