@@ -43,7 +43,9 @@ if ($field == "PC" ||
           if (strncmp("PROBLEM PC", $line, 10) != 0) {
             fprintf($new, "%s", $line);
           }
-          fprintf($new, "PROBLEM PC %s\n\n", $value);
+          if ($value != "default") {
+            fprintf($new, "PROBLEM PC %s\n\n", $value);
+          }
           $written_pc = true;
         }
 

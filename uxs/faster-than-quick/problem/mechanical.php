@@ -5,7 +5,7 @@
 
 include("../uxs/faster-than-quick/labels.php");
 
-$pc = "gamg";
+$pc = "default";
 $E = "200";
 $nu = "0.3";
 $alpha = "0";
@@ -387,9 +387,9 @@ push_accordion_item("input", "problem", "Solver settings", false);
      <label for="material_model" class="col-4 col-form-label text-end">Preconditioner</label>
      <div class="col-8">
       <select class="form-select" id="PC" onchange="ajax2problem(this.id, this.value);">
-       <option value=""></option>
-       <option value="gamg"   <?=($pc == "gamg")?"selected":""?>>GAMG</option>
-       <option value="mumps"  <?=($pc == "mumps")?"selected":""?>>MUMPS</option>
+       <option value="default" <?=($pc == "default")?"selected":""?>>Default</option>
+       <option value="gamg"    <?=($pc == "gamg")?"selected":""?>>GAMG</option>
+       <option value="mumps"   <?=($pc == "mumps")?"selected":""?>>MUMPS</option>
       </select>
      </div> 
     </div> 

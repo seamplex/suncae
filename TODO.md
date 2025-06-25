@@ -1,7 +1,6 @@
-- pc default
-- prescribed displacement
-- force
-- replace python with c++ to "process" msh
+ - prescribed displacement
+ - force
+ - replace python with c++ to "process" msh
 
 # Roadmap
 
