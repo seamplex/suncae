@@ -206,8 +206,8 @@ include("about.php");
      <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Help</a>
       <ul class="dropdown-menu text-small">      
        <li><a class="dropdown-item" href="https://github.com/seamplex/suncae">What's this?</a></li>
-       <li><a class="dropdown-item" href="#">FAQs</a></li>
-       <li><a class="dropdown-item" href="#">Tutorials</a></li>
+       <li><a class="dropdown-item" href="https://github.com/seamplex/suncae/blob/main/doc/FAQs.md">FAQs</a></li>
+       <li><a class="dropdown-item" href="https://github.com/seamplex/suncae/blob/main/doc/tutorials.md">Tutorials</a></li>
        <li><hr class="dropdown-divider"></li>
        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modal_about">About</a></li>
       </ul>
@@ -315,22 +315,20 @@ include("about.php");
     <div class="col-6 col-md-2 mb-3">
      <h5>SunCAE</h5>
      <ul class="nav flex-column">
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Live demo</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Quick start</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Source</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Licensing</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Roadmap</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://caeplex.com/suncae">Live demo</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/tree/main?tab=readme-ov-file#how">Quick start</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae">Source</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/tree/main?tab=readme-ov-file#licensing">Licensing</a></li>
      </ul>
     </div>
 
     <div class="col-6 col-md-2 mb-3">
      <h5>Support</h5>
      <ul class="nav flex-column">
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Forum</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Tutorials</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Documentation</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Solvers &amp; meshers</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/blob/main/doc/FAQs.md">FAQs</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/discussions">Forum</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/blob/main/doc/tutorials.md">Tutorials</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://github.com/seamplex/suncae/tree/main/doc">Documentation</a></li>
      </ul>
     </div>
 
@@ -342,7 +340,7 @@ include("about.php");
      </ul>
     <h5>Contact</h5>
      <ul class="nav flex-column">
-      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">LinkedIn</a></li>
+      <li class="nav-item mb-2"><a class="nav-link p-0 text-body-secondary" href="https://www.linkedin.com/in/jeremytheler">LinkedIn</a></li>
      </ul>
      
     </div>

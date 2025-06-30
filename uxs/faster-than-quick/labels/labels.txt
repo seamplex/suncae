@@ -44,3 +44,8 @@ Wm-1K-1          \\text{W}\\cdot\\text{m}^{-1}\\cdot\\text{K}^{-1}
 Wmm-3            \\text{W}\\cdot\\text{mm}^{-3}
 maxT             \\max{\\|T(x,y,z)\\|}
 minT             \\min{\\|T(x,y,z)\\|}
+Fx=              F_x=
+Fy=              F_y=
+Fz=              F_z=
+kN               \\text{kN}
+N                \\text{N}

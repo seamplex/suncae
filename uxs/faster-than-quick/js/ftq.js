@@ -1014,7 +1014,7 @@ function bc_remove(i) {
 function bc_update_type(i, type) {
   theseus_log("update " + i + " " + type);
   bc_hide_all(i);
-  bootstrap_block("bc_value_"+i+"_"+type);
+  bootstrap_block("bc_value_" + i + "_" + type);
 }
 
 

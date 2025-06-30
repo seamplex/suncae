@@ -24,6 +24,7 @@ function bc_hide_all(i) {
   bootstrap_hide("bc_value_"+i+"_custom");
   bootstrap_hide("bc_value_"+i+"_fixture");
   bootstrap_hide("bc_value_"+i+"_pressure");
+  bootstrap_hide("bc_value_"+i+"_force");
 }
 
 function bc_fixture_update(i) {

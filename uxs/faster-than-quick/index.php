@@ -253,8 +253,8 @@ var solid_base_color = <?=json_encode($cad["color"])?>;
       </button>
       <ul class="dropdown-menu dropdown-menu-end">
        <li><a class="dropdown-item" href="https://github.com/seamplex/suncae">What's this?</a></li>
-       <li><a class="dropdown-item" href="#">FAQs</a></li>
-       <li><a class="dropdown-item" href="#">Tutorials</a></li>
+       <li><a class="dropdown-item" href="https://github.com/seamplex/suncae/blob/main/doc/FAQs.md">FAQs</a></li>
+       <li><a class="dropdown-item" href="https://github.com/seamplex/suncae/blob/main/doc/tutorials.md">Tutorials</a></li>
        <li><hr class="dropdown-divider"></li>
        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modal_about">About</a></li>
       </ul>

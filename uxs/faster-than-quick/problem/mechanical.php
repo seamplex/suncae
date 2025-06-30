@@ -140,7 +140,8 @@ push_accordion_item("bcs", "problem", "Constraints &amp; Loads", true);
       <i class="bi bi-plus-circle me-2"></i>Add boundary condition
      </button>
     </div> 
-    <div class="accordion" id="accordion_bcs">   
+    <div class="accordion" id="accordion_bcs"> 
+<!-- start div class="accordion" id="accordion_bcs" -->
 
 <?php
 for ($i = 0; $i < 10; $i++) {
@@ -161,6 +162,28 @@ for ($i = 0; $i < 10; $i++) {
     $p = $matches[1];
     $bc_type = "pressure";
   }
+  
+  $Fx = "0";
+  $Fy = "0";
+  $Fz = "0";
+  if ($i < count($bc) && str_contains($bc[$i]["value"], "Fx=")) {
+    preg_match('/Fx=([^\s]*)/', $bc[$i]["value"], $matches);
+    $Fx = $matches[1];
+    $bc_type = "force";
+  }
+  if ($i < count($bc) && str_contains($bc[$i]["value"], "Fy=")) {
+    preg_match('/Fy=([^\s]*)/', $bc[$i]["value"], $matches);
+    $Fy = $matches[1];
+    $bc_type = "force";
+  }
+  if ($i < count($bc) && str_contains($bc[$i]["value"], "Fz=")) {
+    preg_match('/Fz=([^\s]*)/', $bc[$i]["value"], $matches);
+    $Fz = $matches[1];
+    $bc_type = "force";
+  }
+  
+  // TODO: what if there are mixtures i.e. u=0 p=1? keep it as "custom"?
+  
 ?>
  <div class="accordion-item <?=($i < count($bc)) ? "d-block" : "d-none" ?>" id="div_bc_<?=$i+1?>">
   <h2 class="accordion-header" id="heading_bc_<?=$i+1?>">
@@ -225,6 +248,7 @@ for ($i = 0; $i < 10; $i++) {
        <option value="custom"   <?=($bc_type == "custom")?"selected":""?>>Custom</option>
        <option value="fixture"  <?=($bc_type == "fixture")?"selected":""?>>Fixture</option>
        <option value="pressure" <?=($bc_type == "pressure")?"selected":""?>>Pressure</option>
+       <option value="force"    <?=($bc_type == "force")?"selected":""?>>Force</option>
       </select>
      </div> 
 
@@ -269,7 +293,33 @@ for ($i = 0; $i < 10; $i++) {
        <span class="input-group-text"><?=$label["MPa"]?></span>
       </div>
      </div>
+    
+     <!-- force -->
+     <div class="col-8 <?=($bc_type == "force")?"":"d-none"?>" id="bc_value_<?=$i+1?>_force">
+      <div class="row">
+       <div class="col input-group">
+        <span class="input-group-text"><?=$label["Fx="]?></span>
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fx" value="<?=$Fx?>" onblur="ajax2problem(this.name, 'Fx='+this.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
+        <span class="input-group-text"><?=$label["N"]?></span>
+       </div> 
+      </div>
+      <div class="row">
+       <div class="col input-group">
+        <span class="input-group-text"><?=$label["Fy="]?></span>
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fy" value="<?=$Fy?>" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+this.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
+        <span class="input-group-text"><?=$label["N"]?></span>
+       </div> 
+      </div>
+      <div class="row">
+       <div class="col input-group">
+        <span class="input-group-text"><?=$label["Fz="]?></span>
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fz" value="<?=$Fz?>" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+this.value)">
+        <span class="input-group-text"><?=$label["N"]?></span>
+       </div> 
+      </div>
+     </div>
     </div>
+    
 
    </div>
   </div>
@@ -277,7 +327,9 @@ for ($i = 0; $i < 10; $i++) {
 <?php
 }
 ?>
+<!-- end div class="accordion" id="accordion_bcs" -->
     </div>
+
 <?php
 pop_accordion_item();
 push_accordion_item("materialproperties", "problem", "Material properties", false);
@@ -351,7 +403,7 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
     </div> 
     
 
-<!-- TODO: tip: this is the man coefficient, edit the input to enter non-uniform coefficients -->
+<!-- TODO: tip: this is the mean coefficient, edit the input to enter non-uniform coefficients -->
     <div class="row mt-2 mb-1 d-none">
      <label for="text_name" class="offset-2 col-2 col-form-label text-end"><?=$label["alpha="]?></label>
      <div class="col-6">
