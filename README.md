@@ -9,9 +9,9 @@
 SunCAE is a web-based front end and a cloud-based back end to perform finite-element calculations directly on the browser.
 
  * The front end is an HTML client with plain vanilla javascript code (i.e. no Angular, no React, not even jQuery) that provide interactivity by sending JSON-based AJAX request to the server backe end. 
- * The back end is written in PHP and responds to the client requests by creating the necesary files, executing the necesary binaries and returning back 3D data to the client.
+ * The back end is written in PHP and responds to the client requests by creating the input files, executing the appropriate binaries and returning back 3D data to the client.
 
-Both fron end and back ends are free software, released under the terms of the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). See [licensing](#licensing) below for more information.
+Both front end and back ends are free software, released under the terms of the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). See the [licenses table](LICENSES.md) and [licensing details](#licensing) below for more information.
 
 
 ## Why
@@ -22,7 +22,7 @@ Both fron end and back ends are free software, released under the terms of the [
  4. **Collaboration.** Many users can access the same case. And Git keeps track of who changed what when.
  5. **Mobile-friendly.** Access your simulation project from your phone or tablet.
  6. **Free and open source.** As in "free speech." You fully get the four freedoms.
- 7. **Extensible.** Add more meshers, solvers, UXs, etc. Join the community!
+ 7. **Extensible.** Add more meshers, solvers, UXs, etc. Join the [community](https://github.com/seamplex/suncae/discussions)!
 
 
 ## How
@@ -94,10 +94,13 @@ Moreover, for each case users can choose the combination of
    - ...
  * [Solvers](solvers)
    - [FeenoX](solvers/feenox)
-   - [Calculi](solvers/calculix)
+   - [CalculiX](solvers/calculix)
    - ...
 
+SunCAE was designed to be able to add more combinations into the sundae.
+Feel free to [join the community](https://github.com/seamplex/suncae/discussions) if you want to add your tool of choice.
 
+   
 ## Licensing
 
 The content of this SunCAE repository is licensed under the terms of the [GNU Affero General Public License version 3](https://www.gnu.org/licenses/agpl-3.0.en.html), or at your option, any later version (AGPLv3+). 

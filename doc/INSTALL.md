@@ -8,7 +8,7 @@
 
 This document explains how to set up [SunCAE](https://www.seamplex.com/suncae) so as to serve one or more clients.
 A basic installation can be done relatively simple, even without understanding the meaning of the commands.
-Keep in mind that a full-fledged installation being able to serve different users might need deep understanding of networking and operating systems details. 
+Keep in mind that a full-fledged installation being able to serve different users might need deep understanding of networking administration and operating systems details. 
 
 ## Architectures
 
@@ -31,7 +31,7 @@ cd suncae
 The repository only hosts particular code and files which are not already available somewhere else.
 The latter include
 
- * meshers and solvers executables (e.g. `gmsh` and `feenox`)
+ * meshers and solvers executables (e.g. `gmsh`, `feenox`, `ccx`, etc.)
  * Javascript libraries (e.g. `x3dom.js`)
  * CSS and fonts (e.g. `bootstrap.css`)
 
@@ -46,7 +46,7 @@ sudo apt-get install git unzip patchelf wget php-cli php-yaml gnuplot
 
 ### Particular
 
-The meshers, solvers and required libraries and fonts can be downloaded by executing the `deps.sh` script in SunCAE's root directory:
+The (free and open source) meshers, solvers and required libraries and fonts can be downloaded by executing the `deps.sh` script in SunCAE's root directory:
 
 ```
 ./deps.sh
@@ -76,7 +76,7 @@ The meshers, solvers and required libraries and fonts can be downloaded by execu
 ## The web server
 
 SunCAE can be hosted with any web server capable of executing PHP scripts.
-The main entry point is under directorty `html`.
+The main entry point is under directory `html`.
 
 All the user information is stored as files under the directory `data`.
 That is to say, there is not **database** (either SQL or Mongo-like).
@@ -114,7 +114,7 @@ ln -s html /var/www/html/suncae
 and then SunCAE would be available at <http://localhost/suncae>.
 
 > [!WARNING]
-> Mind Apache's policies about symbolic links. They are not straightforward, so symlinking SunCAE's `html` directory into Apache's `html` directory might now work out of the box.
+> Mind Apache's policies about symbolic links. They are not straightforward, so symlinking SunCAE's `html` directory into Apache's `html` directory might not work out of the box.
 
 
  * If you do not have experience with Apache, you might want to delete the default `/var/www` tree and clone SunCAE there.
@@ -138,11 +138,9 @@ The file [`conf.php`](../conf.php) in SunCAE's root directory controls the choic
 $auth = "single-user";
 $ux = "faster-than-quick";
 $cadimporter = "upload";
-$mesher = "gmsh";
-$post = "paraview";
+$cadprocessor = "gmsh";
 $runner = "local";
-$solver = "feenox";
-$mesher = "gmsh";
+$max_nodes = 100e3;
 ```
 
 This means that
@@ -150,3 +148,6 @@ This means that
  1. the same server can change the implementations by changing the content of `conf.php` dynamically
  2. different servers (or the same server with different entry points) can serve different implementations by serving different `html` directories whose parent's `conf.php` is different.
  3. any other combination is also possible, e.g. an interactive HTML-based panel that modifies `conf.php` on demand or that clones a new instance of SunCAE in an arbitrary location (and configures Apache to serve it).
+
+Read the [Design Manual](design.md) for details about what each of the definitions mean.
+
