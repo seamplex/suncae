@@ -1,6 +1,9 @@
 u                u
 v                v
 w                w
+u=               u=
+v=               v=
+w=               w=
 p=               p=
 E=               E=
 nu=              \\nu=

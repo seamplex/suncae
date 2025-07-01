@@ -23,6 +23,7 @@ color["bc_19"] = [0.21, 0.78, 0.78];
 function bc_hide_all(i) {
   bootstrap_hide("bc_value_"+i+"_custom");
   bootstrap_hide("bc_value_"+i+"_fixture");
+  bootstrap_hide("bc_value_"+i+"_displacement");
   bootstrap_hide("bc_value_"+i+"_pressure");
   bootstrap_hide("bc_value_"+i+"_force");
 }

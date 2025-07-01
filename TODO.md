@@ -1,12 +1,9 @@
- - prescribed displacement
- - force
- - replace python with c++ to "process" msh
 
 # Roadmap
 
  * more problems (non-linear mechanics, transient thermal, modal, cfd, etc.)
  * more meshers (netgen? tetgen? salome?)
- * more solvers (sparselizard? ccx? fenics?)
+ * more solvers (sparselizard? fenics?)
  * more runners (ssh, aws, kubernetes, etc.)
  * more documentation
 
@@ -14,6 +11,7 @@
 
 ## General
 
+ * replace python with c++ to "process" msh
  * unit tests
  * choose units (SI, etc.)
  * choose points for BCs (and eventually refinements)
