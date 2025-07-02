@@ -7,6 +7,7 @@ $cad_hash = $_GET["cad_hash"];
 
 // assume everything's fine
 $response["status"] = "ok";
+$response["username"] = $username;
 $response["error"] = "";
 
 $cad_dir = "../../data/{$username}/cads/{$cad_hash}";
@@ -22,7 +23,7 @@ if (file_exists("cad.json") === false) {
   // TODO: keep output
   if ($error_level != 0) {
     $response["status"] = "error";
-    $response["error"] = "Unknown yyy error {$error_level} when importing CAD.";
+    $response["error"] = "Error {$error_level} when importing CAD: ";
     for ($i = 0; $i < count($output); $i++) {
       $response["error"] .= $output[$i];
     }
