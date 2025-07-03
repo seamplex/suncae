@@ -1,6 +1,6 @@
 #!/bin/false
 
-gmsh_version=4.13.1
+gmsh_version=4.14.0
 
 # gmsh
 echo -n "meshers/gmsh... "

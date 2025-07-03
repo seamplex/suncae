@@ -11,7 +11,7 @@
 
 ## General
 
- * replace python with c++ to "process" msh
+ * replace python with c++ to "process" msh and make it smarter
  * unit tests
  * choose units (SI, etc.)
  * choose points for BCs (and eventually refinements)
