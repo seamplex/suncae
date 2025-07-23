@@ -495,6 +495,16 @@ include("small_axes.html");
        <ClipPlane id="clip_plane_z" cappingColor="0 0 0.7" cappingStrength="0.5" enabled="false" on="false" plane="0 0 1 0" ></ClipPlane>
       </Group>
  
+      <Transform id="intersection1">
+       <Shape>
+         <Appearance>
+           <Material diffuseColor="1 0 0" transparency="0.5"/>
+         </Appearance>
+         <Sphere id="sphere1"/>
+       </Shape>
+     </Transform>
+
+ 
       <group id="axes">
        <!--  x  -->
        <shape id="axis_line_x" isPickable="false">

@@ -41,6 +41,18 @@ if [ $? -eq 0 ]; then
   
   # the meshing could have worked or not, that's in $?
   gmsh_error=$?
+  if [ "x${gmsh_error}" != "x0" ]; then
+    echo ${dir}/meshes/${mesh_hash}.2 > tmp
+    cat  ${dir}/meshes/${mesh_hash}.2 | grep -v "No elements"  | \
+                                        grep -v "\-\-\-\-\-\-\-\-\-\-\-" | \
+                                        grep -v "Mesh generation error summary" | \
+                                        grep -v " warning" | \
+                                        grep -v " errors" | \
+                                        grep -v "Check the full log for details" > tmp
+                                        
+    sed -n 's/.*intersection (\([^)]*\)).*/\1/p' tmp | tr ',' ' ' | head -n1 > ${dir}/meshes/${mesh_hash}.intersections
+    mv tmp ${dir}/meshes/${mesh_hash}.2
+  fi
   
   # we can have a partial mesh, though
   # TODO: rewrite mesh_data in C++

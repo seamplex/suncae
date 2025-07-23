@@ -1028,4 +1028,16 @@ function bc_change_filter(i, what) {
   theseus_log("current_dim = "+i);
   
 }
-  
+
+function intersection_location(i, location, radius) {
+  const intersection = document.getElementById("intersection"+i);
+  intersection.setAttribute("translation", location);
+  const sphere = document.getElementById("sphere"+i);
+  sphere.setAttribute("radius", radius);
+}
+
+
+function intersection_radius(i, radius) {
+  const sphere = document.getElementById("sphere"+i);
+  sphere.setAttribute("radius", radius);
+}

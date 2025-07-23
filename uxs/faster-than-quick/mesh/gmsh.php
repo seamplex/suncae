@@ -29,6 +29,9 @@ push_accordion("mesh");
 push_accordion_item("currentmesh", "mesh", "Current mesh <span class=\"badge badge-light\">".substr($mesh_hash,0,7)."</span>", true); 
 row_set_width(5);
 
+$cad = json_decode(file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"), true);
+$length_char = 4 * $cad["volume"]/$cad["area"];
+
 if ($mesh_meta["status"] == "success") {
   if (isset($mesh_meta["nodes"])) {
     row_ro("First-order nodes", number_format($mesh_meta["nodes"]), $mesh_meta["nodes"] < $max_nodes);
@@ -87,9 +90,24 @@ if ($mesh_meta["status"] == "success") {
       }
     }
     fclose($error_file);
+    
 ?>
 </pre>
 <?php
+    if (file_exists("{$cad_dir}/meshes/{$mesh_hash}.intersections")) {
+      $intersection_translation = trim(file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.intersections"));
+      $intersection_radius = 2*$length_char;
+?>
+      <div class="row mb-2 mx-0">
+       <div class="col-6 text-danger">
+        Intersection #1
+       </div>
+       <div class="col-6">
+        <input type="range" class="form-range" oninput="intersection_radius(1, this.value)" min="0" max="<?=2*$intersection_radius?>" step="<?=0.005*$intersection_radius?>" value="<?=$intersection_radius?>">
+       </div>
+      </div>
+<?php
+    }
   }
 } else  { 
 ?>  
@@ -106,10 +124,8 @@ push_accordion_item("updatemesh", "mesh", "Customize &amp; update mesh");
 $desc["MeshSizeMax"] = "Target element size [mm]";
 $type["MeshSizeMax"] = "float";  // TODO: enums
 
-$cad = json_decode(file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"), true);
 $length_order = pow(10, floor(log10($cad["max_length"])));
 $length_precision = 1e-2 * $length_order;
-$length_char = 4 * $cad["volume"]/$cad["area"];
 
 $lc = 0;
 $lc_min = 0; 
@@ -394,3 +410,10 @@ pop_accordion();
 </div>
 
 <!-- <img src onerror="n_mesh_field=<?=$n_existing?>"> -->
+<?php
+if (isset($intersection_translation)) {
+?>
+  <img src onerror="intersection_location(1, '<?=$intersection_translation?>', <?=$intersection_radius?>)">
+<?php
+}
+?>
