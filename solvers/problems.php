@@ -20,14 +20,14 @@ fclose($log);
 
 if ($what == "physics") {
 
-  $keys["none"] = "";
+//  $keys["none"] = "";
   foreach ($problems as $physics => $problem) {
     $keys[$physics] = $physics_name[$physics];
   }
 
 } else if (isset($problems[$what])) {
 
-  $keys["none"] = "";
+//  $keys["none"] = "";
   foreach ($problems[$what] as $index => $problem) {
     $keys[$problem] = $problem_name[$problem];
   }

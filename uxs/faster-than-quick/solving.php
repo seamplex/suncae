@@ -22,7 +22,7 @@ include("ux.php");
 
 <!--  TODO: the php in charge of informing the progress should also send the legends  -->
 
-    <legend class="<?=$problem=="mechanical"?"":"d-none"?>">Second order mesh</legend>
+    <legend class="<?=$problem=="mechanical"?"":"d-none"?>">Second-order mesh</legend>
     <div class="progress mt-2 mb-4 <?=$problem=="mechanical"?"":"d-none"?>" role="progressbar">
      <div class="progress-bar bg-info" style="width=0%" id="progress_mesh"></div>
     </div>

@@ -751,11 +751,17 @@ function palette(scalar, field) {
 function cad_update_colors() {
   for (let i = 1; i <= n_faces; i++) {
     let face_bc = bc_groups_get(i, 2);
-    document.getElementById("cad__matface"+i).diffuseColor = (face_bc == 0) ? color["base"] : color["bc_" + face_bc];
+    const matface = document.getElementById("cad__matface"+i);
+    if (matface != null) {
+      matface.diffuseColor = (face_bc == 0) ? color["base"] : color["bc_" + face_bc];
+    }  
   }
   for (let i = 1; i <= n_edges; i++) {
     let edge_bc = bc_groups_get(i, 1);
-    document.getElementById("cad__matedge"+i).emissiveColor = (edge_bc == 0) ? "0 0 0" : color["bc_" + edge_bc];
+    const matedge = document.getElementById("cad__matedge"+i);
+    if (matedge != null) {
+      matedge.emissiveColor = (edge_bc == 0) ? "0 0 0" : color["bc_" + edge_bc];
+    }
   }
 }
 
