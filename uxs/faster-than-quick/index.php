@@ -39,7 +39,7 @@ include("about.php");
  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
   <div class="modal-content">
    <div class="modal-header">
-    <h1 class="modal-title fs-5" id="modal_geo_label"><a href="http://gmsh.info/" target="blank">Gmsh</a> input</h1>
+    <h1 class="modal-title fs-5" id="modal_geo_label"><a href="http://gmsh.info/" target="blank" class="text-decoration-none">Gmsh</a> input</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
    </div>
    <div class="modal-body">
@@ -107,7 +107,7 @@ include("about.php");
  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
   <div class="modal-content">
    <div class="modal-header">
-    <h1 class="modal-title fs-5" id="modal_fee_label"><a href="#" target="blank">FeenoX</a> input</h1>
+    <h1 class="modal-title fs-5" id="modal_fee_label"><a href="https://www.seamplex.com/feenox" target="blank" class="text-decoration-none">FeenoX</a> input</h1>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
    </div>
    <div class="modal-body">
@@ -500,7 +500,7 @@ include("small_axes.html");
          <Appearance>
            <Material diffuseColor="1 0 0" transparency="0.5"/>
          </Appearance>
-         <Sphere id="sphere1"/>
+         <Sphere id="sphere1" radius="0"/>
        </Shape>
      </Transform>
 

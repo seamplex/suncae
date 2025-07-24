@@ -31,6 +31,9 @@ row_set_width(5);
 
 $cad = json_decode(file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"), true);
 $length_char = 4 * $cad["volume"]/$cad["area"];
+$intersection_translation = "";
+$intersection_radius = 0;
+
 
 if ($mesh_meta["status"] == "success") {
   if (isset($mesh_meta["nodes"])) {
@@ -96,17 +99,19 @@ if ($mesh_meta["status"] == "success") {
 <?php
     if (file_exists("{$cad_dir}/meshes/{$mesh_hash}.intersections")) {
       $intersection_translation = trim(file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.intersections"));
-      $intersection_radius = 2*$length_char;
+      if ($intersection_translation != "") {
+        $intersection_radius = 2*$length_char;
 ?>
-      <div class="row mb-2 mx-0">
-       <div class="col-6 text-danger">
-        Intersection #1
-       </div>
-       <div class="col-6">
-        <input type="range" class="form-range" oninput="intersection_radius(1, this.value)" min="0" max="<?=2*$intersection_radius?>" step="<?=0.005*$intersection_radius?>" value="<?=$intersection_radius?>">
-       </div>
-      </div>
+        <div class="row mb-2 mx-0">
+         <div class="col-6 text-danger">
+          Intersection #1
+         </div>
+         <div class="col-6">
+          <input type="range" class="form-range" oninput="intersection_radius(1, this.value)" min="0" max="<?=2*$intersection_radius?>" step="<?=0.005*$intersection_radius?>" value="<?=$intersection_radius?>">
+         </div>
+        </div>
 <?php
+      }
     }
   }
 } else  { 
@@ -369,9 +374,11 @@ push_accordion_item("expertmesh", "mesh", "Mesher input &amp; output", false);
       <button class="btn btn-outline-secondary w-100" onclick="geo_show()">
        <i class="bi bi-pencil-square me-2"></i>Show &amp; edit mesher input
       </button>
+<!--
       <button class="btn btn-outline-info">
        <i class="bi bi-question-circle"></i>
       </button>
+-->
      </div>
     </div>
 <?php
@@ -382,9 +389,11 @@ if (file_exists("{$case_dir}/run/meshes/{$mesh_hash}.msh")) {
       <a class="btn btn-success w-100" href="mesh_msh.php?id=<?=$id?>&hash=<?=$mesh_hash?>">
        <i class="bi bi-download me-2"></i>Download MSH
       </a>
+<!--      
       <button class="btn btn-success">
        <i class="bi bi-question-circle"></i>
       </button>
+-->
      </div>
     </div>
 <?php
@@ -410,10 +419,4 @@ pop_accordion();
 </div>
 
 <!-- <img src onerror="n_mesh_field=<?=$n_existing?>"> -->
-<?php
-if (isset($intersection_translation)) {
-?>
-  <img src onerror="intersection_location(1, '<?=$intersection_translation?>', <?=$intersection_radius?>)">
-<?php
-}
-?>
+<img src onerror="intersection_location(1, '<?=$intersection_translation?>', <?=$intersection_radius?>)">

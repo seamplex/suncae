@@ -222,12 +222,14 @@ for ($i = 0; $i < 10; $i++) {
           <i class="bi bi-trash me-2"></i>Remove condition
          </a>
         </li>
+<!--        
         <li><hr class="dropdown-divider"></li>
         <li>
          <a class="dropdown-item" href="#">
           <i class="bi bi-question-circle me-2"></i>Help
          </a>
         </li>
+-->
        </ul>
       </div> 
      </div>
@@ -331,12 +333,14 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
           <i class="bi bi-pencil-square me-2"></i>Edit full solver input
          </a>
         </li>
+<!--        
         <li><hr class="dropdown-divider"></li>
         <li>
          <a class="dropdown-item" href="#">
           <i class="bi bi-question-circle me-2"></i>Help
          </a>
         </li>
+-->
        </ul>
       </div>
      </div>
@@ -353,9 +357,11 @@ push_accordion_item("input", "problem", "Solver input", false);
       <button class="btn btn-outline-primary w-100" onclick="fee_show()">
        <i class="bi bi-pencil-square me-2"></i>Show &amp; edit solver input
       </button>
+<!--      
       <button class="btn btn-outline-info">
        <i class="bi bi-question-circle"></i>
       </button>
+-->
      </div>    
     </div>
  

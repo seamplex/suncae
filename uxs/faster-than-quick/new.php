@@ -1,3 +1,10 @@
+<?php
+include("../../solvers/common.php");
+$default_physics = "solid";
+$default_problem = "mechanical";
+$default_solver = "feenox";
+?>
+
 <!doctype html>
 <html lang="en" class="h-100">
 <!--
@@ -189,7 +196,7 @@ function enable_btn_start() {
 
 </script>
 </head>
-<body onload="update_problem('physics', 'physics', 'physics')">
+<body>
 
 <?php
 include("about.php");
@@ -239,33 +246,67 @@ include("about.php");
       <div class="row mb-3">
        <div class="col-lg-6">
         <label for="physics" class="form-label">
-         <span class="badge text-bg-primary" id="badge_physics">2</span>&nbsp;Physics
+         <span class="badge text-bg-success" id="badge_physics">2</span>&nbsp;Physics
         </label>
         <select class="form-select col-6" id="physics" onchange="update_problem(this.value, 'physics', 'problem')" required>
+<?php
+  foreach ($problems as $physics => $problem) {
+?>
+         <option value="<?=$physics?>" <?=($physics == $default_physics) ? "selected" : ""?>><?=$physics_name[$physics]?></option>
+<?php
+  }
+?>
         </select>
+<!--        
         <div id="physics_help" class="form-text mb-3">
          First pick the physics, then choose the problem.
         </div>
+-->
        </div>
 
        <div class="col-lg-6">
         <label for="problem" class="form-label">
-         <span class="badge text-bg-primary" id="badge_problem">3</span>&nbsp;Problem
+         <span class="badge text-bg-success" id="badge_problem">3</span>&nbsp;Problem
         </label>
         <select class="form-select col-6" id="problem" name="problem" onchange="update_problem(this.value, 'problem', 'solver')">
+
+<?php
+  $keys = array();
+  foreach ($problems[$default_physics] as $index => $problem) {
+    $keys[$problem] = $problem_name[$problem];
+  }
+  foreach ($keys as $key => $value) {
+?>
+         <option value="<?=$key?>" <?=($key == $default_problem) ? "selected" : ""?>><?=$value?></option>
+<?php
+  }
+?>
         </select>
+<!--        
         <div id="problem_help" class="form-text mb-3">
          Once you have the problem, choose the solver.
         </div>
+-->
        </div>
       </div> 
 
       <div class="row mb-3">
        <div class="col-lg-6">
         <label for="solver" class="form-label">
-         <span class="badge text-bg-primary" id="badge_solver">4</span>&nbsp;Solver
+         <span class="badge text-bg-success" id="badge_solver">4</span>&nbsp;Solver
         </label>
         <select class="form-select col-6" id="solver" name="solver" onchange="update_problem(this.value, 'solver', 'mesher')">
+<?php
+  $keys = array();
+  foreach ($solvers[$default_problem] as $index => $solver) {
+    $keys[$solver] = $solvers_names[$solver];
+  }
+  foreach ($keys as $key => $value) {
+?>
+         <option value="<?=$key?>" <?=($key == $default_solver) ? "selected" : ""?>><?=$value?></option>
+<?php
+  }
+?>
         </select>
 <!--
         <div id="solver_help" class="form-text">
@@ -276,9 +317,10 @@ include("about.php");
 
        <div class="col-lg-6">
         <label for="mesher" class="form-label">
-         <span class="badge text-bg-primary" id="badge_mesher">5</span>&nbsp;Mesher
+         <span class="badge text-bg-success" id="badge_mesher">5</span>&nbsp;Mesher
         </label>
         <select class="form-select col-6" id="mesher" name="mesher" onchange="enable_btn_start()">
+         <option value="gmsh" selected>Gmsh</option>
         </select>
 <!--
         <div id="mesher_help" class="form-text">

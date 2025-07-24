@@ -63,9 +63,11 @@ if (file_exists("{$case_dir}/run/{$problem_hash}.vtk")) {
       <a class="btn btn-success w-100" href="results_vtk.php?id=<?=$id?>&hash=<?=$problem_hash?>">
        <i class="bi bi-download me-2"></i>Download VTK
       </a>
+<!--      
       <button class="btn btn-success">
        <i class="bi bi-question-circle"></i>
       </button>
+-->
      </div>
     </div>
 <?php  
