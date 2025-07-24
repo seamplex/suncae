@@ -50,8 +50,10 @@ if ($fee) {
         if ($line_exploded[$i] == "GROUPS") {
           while (isset($line_exploded[++$i])) {
             preg_match('/(?P<name>\w+?)(?P<digit>\d+)/', $line_exploded[$i], $matches);
-            $entity[$n_groups] = $matches[1];
-            $bc_group[$n_groups++] = $matches[2];
+            if (isset($matches[2])) {
+              $entity[$n_groups] = $matches[1];
+              $bc_group[$n_groups++] = $matches[2];
+            }
           }
           break;
         } else if ($line_exploded[$i] == "GROUP") {
@@ -283,7 +285,7 @@ for ($i = 0; $i < 10; $i++) {
 
      <!-- custom  -->
      <div class="col-8 <?=($bc_type == "custom")?"":"d-none"?>" id="bc_value_<?=$i+1?>_custom">
-      <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_value" value="<?=$custom_value?>" onblur="ajax2problem(this.name, this.value)">
+      <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_value" value="<?=$custom_value?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, this.value)">
      </div>
 
      <!-- fixture -->
@@ -292,21 +294,21 @@ for ($i = 0; $i < 10; $i++) {
 
        <div class="col-4 pt-2">
         <div class="form-check form-switch">
-         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_u" <?=($u || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
+         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_u" <?=($u || $u_fixed || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
          <label class="form-check-label" for="bc_<?=$i+1?>_fixture_u"><?=$label["u"]?></label>
         </div>
        </div> 
 
        <div class="col-4 pt-2">
         <div class="form-check form-switch">
-         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_v" <?=($v || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
+         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_v" <?=($v || $v_fixed || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
          <label class="form-check-label" for="bc_<?=$i+1?>_fixture_v"><?=$label["v"]?></label>
         </div>
        </div> 
 
        <div class="col-4 pt-2">
         <div class="form-check form-switch">
-         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_w" <?=($w || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
+         <input class="form-check-input" type="checkbox" role="switch" id="bc_<?=$i+1?>_fixture_w" <?=($w || $w_fixed || $i >= count($bc))?"checked":""?> onblur="bc_fixture_update(<?=$i+1?>)">
          <label class="form-check-label" for="bc_<?=$i+1?>_fixture_w"><?=$label["w"]?></label>
         </div>
        </div> 
@@ -319,21 +321,21 @@ for ($i = 0; $i < 10; $i++) {
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["u="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_u" value="<?=$u?>" onblur="ajax2problem(this.name, 'u='+this.value + ' v='+text_bc_<?=$i+1?>_v.value + ' w='+text_bc_<?=$i+1?>_w.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_u" value="<?=$u?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'u='+this.value + ' v='+text_bc_<?=$i+1?>_v.value + ' w='+text_bc_<?=$i+1?>_w.value)">
         <span class="input-group-text"><?=$label["mm"]?></span>
        </div> 
       </div>
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["v="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_v" value="<?=$v?>" onblur="ajax2problem(this.name, 'u='+text_bc_<?=$i+1?>_u.value + ' v='+this.value + ' w='+text_bc_<?=$i+1?>_w.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_v" value="<?=$v?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'u='+text_bc_<?=$i+1?>_u.value + ' v='+this.value + ' w='+text_bc_<?=$i+1?>_w.value)">
         <span class="input-group-text"><?=$label["mm"]?></span>
        </div> 
       </div>
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["w="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_w" value="<?=$w?>" onblur="ajax2problem(this.name, 'u='+text_bc_<?=$i+1?>_u.value + ' v='+text_bc_<?=$i+1?>_v.value + ' w='+this.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_w" value="<?=$w?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'u='+text_bc_<?=$i+1?>_u.value + ' v='+text_bc_<?=$i+1?>_v.value + ' w='+this.value)">
         <span class="input-group-text"><?=$label["mm"]?></span>
        </div> 
       </div>
@@ -344,7 +346,7 @@ for ($i = 0; $i < 10; $i++) {
      <div class="col-8 <?=($bc_type == "pressure")?"":"d-none"?>" id="bc_value_<?=$i+1?>_pressure">
       <div class="input-group">
        <span class="input-group-text"><?=$label["p="]?></span>
-       <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_p" value="<?=$p?>" onblur="ajax2problem(this.name, 'p='+this.value)">
+       <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_p" value="<?=$p?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'p='+this.value)">
        <span class="input-group-text"><?=$label["MPa"]?></span>
       </div>
      </div>
@@ -354,21 +356,21 @@ for ($i = 0; $i < 10; $i++) {
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["Fx="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fx" value="<?=$Fx?>" onblur="ajax2problem(this.name, 'Fx='+this.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fx" value="<?=$Fx?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'Fx='+this.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
         <span class="input-group-text"><?=$label["N"]?></span>
        </div> 
       </div>
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["Fy="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fy" value="<?=$Fy?>" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+this.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fy" value="<?=$Fy?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+this.value + ' Fz='+text_bc_<?=$i+1?>_Fz.value)">
         <span class="input-group-text"><?=$label["N"]?></span>
        </div> 
       </div>
       <div class="row">
        <div class="col input-group">
         <span class="input-group-text"><?=$label["Fz="]?></span>
-        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fz" value="<?=$Fz?>" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+this.value)">
+        <input type="text" class="form-control" name="bc_<?=$i+1?>_value" id="text_bc_<?=$i+1?>_Fz" value="<?=$Fz?>" onfocus="button_next.disabled=true" onblur="ajax2problem(this.name, 'Fx='+text_bc_<?=$i+1?>_Fx.value + ' Fy='+text_bc_<?=$i+1?>_Fy.value + ' Fz='+this.value)">
         <span class="input-group-text"><?=$label["N"]?></span>
        </div> 
       </div>

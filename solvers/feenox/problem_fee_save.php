@@ -5,7 +5,7 @@
 
 chdir("../data/{$username}/cases/{$id}");
 $fee = fopen("case.fee", "w");
-fprintf($fee, "PROBLEM {$problem_name[$problem]} MESH {$mesh_hash}%s.msh", ($mesh_order[$problem] == 1) ? "" : $mesh_order[$problem]);
+fprintf($fee, "PROBLEM {$problem_name[$problem]} MESH {$mesh_hash}%s.msh\n", ($mesh_order[$problem] == 1) ? "" : $mesh_order[$problem]);
 fwrite($fee, $_POST["fee"]);
 fclose($fee);
 
@@ -22,7 +22,7 @@ if ($result != 0) {
     if ($output[$i] != "" && strncasecmp($output[$i], "Authorization", 13) != 0) {
       if (strncmp("error", $output[$i], 5) == 0) {
         $output_exploded = explode(":", $output[$i]);
-        for ($j = 3; $j < count($output_exploded); $j++) {
+        for ($j = 2; $j < count($output_exploded); $j++) {
           $response["error"] .= $output_exploded[$j] ;
         }
         $response["error"] .= "<br>";
