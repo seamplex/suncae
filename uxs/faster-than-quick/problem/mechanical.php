@@ -139,7 +139,7 @@ push_accordion_item("bcs", "problem", "Constraints &amp; Loads", true);
 ?>
     <div class="row m-1 p-1">
      <button class="btn btn-outline-primary w-100" onclick="bc_add('custom')">
-      <i class="bi bi-plus-circle me-2"></i>Add boundary condition
+      <i class="bi bi-plus-circle me-2"></i>Add condition
      </button>
     </div> 
     <div class="accordion" id="accordion_bcs"> 
