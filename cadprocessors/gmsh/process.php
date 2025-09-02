@@ -18,7 +18,7 @@ chdir($cad_dir);
 
 // ------------------------------------------------------------
 if (file_exists("cad.json") === false) {
-  exec("../../../../cadprocessors/gmsh/cadimport.py 2>&1", $output, $error_level);
+  exec(sprintf("%s/cadimport.py 2>&1", __DIR__), $output, $error_level);
   
   // TODO: keep output
   if ($error_level != 0) {
