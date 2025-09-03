@@ -49,13 +49,14 @@ if (!function_exists('str_contains')) {
 function suncae_log($message) {
   global $permissions;
   global $username;
-  if (file_exists("../../../logs") ==  false) {
-    if (mkdir("../../../logs", $permissions, true) == false) {
+  $log_dir = __DIR__ . "/../data/logs/";
+  if (file_exists($log_dir) ==  false) {
+    if (mkdir($log_dir, $permissions, true) == false) {
       echo "error: cannot create log directory";
       exit();
     }
   }
-  $log = fopen("../../../logs/".date("Y-m-d").".log", "a");
+  $log = fopen($log_dir . date("Y-m-d").".log", "a");
   if ($log === false) {
     echo "Cannot open log file, please check permissions.";
     exit(1);
