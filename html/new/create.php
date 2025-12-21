@@ -16,13 +16,11 @@ include("../../solvers/{$solver}/input_initial_{$problem}.php");
 
 if (file_exists("../../data/{$username}/cases") ==  false) {
   if (mkdir("../../data/{$username}/cases", $permissions, true) == false) {
-    echo "error: cannot create cases directory";
-    exit();
+    suncae_error("error: cannot create cases directory");
   }
 }
 if (chdir("../../data/{$username}/cases") == false) {
-  echo "error: cannot chdir to cases";
-  exit();
+  suncae_error("error: cannot chdir to cases");
 }
 
 $cad = $_POST["cad_hash"];
@@ -36,7 +34,7 @@ $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 
 
 if (file_exists($id) === true) {
-  suncae_error("Project {$id} already exists");
+  suncae_error("project {$id} already exists");
 }
 mkdir($id, $permissions, true);
 chdir($id);

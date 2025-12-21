@@ -47,12 +47,8 @@ function suncae_log_error($message) {
 
 function suncae_error($error) {
   global $username;
-  echo "<p><b>SunCAE found a fatal error:</b>";
   echo $error;
-  echo "</p>";
-
-  $log_dir = __DIR__ . "/../data/logs/";
-  $date = date('Y-m-d');
+  suncae_log_error($error);
   exit();
 }
 
@@ -97,6 +93,7 @@ function return_back_html($response) {
 function return_error_html($error) {
   header("Content-Type: text/html");
   echo $response;
+  suncae_log_error($error);
   exit();
 }
 
