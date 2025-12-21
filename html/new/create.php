@@ -87,6 +87,6 @@ if ($result != 0) {
   return_error_json("cannot git commit {$case["problem"]} {$id}");
 }
 
-suncae_log("created problem {$case["problem"]} {$id}");
+suncae_log("created case {$id} type {$case["problem"]} ", 2);
 
 header("Location: ../?id={$id}");

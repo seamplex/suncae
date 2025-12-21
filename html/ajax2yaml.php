@@ -53,11 +53,11 @@ if ($update_yaml) {
 
 exec("git commit -a -m 'case {$field} = {$value}'", $output, $result);
 if ($result != 0) {
-  suncae_log("cannot git commit {$problem} {$id}");
+  suncae_log_error("cannot git commit {$problem} {$id}");
   echo "cannot git commit {$case["problem"]} {$id}";
   exit(1);
 }
-suncae_log("case {$id} ajax2yaml {$field} = {$value}");
+suncae_log("case {$id} ajax2yaml {$field} = {$value}", 0);
 
 
 // TODO: git commit

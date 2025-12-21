@@ -6,12 +6,87 @@
 $permissions = 0755;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 
+// based on original work from the PHP Laravel framework
+if (!function_exists('str_contains')) {
+  function str_contains($haystack, $needle) {
+    return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+  }
+}
+
+function suncae_log_write($file_path, $username, $message) {
+
+  $log = fopen($file_path, "a");
+  if ($log === false) {
+    suncae_error("Cannot open log file, please check permissions.");
+  }
+  fprintf($log, "%s %s\t%s: %s\n", date("c"), $_SERVER['REMOTE_ADDR'], $username, $message);
+  fclose($log);
+
+}
+
+function suncae_log_error($message) {
+  global $username;
+  if ($username == "") {
+    $username = "anonymous";
+  }
+
+  $log_dir = __DIR__ . "/../data/logs/";
+  if (file_exists($log_dir) ==  false) {
+    if (mkdir($log_dir, $permissions, true) == false) {
+      suncae_error("error: cannot create log directory");
+    }
+  }
+
+  $date = date('Y-m-d');
+  suncae_log_write("{$log_dir}error.log", $username, $message);
+  if ($level > 0) {
+    suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message);
+  }
+}
+
+
 function suncae_error($error) {
+  global $username;
   echo "<p><b>SunCAE found a fatal error:</b>";
   echo $error;
   echo "</p>";
+
+  $log_dir = __DIR__ . "/../data/logs/";
+  $date = date('Y-m-d');
   exit();
 }
+
+function suncae_log($message, $level = 0) {
+  global $permissions;
+  global $username;
+  if ($username == "") {
+    $username = "anonymous";
+  }
+
+  $log_dir = __DIR__ . "/../data/logs/";
+  if (file_exists($log_dir) ==  false) {
+    if (mkdir($log_dir, $permissions, true) == false) {
+      suncae_error("error: cannot create log directory");
+    }
+  }
+
+  $date = date('Y-m-d');
+  suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
+  if ($level > 0) {
+    suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message);
+  }
+
+  if ($username != "anonymous") {
+    $log_dir = __DIR__ . "/../data/{$username}/";
+    if (file_exists($log_dir) ==  false) {
+      if (mkdir($log_dir, $permissions, true) == false) {
+        suncae_error("error: cannot create log directory");
+      }
+    }
+    suncae_log_write("{$log_dir}activity.log", $username, $message);
+  }
+}
+
 
 function return_back_html($response) {
   header("Content-Type: text/html");
@@ -33,56 +108,7 @@ function return_back_json($response) {
 
 function return_error_json($error) {
   $response["error"] = $error;
-  suncae_log($error);
+  suncae_log_error($error);
   return_back_json($response);
   exit();
-}
-
-// based on original work from the PHP Laravel framework
-if (!function_exists('str_contains')) {
-  function str_contains($haystack, $needle) {
-    return $needle !== '' && mb_strpos($haystack, $needle) !== false;
-  }
-}
-
-function suncae_log_write($file_path, $username, $message) {
-
-  $log = fopen($file_path, "a");
-  if ($log === false) {
-    suncae_error("Cannot open log file, please check permissions.");
-  }
-  fprintf($log, "%s %s\t%s: %s\n", date("c"), $_SERVER['REMOTE_ADDR'], $username, $message);
-  fclose($log);
-
-}
-
-function suncae_log($message, $level = 0) {
-  global $permissions;
-  global $username;
-  if ($username == "") {
-    $username = "anonymous";
-  }
-
-  $log_dir = __DIR__ . "/../data/logs/";
-  if (file_exists($log_dir) ==  false) {
-    if (mkdir($log_dir, $permissions, true) == false) {
-      suncae_error("error: cannot create log directory");
-    }
-  }
-
-  $date = date('Y-m-d');
-  suncae_log_write("{$log_dir}0-{$date}.log", $message);
-  if ($level > 0) {
-    suncae_log_write("{$log_dir}{$level}-{$date}.log", $message);
-  }
-
-  if ($username != "anonymous") {
-    $log_dir = __DIR__ . "/../data/{$username}/";
-    if (file_exists($log_dir) ==  false) {
-      if (mkdir($log_dir, $permissions, true) == false) {
-        suncae_error("error: cannot create log directory");
-      }
-    }
-    suncae_log_write("{$log_dir}{$level}-{$date}.log", $message);
-  }
 }
