@@ -15,4 +15,9 @@ if ($result == 0) {
   suncae_log("{$id} problem syntax error");
 }
 
+
+if ($response["error"] != "") {
+  suncae_log_error("case {$id} chage step failed: {$response["error"]}");
+}
+
 ?>

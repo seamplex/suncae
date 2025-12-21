@@ -9,14 +9,14 @@ $sigma_data_path = "../data/{$username}/cases/{$id}/run/{$problem_hash}-sigma.da
 
 if (file_exists($displacements_data_path) == false) {
   $response["error"] = "Displacements data path does not exist";
+  suncae_log_error("case {$id} failed \"{$response["error"]}\"");
   return_back_json($response);
 }
 if (file_exists($sigma_data_path) == false) {
   $response["error"] = "Stress data path does not exist";
+  suncae_log_error("case {$id} failed \"{$response["error"]}\"");
   return_back_json($response);
 }
-  
-
 
 $response["nodes_warped"] = file_get_contents($displacements_data_path);
 $response["field"]        = file_get_contents($sigma_data_path);

@@ -4,11 +4,11 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 if (($cad_json = file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json")) == false) {
-  return_error("cannot find cad {$case["cad"]}");
+  return_error_json("cannot find cad {$case["cad"]}");
 }
 
 if (($cad = json_decode($cad_json, true)) == null) {
-  return_error("cannot decode cad {$id}");
+  return_error_json("cannot decode cad {$id}");
 }
 
 
@@ -22,7 +22,6 @@ if (file_exists($mesh_json_path) === false) {
   usleep(200);
   if (file_exists($mesh_json_path) === false) {
     return_error_json("mesh meta json {$mesh_json_path} does not exist");
-    exit();
   }
 }
 if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
@@ -32,8 +31,7 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
     // maybe there's some locking thing here
     usleep(200);
     if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
-      return_error_json("");
-      exit();
+      return_error_json("too many errors");
     }
   }
 }

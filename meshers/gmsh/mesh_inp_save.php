@@ -23,4 +23,8 @@ if ($result != 0) {
   }
 }
 
+
+if ($response["error"] != "") {
+  suncae_log_error("csae {$id} mesh save failed \"{$response["error"]}\"");
+}
 return_back_json($response);

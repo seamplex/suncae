@@ -52,6 +52,9 @@ if (file_exists("cad.json")) {
 // leave running the mesher in the background
 exec("../../../../cadprocessors/gmsh/initial_mesh.sh > cadmesh.log 2>&1 &");
 
+if ($response["error"] != "") {
+  suncae_log_error("CAD {$cad_hash} process failed: {$response["error"]}");
+}
 suncae_log("CAD {$cad_hash} process {$response["status"]} {$response["error"]}");
 
 

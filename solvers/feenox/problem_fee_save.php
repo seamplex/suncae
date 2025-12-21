@@ -33,4 +33,8 @@ if ($result != 0) {
   }
 }
 
+if ($response["error"] != "") {
+  suncae_log_error("case {$id} fee save failed: {$response["error"]}");
+}
+
 return_back_json($response);

@@ -231,7 +231,7 @@ if (count($output) > 0) {
 }
 suncae_log("problem {$id} ajax2problem {$field} = {$value}");
 if ($response["error"] != "") {
-  suncae_log("case {$id} error: {$response["error"]}");
+  suncae_log_error("case {$id} ajax2problem failed: {$response["error"]}");
 }
 
 return_back_json($response);

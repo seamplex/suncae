@@ -2,7 +2,7 @@
 
 if (file_exists("original.json") === false) {
   exec("../../../../cadprocessors/gmsh/cadcheck.py", $output, $error_level);
-  
+
   // TODO: keep output
   if ($error_level != 0) {
     $response["status"] = "error";
@@ -44,6 +44,9 @@ if (file_exists("original.json")) {
   $response["error"] = "Cannot create original json.";
 }
 
+if ($response["error"] != "") {
+  suncae_log_error("CAD {$response["cad_hash"]} process failed \"{$response["error"]}\"");
+}
 suncae_log("CAD {$response["cad_hash"]} upload {$response["status"]} {$response["error"]}");
 
 ?>

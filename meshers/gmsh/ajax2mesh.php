@@ -81,7 +81,7 @@ if ($result != 0) {
 suncae_log("mesh {$id} ajax2yaml {$field} = {$value}");
 
 if ($response["error"] != "") {
-  suncae_log("mesh {$id} error: {$response["error"]}");
+  suncae_log_error("mesh {$id} failed: {$response["error"]}");
 }
 
 return_back_json($response);

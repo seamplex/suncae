@@ -5,6 +5,7 @@
 
 if (!isset($id)) {
   $response["error"] = "Cannnot proceed, no id given.";
+  suncae_log_error("mesh {$id} failed: {$response["error"]}");
   return_back_json($response);
   exit();
 }
@@ -13,7 +14,6 @@ $mesh_data_path = "../data/{$username}/cads/{$case["cad"]}/meshes/{$mesh_hash}-d
 if (file_exists($mesh_data_path)) {
   header("Content-Type: application/json");
   echo file_get_contents($mesh_data_path);
-  
 } else {
   $response["nodes"] = "";
   $response["surfaces_edges_set"] = "";

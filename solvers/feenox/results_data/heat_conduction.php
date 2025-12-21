@@ -7,9 +7,10 @@
 $temperature_data_path = "../data/{$username}/cases/{$id}/run/{$problem_hash}-T.dat";
 if (file_exists($temperature_data_path) == false) {
   $response["error"] = "Stress data path does not exist";
+  suncae_log_error("case {$id} failed \"{$response["error"]}\"");
   return_back_json($response);
 }
-  
+
 $response["field"]        = file_get_contents($temperature_data_path);
 
 return_back_json($response);
