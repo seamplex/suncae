@@ -12,7 +12,6 @@ function suncae_error($error) {
   echo "</p>";
   exit();
 }
-  
 
 function return_back_html($response) {
   header("Content-Type: text/html");
@@ -46,21 +45,44 @@ if (!function_exists('str_contains')) {
   }
 }
 
-function suncae_log($message) {
-  global $permissions;
-  global $username;
-  $log_dir = __DIR__ . "/../data/logs/";
-  if (file_exists($log_dir) ==  false) {
-    if (mkdir($log_dir, $permissions, true) == false) {
-      echo "error: cannot create log directory";
-      exit();
-    }
-  }
-  $log = fopen($log_dir . date("Y-m-d").".log", "a");
+function suncae_log_write($file_path, $username, $message) {
+
+  $log = fopen($file_path, "a");
   if ($log === false) {
-    echo "Cannot open log file, please check permissions.";
-    exit(1);
+    suncae_error("Cannot open log file, please check permissions.");
   }
   fprintf($log, "%s %s\t%s: %s\n", date("c"), $_SERVER['REMOTE_ADDR'], $username, $message);
   fclose($log);
+
+}
+
+function suncae_log($message, $level = 0) {
+  global $permissions;
+  global $username;
+  if ($username == "") {
+    $username = "anonymous";
+  }
+
+  $log_dir = __DIR__ . "/../data/logs/";
+  if (file_exists($log_dir) ==  false) {
+    if (mkdir($log_dir, $permissions, true) == false) {
+      suncae_error("error: cannot create log directory");
+    }
+  }
+
+  $date = date('Y-m-d');
+  suncae_log_write("{$log_dir}0-{$date}.log", $message);
+  if ($level > 0) {
+    suncae_log_write("{$log_dir}{$level}-{$date}.log", $message);
+  }
+
+  if ($username != "anonymous") {
+    $log_dir = __DIR__ . "/../data/{$username}/";
+    if (file_exists($log_dir) ==  false) {
+      if (mkdir($log_dir, $permissions, true) == false) {
+        suncae_error("error: cannot create log directory");
+      }
+    }
+    suncae_log_write("{$log_dir}{$level}-{$date}.log", $message);
+  }
 }
