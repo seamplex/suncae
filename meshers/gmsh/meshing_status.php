@@ -31,7 +31,11 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
     // maybe there's some locking thing here
     usleep(200);
     if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
-      return_error_json("too many errors");
+      // maybe there's some locking thing here
+      usleep(200);
+      if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
+        return_error_json("");
+      }
     }
   }
 }
