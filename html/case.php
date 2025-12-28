@@ -8,6 +8,10 @@ if ($id == "") {
   exit();
 }
 
+if ($username == "") {
+  suncae_error("empty username");
+}
+
 $mesh_hash = (isset($_POST["mesh_hash"])) ? $_POST["mesh_hash"] : ((isset($_GET["mesh_hash"])) ? $_GET["mesh_hash"] : "");
 $problem_hash = (isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((isset($_GET["problem_hash"])) ? $_GET["problem_hash"] : "");
 
@@ -26,13 +30,11 @@ function mesh_hash() {
 
 $case_dir = "../data/{$owner}/cases/{$id}";
 if (($case_yaml = file_get_contents("{$case_dir}/case.yaml")) == false) {
-  echo "cannot find project {$id}";
-  exit();
+  suncae_error("cannot find project {$id} for user {$owner}");
 }
 
 if (($case = yaml_parse($case_yaml)) == null) {
-  echo "cannot decode project {$id}";
-  exit();
+  suncae_error("cannot decode project {$id}");
 }
 $problem = $case["problem"];
 $solver = $case["solver"];
