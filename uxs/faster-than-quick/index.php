@@ -4,7 +4,7 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 // TODO: move to cad.php?
-if (($cad_json = file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json")) == false) {
+if (($cad_json = file_get_contents("../data/{$owner}/cads/{$case["cad"]}/cad.json")) == false) {
   return_error("cannot find cad {$case["cad"]}");
 }
 

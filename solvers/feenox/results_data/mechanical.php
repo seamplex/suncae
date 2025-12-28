@@ -4,8 +4,8 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 // TODO: read & check
-$displacements_data_path = "../data/{$username}/cases/{$id}/run/{$problem_hash}-displacements.dat";
-$sigma_data_path = "../data/{$username}/cases/{$id}/run/{$problem_hash}-sigma.dat";
+$displacements_data_path = "../data/{$owner}/cases/{$id}/run/{$problem_hash}-displacements.dat";
+$sigma_data_path = "../data/{$owner}/cases/{$id}/run/{$problem_hash}-sigma.dat";
 
 if (file_exists($displacements_data_path) == false) {
   $response["error"] = "Displacements data path does not exist";

@@ -19,16 +19,16 @@ $default_bc["heat_conduction"] = "adiabatic";
 
 
 function problem_hash() {
-  global $username, $id;
+  global $owner, $id;
   if (file_exists("case.fee")) {
     return md5_file("case.fee");
   } else {
-    return md5_file("../data/{$username}/cases/{$id}/case.fee");
+    return md5_file("../data/{$owner}/cases/{$id}/case.fee");
   }
 }
 
 function update_mesh_in_fee() {
-  global $username;
+  global $owner;
   global $id;
   global $mesh_hash;
   global $problem;
@@ -36,8 +36,8 @@ function update_mesh_in_fee() {
   global $problem_name;
   $real_mesh_hash = mesh_hash();
   if ($real_mesh_hash != $mesh_hash) {
-    $current = fopen("../data/{$username}/cases/{$id}/case.fee", "r");
-    $new = fopen("../data/{$username}/cases/{$id}/new.fee", "w");
+    $current = fopen("../data/{$owner}/cases/{$id}/case.fee", "r");
+    $new = fopen("../data/{$owner}/cases/{$id}/new.fee", "w");
     $p = $problem_name[$problem];
     if ($current && $new) {
       while (($line = fgets($current)) !== false) {
@@ -50,7 +50,7 @@ function update_mesh_in_fee() {
       fclose($current);
       fclose($new);
 
-      if (rename("../data/{$username}/cases/{$id}/new.fee", "../data/{$username}/cases/{$id}/case.fee") !== true) {
+      if (rename("../data/{$owner}/cases/{$id}/new.fee", "../data/{$owner}/cases/{$id}/case.fee") !== true) {
         return_error_json("Cannot update fee");
       }
     } else {

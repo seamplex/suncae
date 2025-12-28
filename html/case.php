@@ -14,17 +14,17 @@ $problem_hash = (isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((iss
 
 // TODO: per mesher
 function mesh_hash() {
-  global $username, $id;
+  global $owner, $id;
   // there might have been a chdir to the case's dir
   if (file_exists("mesh.geo")) {
     return md5_file("mesh.geo");
   } else {
-    return md5_file("../data/{$username}/cases/{$id}/mesh.geo");
+    return md5_file("../data/{$owner}/cases/{$id}/mesh.geo");
   }
 }
 
 
-$case_dir = "../data/{$username}/cases/{$id}";
+$case_dir = "../data/{$owner}/cases/{$id}";
 if (($case_yaml = file_get_contents("{$case_dir}/case.yaml")) == false) {
   echo "cannot find project {$id}";
   exit();
@@ -38,7 +38,7 @@ $problem = $case["problem"];
 $solver = $case["solver"];
 $mesher = $case["mesher"];
 
-$cad_dir = "../data/{$username}/cads/{$case["cad"]}";
+$cad_dir = "../data/{$owner}/cads/{$case["cad"]}";
 if (is_dir("{$cad_dir}/meshes") == false) {
   mkdir("{$cad_dir}/meshes", $permissions, true);
 }
@@ -47,7 +47,7 @@ if (is_dir("{$case_dir}/run") == false) {
   mkdir("{$case_dir}/run", $permissions, true);
 }
 if (file_exists("{$case_dir}/run/meshes") == false) {
-  symlink("../../../cads/{$case["cad"]}/meshes", "../data/{$username}/cases/{$id}/run/meshes");
+  symlink("../../../cads/{$case["cad"]}/meshes", "../data/{$owner}/cases/{$id}/run/meshes");
 }
 
 include("../solvers/{$solver}/common.php");

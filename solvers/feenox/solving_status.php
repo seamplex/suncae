@@ -4,7 +4,7 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 $problem_hash = $_GET["problem_hash"];
-chdir("../data/{$username}/cases/{$id}");
+chdir("../data/{$owner}/cases/{$id}");
 
 // first, see if the solve is finished or running
 $results_json_path = "run/{$problem_hash}.json";

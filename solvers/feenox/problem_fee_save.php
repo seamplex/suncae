@@ -3,7 +3,7 @@
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-chdir("../data/{$username}/cases/{$id}");
+chdir("../data/{$owner}/cases/{$id}");
 $fee = fopen("case.fee", "w");
 fprintf($fee, "PROBLEM {$problem_name[$problem]} MESH {$mesh_hash}%s.msh\n", ($mesh_order[$problem] == 1) ? "" : $mesh_order[$problem]);
 fwrite($fee, $_POST["fee"]);

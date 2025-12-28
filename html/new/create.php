@@ -11,27 +11,22 @@ include("../common.php");
 $problem = $_POST["problem"];
 $mesher = $_POST["mesher"];
 $solver = $_POST["solver"];
+$owner = $username;
 include("../../solvers/{$solver}/input_initial_{$problem}.php");
 
 
-if (file_exists("../../data/{$username}/cases") ==  false) {
-  if (mkdir("../../data/{$username}/cases", $permissions, true) == false) {
+
+if (file_exists("../../data/{$owner}/cases") ==  false) {
+  if (mkdir("../../data/{$owner}/cases", $permissions, true) == false) {
     suncae_error("error: cannot create cases directory");
   }
 }
-if (chdir("../../data/{$username}/cases") == false) {
+if (chdir("../../data/{$owner}/cases") == false) {
   suncae_error("error: cannot chdir to cases");
 }
 
 $cad = $_POST["cad_hash"];
 $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
-
-// TODO: 2024-09-14
-// if (file_exists("../cads/{$cad}/default.geo") === false) {
-//   echo "error: cad {$cad} does not have default.geo";
-//   exit();
-// }
-
 
 if (file_exists($id) === true) {
   suncae_error("project {$id} already exists");
@@ -43,7 +38,7 @@ chdir($id);
 copy("../../cads/{$cad}/default.geo", "mesh.geo");
 
 $case["id"] = $id;
-$case["owner"] = $username;
+$case["owner"] = $owner;
 $case["date"] = time();
 $case["cad"] = $cad;
 $case["problem"] = $problem;
@@ -66,12 +61,12 @@ if ($result != 0) {
   return_error_json("cannot git init {$case["problem"]} {$id}");
 }
 
-exec("git config user.name '{$username}'", $output, $result);
+exec("git config user.name '{$owner}'", $output, $result);
 if ($result != 0) {
   return_error_json("cannot set user.name {$case["problem"]} {$id}");
 }
 
-exec("git config user.email '{$username}@suncae'", $output, $result);
+exec("git config user.email '{$owner}@suncae'", $output, $result);
 if ($result != 0) {
   return_error_json("cannot set user.email {$case["problem"]} {$id}");
 }

@@ -5,7 +5,7 @@
 
 $mesh_hash = $_GET["mesh_hash"];
 
-$response["stdout"] = file_get_contents("../data/{$username}/cases/{$id}/run/meshes/{$mesh_hash}.1");
-$response["stderr"] = file_get_contents("../data/{$username}/cases/{$id}/run/meshes/{$mesh_hash}.2");
+$response["stdout"] = file_get_contents("../data/{$owner}/cases/{$id}/run/meshes/{$mesh_hash}.1");
+$response["stderr"] = file_get_contents("../data/{$owner}/cases/{$id}/run/meshes/{$mesh_hash}.2");
 
 return_back_json($response);

@@ -8,7 +8,7 @@ include("../uxs/faster-than-quick/labels.php");
 $k = "1";
 $bc = array();
 
-$fee = fopen("../data/{$username}/cases/{$id}/case.fee", "r");
+$fee = fopen("../data/{$owner}/cases/{$id}/case.fee", "r");
 if ($fee) {
   $bc_i = 0;
   // TODO: allow spacing, spaces in regexps?

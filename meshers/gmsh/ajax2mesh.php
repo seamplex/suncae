@@ -10,7 +10,7 @@ $response["warning"] = "";
 $field = $_GET["field"];
 $value = $_GET["value"];
 
-if (chdir("../data/{$username}/cases/{$id}") === false) {
+if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
 }
 

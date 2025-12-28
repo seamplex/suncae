@@ -10,7 +10,7 @@ if (!isset($id)) {
   exit();
 }
 
-$mesh_data_path = "../data/{$username}/cads/{$case["cad"]}/meshes/{$mesh_hash}-data.json";
+$mesh_data_path = "../data/{$owner}/cads/{$case["cad"]}/meshes/{$mesh_hash}-data.json";
 if (file_exists($mesh_data_path)) {
   header("Content-Type: application/json");
   echo file_get_contents($mesh_data_path);

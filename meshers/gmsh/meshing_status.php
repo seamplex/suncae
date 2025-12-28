@@ -3,7 +3,7 @@
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-if (($cad_json = file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json")) == false) {
+if (($cad_json = file_get_contents("../data/{$owner}/cads/{$case["cad"]}/cad.json")) == false) {
   return_error_json("cannot find cad {$case["cad"]}");
 }
 
@@ -13,7 +13,7 @@ if (($cad = json_decode($cad_json, true)) == null) {
 
 
 $mesh_hash = $_GET["mesh_hash"];
-chdir("../data/{$username}/cases/{$id}");
+chdir("../data/{$owner}/cases/{$id}");
 
 // first, see if the mesh is finished or running
 $mesh_json_path = "run/meshes/{$mesh_hash}.json";
@@ -52,7 +52,7 @@ if ($mesh_status["status"] == "running" && (isset($mesh_status["pid"]) && posix_
     return_error_json("cannot decode mesh status json {$mesh_json_path}");
     exit();
   }
-  
+
   $mesh_status["progress_edges"]   = round(100 * $mesh_status["edges"] / $cad["edges"]);
   $mesh_status["progress_faces"]   = round(100 * $mesh_status["faces"] / $cad["faces"]);
   $mesh_status["progress_volumes"] = round(100 * $mesh_status["volumes"] / $cad["solids"]);

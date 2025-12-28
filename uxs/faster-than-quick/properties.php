@@ -13,11 +13,6 @@ if (isset($case["owner"]) == false) {
   $case["onwer"] = "anonymous";
 }
 
-// TODO: keep it in the fee?
-// or keep a copy in the yaml so as to check the user did not change it?
-// chdir("../data/{$username}/cases/{$id}");
-// $problem["type"] = shell_exec("grep ^PROBLEM case.fee | awk '{print $2}'");
-
 title_left("Properties");
 push_accordion("properties");
 push_accordion_item("case", "properties", "Case properties", true);
@@ -44,9 +39,8 @@ row_form_ro("text_solver", "Mesher", $case["mesher"]);
 row_form_ro("text_solver", "Solver", $case["solver"]);
 pop_accordion_item();
 
- // chdir("../data/{$username}/cases/{$id}");
-if (($cad_json = file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json")) == false) {
-  return_error("cannot find cad {$case["cad"]}");
+if (($cad_json = file_get_contents("../data/{$owner}/cads/{$case["cad"]}/cad.json")) == false) {
+  return_error("cannot find cad {$case["cad"]} for user {$owner}");
 }
 
 if (($cad = json_decode($cad_json, true)) == null) {

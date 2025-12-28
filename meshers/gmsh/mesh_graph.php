@@ -6,7 +6,7 @@
 $id = $_GET["id"];
 $file = $_GET["file"];
 
-$svg_path = "../data/{$username}/cases/{$id}/run/meshes/{$file}.svg";
+$svg_path = "../data/{$owner}/cases/{$id}/run/meshes/{$file}.svg";
 if (file_exists($svg_path)) {
 
   header("Content-Type: image/svg+xml");

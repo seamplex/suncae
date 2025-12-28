@@ -29,7 +29,7 @@ push_accordion("mesh");
 push_accordion_item("currentmesh", "mesh", "Current mesh <span class=\"badge badge-light\">".substr($mesh_hash,0,7)."</span>", true); 
 row_set_width(5);
 
-$cad = json_decode(file_get_contents("../data/{$username}/cads/{$case["cad"]}/cad.json"), true);
+$cad = json_decode(file_get_contents("../data/{$owner}/cads/{$case["cad"]}/cad.json"), true);
 $length_char = 4 * $cad["volume"]/$cad["area"];
 $intersection_translation = "";
 $intersection_radius = 0;
