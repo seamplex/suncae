@@ -10,6 +10,10 @@ $response["status"] = "ok";
 $response["username"] = $username;
 $response["error"] = "";
 
+if (isset($username) == false || $username == "") {
+  return_error_json("username is empty");
+}
+
 $cad_dir = "../../data/{$username}/cads/{$cad_hash}";
 if (file_exists($cad_dir) === false) {
   mkdir($cad_dir, $permissions, true);
@@ -22,13 +26,11 @@ if (file_exists("cad.json") === false) {
   
   // TODO: keep output
   if ($error_level != 0) {
-    $response["status"] = "error";
-    $response["error"] = "Error {$error_level} when importing CAD: ";
+    $error_message = "Error {$error_level} when importing CAD: ";
     for ($i = 0; $i < count($output); $i++) {
-      $response["error"] .= $output[$i];
+      $error_message .= $output[$i];
     }
-    suncae_log("CAD {$cad_hash} process {$response["status"]} {$response["error"]}");
-    return_back_json($response);
+    return_error_json($error_message);
   }
 }
 
@@ -41,10 +43,7 @@ if (file_exists("cad.json")) {
   $response["fieldOfView"] = $cad["fieldOfView"];
   
 } else {
-  $response["status"] = "error";
-  $response["error"] = "Cannot create CAD json.";
-  suncae_log("CAd {$cad_hash} process {$response["status"]} {$response["error"]}");
-  return_back_json($response);
+  return_error_json("cannot create CAD json");  
 }
 
 
@@ -53,10 +52,8 @@ if (file_exists("cad.json")) {
 exec("../../../../cadprocessors/gmsh/initial_mesh.sh > cadmesh.log 2>&1 &");
 
 if ($response["error"] != "") {
-  suncae_log_error("CAD {$cad_hash} process failed: {$response["error"]}");
+  return_error_json("CAD {$cad_hash} process failed: {$response["error"]}");
+} else {
+  return_back_json($response);
 }
-suncae_log("CAD {$cad_hash} process {$response["status"]} {$response["error"]}");
-
-
-return_back_json($response);
 
