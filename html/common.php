@@ -102,6 +102,7 @@ function return_back_json($response) {
 }
 
 function return_error_json($error) {
+  $response["status"] = "error";  
   $response["error"] = $error;
   suncae_log_error($error);
   return_back_json($response);
