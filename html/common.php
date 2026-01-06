@@ -24,7 +24,7 @@ function suncae_log_write($file_path, $username, $message) {
 
 }
 
-function suncae_log_error($message) {
+function suncae_log_error($message, $level = 0) {
   global $username;
   if ($username == "") {
     $username = "anonymous";
@@ -39,7 +39,11 @@ function suncae_log_error($message) {
 
   $date = date('Y-m-d');
   suncae_log_write("{$log_dir}error.log", $username, $message);
-  suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
+  suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message);
+  if ($level > 0) {
+    suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
+  }
+    
 }
 
 
