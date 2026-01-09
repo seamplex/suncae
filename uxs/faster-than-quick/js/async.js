@@ -136,6 +136,9 @@ async function ajax2yaml(field, value) {
 async function ajax2problem(field, value) {
   theseus_log("ajax2problem("+field+","+value+")");
 
+  // Show loading spinner
+  bootstrap_block("ajax_processing");
+
   let response;
   try {
     let res = await fetch("ajax2problem.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
@@ -144,8 +147,12 @@ async function ajax2problem(field, value) {
   } catch (exception) {
     set_error("Error 2, see console.");
     theseus_log(exception);
+    bootstrap_hide("ajax_processing");
     return;
   }
+
+  // Hide loading spinner
+  bootstrap_hide("ajax_processing");
 
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);
@@ -170,6 +177,9 @@ async function ajax2problem(field, value) {
 async function ajax2mesh(field, value) {
   theseus_log("ajax2mesh("+field+","+value+")");
 
+  // Show loading spinner
+  bootstrap_block("ajax_processing");
+
   let response;
   try {
     let res = await fetch("ajax2mesh.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
@@ -178,8 +188,12 @@ async function ajax2mesh(field, value) {
   } catch (exception) {
     set_error("Error 3, see console.");
     theseus_log(exception);
+    bootstrap_hide("ajax_processing");
     return;
   }
+
+  // Hide loading spinner
+  bootstrap_hide("ajax_processing");
 
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);

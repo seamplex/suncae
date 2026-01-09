@@ -183,6 +183,14 @@ include("about.php");
 
     <div class="collapse" id="collapse_leftcol">
     </div>
+    
+    <div class="my-2 py-2 text-center d-none" id="ajax_processing">
+     <div class="spinner-border text-info" role="status">
+      <span class="visually-hidden">Processing...</span>
+     </div>
+<!--      <div class="mt-2 text-muted small">Processing request...</div> -->
+    </div>
+    
    </div>
 <!-- ============================================================================================================ -->
 
