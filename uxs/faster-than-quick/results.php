@@ -15,6 +15,7 @@ if ($has_results) {
   include("results/{$problem}.php");
 } else if ($has_results_attempt) {
   if ($results_meta["status"] == "canceled") {
+    suncae_log_error("problem {$id} canceled"); 
 ?>
     <div class="small alert alert-dismissible alert-warning">
      The solving process was canceled.
@@ -26,11 +27,13 @@ if ($has_results) {
     </button>
 <?php
   } else if ($results_meta["status"] == "syntax_error") {
+    suncae_log_error("problem {$id} syntax error: " . file_get_contents("{$case_dir}/run/{$problem_hash}-check.2"));     
 ?>
     <pre class="small alert alert-warning"><?=file_get_contents("{$case_dir}/run/{$problem_hash}-check.2")?></pre>
 <?php
   } else if ($results_meta["status"] == "error") {
     if (file_exists("{$case_dir}/run/{$problem_hash}.2")) {
+      suncae_log_error("problem {$id} error: " . file_get_contents("{$case_dir}/run/{$problem_hash}-check.2"));     
 ?>
     <pre class="small alert alert-danger"><?=file_get_contents("{$case_dir}/run/{$problem_hash}.2")?></pre>
     <button class="btn btn-lg btn-outline-success w-100" onclick="relaunch_solving('<?=$problem_hash?>')">
@@ -38,17 +41,20 @@ if ($has_results) {
     </button>
 <?php
     } else {
+      suncae_log_error("problem {$id} got status error but not stderr");
 ?>
       Got status error but no stderr.
 <?php
     }
   } else {
+    suncae_log_error("problem {$id} unknown error");
 ?>
     Not sure what happened.
 <?php
   }
   
 } else  { 
+    suncae_log_error("problem {$id} there are no results nor any attempt at getting them");
 ?>  
     <div class="small alert alert-dismissible alert-warning">
      There are no results nor any attempt at getting them.

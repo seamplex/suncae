@@ -18,7 +18,7 @@ if ($geo) {
     }
   }
 } else {
-  echo "error opening {$case_dir}/mesh.geo";
+  return_error("cannot open {$case_dir}/mesh.geo");
   exit();
 }
 
@@ -61,9 +61,13 @@ if ($mesh_meta["status"] == "success") {
     </div>
 <?php
   }
+  suncae_log("problem {$id} mesh ok {$mesh_meta["nodes"]}", 3);
+  suncae_log("problem {$id} mesh ok " . json_encode($mesh_meta));
+  
 } else if ($has_mesh_attempt) {
   
   if ($mesh_meta["status"] == "canceled") {
+    suncae_log_error("problem {$id} mesh canceled");
 ?>
     <div class="small alert alert-warning">
      The meshing process was canceled.
@@ -74,6 +78,8 @@ if ($mesh_meta["status"] == "success") {
     </button>
 <?php
   } else if ($mesh_meta["status"] == "syntax_error") {
+    suncae_log_error("problem {$id} mesh syntax error " . file_get_contents("{$cad_dir}/meshes/{$mesh_hash}-check.2"));
+    
 ?>
 <pre class="small alert alert-danger">
 <?=file_get_contents("{$cad_dir}/meshes/{$mesh_hash}-check.2")?>
@@ -81,6 +87,7 @@ if ($mesh_meta["status"] == "success") {
 
 <?php
   } else {
+    suncae_log_error("problem {$id} mesh error " . file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.2"));
 ?>
 <pre class="small alert alert-danger">
 <?php
@@ -98,6 +105,7 @@ if ($mesh_meta["status"] == "success") {
 </pre>
 <?php
     if (file_exists("{$cad_dir}/meshes/{$mesh_hash}.intersections")) {
+      suncae_log_error("problem {$id} mesh intersections " . file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.intersections"));
       $intersection_translation = trim(file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.intersections"));
       if ($intersection_translation != "") {
         $intersection_radius = 2*$length_char;
@@ -115,6 +123,7 @@ if ($mesh_meta["status"] == "success") {
     }
   }
 } else  { 
+  suncae_log_error("problem {$id} no mesh nor attempt");
 ?>  
     <div id="error_message" class="small alert alert-dismissible alert-warning">
      There is no mesh nor any attempt at it.
