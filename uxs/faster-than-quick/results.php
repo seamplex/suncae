@@ -33,7 +33,7 @@ if ($has_results) {
 <?php
   } else if ($results_meta["status"] == "error") {
     if (file_exists("{$case_dir}/run/{$problem_hash}.2")) {
-      suncae_log_error("problem {$id} error: " . file_get_contents("{$case_dir}/run/{$problem_hash}-check.2"));     
+      suncae_log_error("problem {$id} error: " . file_get_contents("{$case_dir}/run/{$problem_hash}.2"));
 ?>
     <pre class="small alert alert-danger"><?=file_get_contents("{$case_dir}/run/{$problem_hash}.2")?></pre>
     <button class="btn btn-lg btn-outline-success w-100" onclick="relaunch_solving('<?=$problem_hash?>')">
