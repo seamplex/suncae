@@ -1,0 +1,54 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: yaml
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot libgl1-mesa-glx libxrender1 libxcursor1 libxft2 libxinerama1
+
+    - name: Install SunCAE Dependencies (FeenoX & Gmsh)
+      run: ./deps.sh
+
+    - name: Install Node Dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Start PHP Server
+      run: php -S localhost:8000 -t html > php-server.log 2>&1 &
+
+    - name: Run Playwright tests
+      run: npx playwright test
+
+    - name: Upload Playwright Report
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
