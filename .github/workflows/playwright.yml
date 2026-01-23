@@ -37,17 +37,17 @@ jobs:
     - name: Install Node Dependencies
       run: npm ci
 
-    - name: Check what's on port 8000
-      run: ss -ltnp | grep ':8000' || true
-    
-    - name: Free port 8000 (if occupied)
-      run: npx kill-port 8000 || true
+#     - name: Check what's on port 8000
+#       run: ss -ltnp | grep ':8000' || true
+#     
+#     - name: Free port 8000 (if occupied)
+#       run: npx kill-port 8000 || true
       
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Start PHP Server
-      run: php -S localhost:8000 -t html > php-server.log 2>&1 &
+    # - name: Start PHP Server
+    #   run: php -S localhost:8000 -t html > php-server.log 2>&1 &
 
     - name: Run Playwright tests
       run: npx playwright test
