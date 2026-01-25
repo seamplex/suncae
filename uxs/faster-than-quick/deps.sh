@@ -4,6 +4,7 @@ bootstrap_version=5.3.3
 bootstrap_icons_version=1.11.3
 katex_version=0.16.11
 pandoc_version=3.5
+pandoc_version_min=3.2
 
 # boostrap (we only need the js, the css comes from bootswatch)
 echo -n "uxs/faster-than-quick/bootstrap.js... "
@@ -71,22 +72,46 @@ else
 fi
 
 # pandoc
+# Function to extract version from binary
+get_pandoc_version() {
+  local binary="$1"
+  "$binary" --version 2>&1 | head -n1 | cut -d" " -f2
+}
+
 echo -n "uxs/faster-than-quick/pandoc... "
-pandoc_tarball=pandoc-${pandoc_version}-linux-amd64
-if [ $force = 1 ] || [ ! -e bin/pandoc ] || [ ! -f deps/${pandoc_tarball}.tar.gz ]; then
-  cd deps
-  if [ ! -e ${pandoc_tarball}.tar.gz ]; then
-    wget https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${pandoc_tarball}.tar.gz
+
+# Check if pandoc is already installed system-wide
+use_system_binary=0
+if [ -x "$(which pandoc 2>/dev/null)" ] && [ $force = 0 ]; then
+  installed_version=$(get_pandoc_version "$(which pandoc)")
+  if [ -n "$installed_version" ] && version_ge "$installed_version" "$pandoc_version_min"; then
+    echo "found system version $installed_version (>= $pandoc_version_min), using it"
+    use_system_binary=1
+    # Create symlink to system binary
+    mkdir -p bin
+    ln -sf "$(which pandoc)" bin/pandoc
+  else
+    echo "system version $installed_version is too old (need >= $pandoc_version_min), will download"
   fi
-  if [ ! -d pandoc-${pandoc_version} ]; then
-    tar xvzf ${pandoc_tarball}.tar.gz
-  fi
-  cp pandoc-${pandoc_version}/bin/pandoc        ../bin
-  echo "done"
-  cd .. 
-else
-  echo "already installed"
 fi
 
-# TODO: gnuplot?
+if [ $use_system_binary = 0 ]; then
+    pandoc_tarball=pandoc-${pandoc_version}-linux-amd64
+    if [ $force = 1 ] || [ ! -x bin/pandoc ] || [ ! -f deps/${pandoc_tarball}.tgz ]; then
+    cd deps
+    if [ ! -e ${pandoc_tarball}.tar.gz ]; then
+      wget https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${pandoc_tarball}.tar.gz
+    fi
+    if [ ! -d pandoc-${pandoc_version} ]; then
+      tar xvzf ${pandoc_tarball}.tar.gz
+    fi
+    cp pandoc-${pandoc_version}/bin/pandoc        ../bin
+    echo "done"
+    cd .. 
+  else
+    echo "already installed"
+  fi
+fi
+
+# TODO: gnuplot
 
