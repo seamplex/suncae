@@ -42,6 +42,7 @@ if [ $use_system_binary = 0 ]; then
       wget -c http://gmsh.info/bin/Linux/${gmsh_tarball}.tgz
     fi
     tar xzf ${gmsh_tarball}.tgz
+    rm -f ../bin/gmsh.py
     cp ${gmsh_tarball}/bin/gmsh ../bin
     cp ${gmsh_tarball}/lib/gmsh.py ../bin
     cp -d ${gmsh_tarball}/lib/libgmsh.so* ../bin

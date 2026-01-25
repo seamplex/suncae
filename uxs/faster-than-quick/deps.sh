@@ -105,6 +105,7 @@ if [ $use_system_binary = 0 ]; then
     if [ ! -d pandoc-${pandoc_version} ]; then
       tar xvzf ${pandoc_tarball}.tar.gz
     fi
+    rm -f ../bin/pandoc
     cp pandoc-${pandoc_version}/bin/pandoc        ../bin
     echo "done"
     cd .. 

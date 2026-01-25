@@ -28,8 +28,7 @@ jobs:
     - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot libxrender1 libxcursor1 libxft2 libxinerama1
-        sudo apt-get install -y libgl1-mesa-glx || sudo apt-get install -y libgl1-mesa-dri || sudo apt-get install -y libgl1
+        sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot
 
     - name: Install SunCAE Dependencies (FeenoX & Gmsh)
       run: ./deps.sh
@@ -37,17 +36,8 @@ jobs:
     - name: Install Node Dependencies
       run: npm ci
 
-#     - name: Check what's on port 8000
-#       run: ss -ltnp | grep ':8000' || true
-#     
-#     - name: Free port 8000 (if occupied)
-#       run: npx kill-port 8000 || true
-      
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-
-    # - name: Start PHP Server
-    #   run: php -S localhost:8000 -t html > php-server.log 2>&1 &
 
     - name: Run Playwright tests
       run: npx playwright test
