@@ -73,9 +73,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot
 
+#  feenox 1.2 is not available in ubuntu 24.04, only in 25.10
     - name: Install SunCAE Dependencies (FeenoX & Gmsh) from apt
       run: |
-#  feenox 1.2 is not available in ubuntu 24.04, only in 25.10
         sudo apt-get install -y libgmsh-dev pandoc
         ./deps.sh
 
