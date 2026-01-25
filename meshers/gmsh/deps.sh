@@ -36,6 +36,7 @@ if [ $use_system_binary = 0 ]; then
       echo "error: downloaded gmsh needs ${i}, please do sudo apt install patchelf"
       exit 1
     fi
+    mkdir -p bin
     cd deps
     if [ ! -e ${gmsh_tarball}.tgz ]; then
       wget -c http://gmsh.info/bin/Linux/${gmsh_tarball}.tgz
