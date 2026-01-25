@@ -19,11 +19,9 @@ if [ $force = 1 ] || [ ! -e renderers/x3dom/x3dom.js ]; then
 #   cp x3dom/x3dom.js  ../renderers/x3dom
 #   cp x3dom/x3dom.css ../renderers/x3dom
 
-  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.js
-  cp x3dom.js  ../renderers/x3dom
-  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.css
-  cp x3dom.css ../renderers/x3dom
-  
+  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.js   -o ../renderers/x3dom/x3dom.js
+  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.css  -o ../renderers/x3dom/x3dom.css
+
   cd ../uxs/faster-than-quick/js
   if [ ! -e x3dom.js ]; then
     ln -s ../../../renderers/x3dom/x3dom.js

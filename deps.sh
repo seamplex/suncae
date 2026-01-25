@@ -12,7 +12,7 @@ if [ ! -e deps.sh ]; then
 fi
 
 # check for needed tools
-for i in wget tar unzip patchelf python3; do
+for i in wget tar unzip python3; do
   if [ -z "$(which $i)" ]; then
     echo "error: ${i} not installed"
     exit 1
@@ -26,11 +26,17 @@ fi
 
 mkdir -p deps
 
+
+# Function to compare versions (include in main deps.sh or source from a utils file)
+version_ge() {
+  printf '%s\n%s\n' "$2" "$1" | sort -V -C
+  return $?
+}
+
+
 # TODO: parse conf.php
 . renderers/x3dom/deps.sh
 . uxs/faster-than-quick/deps.sh
 . meshers/gmsh/deps.sh
 . solvers/feenox/deps.sh
 . solvers/ccx/deps.sh
-
-
