@@ -50,8 +50,6 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-
-jobs:
   playwrigth-apt:
     timeout-minutes: 60
     runs-on: ubuntu-latest
