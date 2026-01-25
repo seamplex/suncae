@@ -7,7 +7,7 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+  playwrigth-standalone:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-    
+
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -30,8 +30,55 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot
 
-    - name: Install SunCAE Dependencies (FeenoX & Gmsh)
+    - name: Install SunCAE Dependencies (FeenoX & Gmsh) standalone
       run: ./deps.sh
+
+    - name: Install Node Dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: npx playwright test
+
+    - name: Upload Playwright Report
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+
+jobs:
+  playwrigth-apt:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: yaml
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y unzip patchelf wget php-cli php-yaml gnuplot
+
+    - name: Install SunCAE Dependencies (FeenoX & Gmsh) from apt
+      run: |
+        sudo apt-get install -y libgmsh-dev feenox pandoc
+        ./deps.sh
 
     - name: Install Node Dependencies
       run: npm ci
