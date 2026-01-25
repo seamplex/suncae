@@ -1,6 +1,6 @@
 #!/bin/false
 
-feenox_version=1.2
+feenox_version=1.2.1
 feenox_version_min=1.72
 
 # feenox

@@ -75,7 +75,8 @@ jobs:
 
     - name: Install SunCAE Dependencies (FeenoX & Gmsh) from apt
       run: |
-        sudo apt-get install -y libgmsh-dev feenox pandoc
+#  feenox 1.2 is not available in ubuntu 24.04, only in 25.10
+        sudo apt-get install -y libgmsh-dev pandoc
         ./deps.sh
 
     - name: Install Node Dependencies
