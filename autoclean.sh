@@ -33,3 +33,8 @@ for i in $(find . -name .gitignore); do
     cd ${pwd}
   fi
 done
+
+# more
+for i in x3dom.js x3dom.css
+  find . -name {$i} | xargs rm
+done
