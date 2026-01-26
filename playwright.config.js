@@ -11,6 +11,13 @@ module.exports = defineConfig({
   use: {
     baseURL: 'http://localhost:8000',
     trace: 'on-first-retry',
+    video: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    // Add HAR recording to capture all network traffic
+    recordHar: { 
+      path: 'test-results/network.har',
+      content: 'attach' // Include response bodies
+    },
   },
 
   projects: [
