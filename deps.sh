@@ -31,7 +31,7 @@ fi
 
 
 
-# Function to compare versions (include in main deps.sh or source from a utils file)
+# Function to compare versions
 version_ge() {
   printf '%s\n%s\n' "$2" "$1" | sort -V -C
   return $?

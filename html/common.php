@@ -24,10 +24,13 @@ function suncae_log_write($file_path, $username, $message) {
 
   $log = fopen($file_path, "a");
   if ($log) {
-    fprintf($log, "%s %s\t%s: %s\n", date("c"), $_SERVER['REMOTE_ADDR'], $username, $message);
+    $ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : "localhost";
+    fprintf($log, "%s %s\t%s: %s\n", date("c"), $ip, $username, $message);
     fclose($log);
+    return 0;
+  } else {
+    return 1;
   }
-
 }
 
 function suncae_log_error($message, $level = 0) {
@@ -69,25 +72,30 @@ function suncae_log($message, $level = 0) {
   $log_dir = __DIR__ . "/../data/logs/";
   if (file_exists($log_dir) ==  false) {
     if (mkdir($log_dir, $permissions, true) == false) {
-      exit(1);
+      return 1;
     }
   }
 
   $date = date('Y-m-d');
   suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
   if ($level > 0) {
-    suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message);
+    if (suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message) != 0) {
+      return 1;
+    }
   }
 
   if ($username != "anonymous") {
     $log_dir = __DIR__ . "/../data/{$username}/";
     if (file_exists($log_dir) ==  false) {
       if (mkdir($log_dir, $permissions, true) == false) {
-        exit(1);
+        return 2;
       }
     }
-    suncae_log_write("{$log_dir}activity.log", $username, $message);
+    if (suncae_log_write("{$log_dir}activity.log", $username, $message) != 0) {
+      return 1;
+    }
   }
+  return 0;
 }
 
 
