@@ -1,9 +1,14 @@
 #!/usr/bin/python3
 import sys
-sys.path.append("../../../../bin")
-import gmsh
-import math
 import os
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+bin_dir = os.path.join(script_dir, '../../', 'bin')  # if bin is one level up
+if os.path.exists(bin_dir):
+  sys.path.insert(0, bin_dir)
+import gmsh
+
+import math
 import json
 import signal
 

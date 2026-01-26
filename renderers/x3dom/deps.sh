@@ -14,13 +14,13 @@ if [ $force = 1 ] || [ ! -e renderers/x3dom/x3dom.js ]; then
 #   fi
 #   if [ ! -d x3dom ]; then
 #     mkdir -p x3dom
-#     unzip ${x3dom_tarball}.zip -d x3dom
+#     unzip -q ${x3dom_tarball}.zip -d x3dom
 #   fi  
 #   cp x3dom/x3dom.js  ../renderers/x3dom
 #   cp x3dom/x3dom.css ../renderers/x3dom
 
-  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.js   -o ../renderers/x3dom/x3dom.js
-  wget -c https://andreasplesch.github.io/x3dom/dist/x3dom.css  -o ../renderers/x3dom/x3dom.css
+  wget -q -c https://andreasplesch.github.io/x3dom/dist/x3dom.js   -O ../renderers/x3dom/x3dom.js
+  wget -q -c https://andreasplesch.github.io/x3dom/dist/x3dom.css  -O ../renderers/x3dom/x3dom.css
 
   cd ../uxs/faster-than-quick/js
   if [ ! -e x3dom.js ]; then

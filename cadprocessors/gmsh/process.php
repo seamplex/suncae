@@ -14,16 +14,20 @@ if (isset($username) == false || $username == "") {
   return_error_json("username is empty");
 }
 
-$cad_dir = "../../data/{$username}/cads/{$cad_hash}";
+$cad_dir = $data_dir . "{$username}/cads/{$cad_hash}";
 if (file_exists($cad_dir) === false) {
-  mkdir($cad_dir, $permissions, true);
+  if (mkdir($cad_dir, $permissions, true) === false) {
+    return_error_json("cannot mkdir {$cad_dir}");
+  }
 }
-chdir($cad_dir);
+if (chdir($cad_dir) === false) {
+  return_error_json("cannot chdir to {$cad_dir}");
+}
 
 // ------------------------------------------------------------
 if (file_exists("cad.json") === false) {
   exec(sprintf("%s/cadimport.py 2>&1", __DIR__), $output, $error_level);
-  
+
   // TODO: keep output
   if ($error_level != 0) {
     $error_message = "Error {$error_level} when importing CAD: ";

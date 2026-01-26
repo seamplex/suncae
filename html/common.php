@@ -3,8 +3,15 @@
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-$permissions = 0755;
+$permissions = 0777;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
+$data_dir = __DIR__ . "/../data/";
+if (file_exists($data_dir) === false) {
+  if (mkdir($data_dir, $permissions, true) === false) {
+    echo "cannot mkdir {$data_dir}, please check permissions";
+    exit(1);
+  }
+}
 
 // based on original work from the PHP Laravel framework
 if (!function_exists('str_contains')) {
@@ -16,12 +23,14 @@ if (!function_exists('str_contains')) {
 function suncae_log_write($file_path, $username, $message) {
 
   $log = fopen($file_path, "a");
-  if ($log === false) {
-    suncae_error("Cannot open log file, please check permissions.");
+  if ($log) {
+    $ip = (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : "localhost";
+    fprintf($log, "%s %s\t%s: %s\n", date("c"), $ip, $username, $message);
+    fclose($log);
+    return 0;
+  } else {
+    return 1;
   }
-  fprintf($log, "%s %s\t%s: %s\n", date("c"), $_SERVER['REMOTE_ADDR'], $username, $message);
-  fclose($log);
-
 }
 
 function suncae_log_error($message, $level = 0) {
@@ -33,7 +42,7 @@ function suncae_log_error($message, $level = 0) {
   $log_dir = __DIR__ . "/../data/logs/";
   if (file_exists($log_dir) ==  false) {
     if (mkdir($log_dir, $permissions, true) == false) {
-      suncae_error("error: cannot create log directory");
+      exit(1);
     }
   }
 
@@ -43,7 +52,6 @@ function suncae_log_error($message, $level = 0) {
   if ($level > 0) {
     suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
   }
-    
 }
 
 
@@ -64,25 +72,30 @@ function suncae_log($message, $level = 0) {
   $log_dir = __DIR__ . "/../data/logs/";
   if (file_exists($log_dir) ==  false) {
     if (mkdir($log_dir, $permissions, true) == false) {
-      suncae_error("error: cannot create log directory");
+      return 1;
     }
   }
 
   $date = date('Y-m-d');
   suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
   if ($level > 0) {
-    suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message);
+    if (suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message) != 0) {
+      return 1;
+    }
   }
 
   if ($username != "anonymous") {
     $log_dir = __DIR__ . "/../data/{$username}/";
     if (file_exists($log_dir) ==  false) {
       if (mkdir($log_dir, $permissions, true) == false) {
-        suncae_error("error: cannot create log directory");
+        return 2;
       }
     }
-    suncae_log_write("{$log_dir}activity.log", $username, $message);
+    if (suncae_log_write("{$log_dir}activity.log", $username, $message) != 0) {
+      return 1;
+    }
   }
+  return 0;
 }
 
 
