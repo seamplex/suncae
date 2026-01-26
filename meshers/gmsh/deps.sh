@@ -1,7 +1,7 @@
 #!/bin/false
 
 gmsh_version=4.14.0
-gmsh_min_version=4.11.0  # Minimum required version
+gmsh_min_version=4.13.0  # Minimum required version for xao support
 
 # Function to extract version from binary
 get_gmsh_version() {
