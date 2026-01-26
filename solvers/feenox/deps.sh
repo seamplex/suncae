@@ -32,7 +32,7 @@ if [ $use_system_binary = 0 ]; then
   if [ $force = 1 ] || [ ! -x bin/feenox ] || [ ! -f deps/${feenox_tarball}.tgz ]; then
     cd deps
     if [ ! -e  ${feenox_tarball}.tar.gz ]; then
-      wget -c https://www.seamplex.com/feenox/dist/linux/${feenox_tarball}.tar.gz
+      wget -q -c https://www.seamplex.com/feenox/dist/linux/${feenox_tarball}.tar.gz
     fi
     tar xzf ${feenox_tarball}.tar.gz
     cp ${feenox_tarball}/bin/feenox  ../bin

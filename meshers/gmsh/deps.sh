@@ -39,7 +39,7 @@ if [ $use_system_binary = 0 ]; then
     mkdir -p bin
     cd deps
     if [ ! -e ${gmsh_tarball}.tgz ]; then
-      wget -c http://gmsh.info/bin/Linux/${gmsh_tarball}.tgz
+      wget -q -c http://gmsh.info/bin/Linux/${gmsh_tarball}.tgz
     fi
     tar xzf ${gmsh_tarball}.tgz
     rm -f ../bin/gmsh.py ../bin/gmsh ../bin/libgmsh.so*
