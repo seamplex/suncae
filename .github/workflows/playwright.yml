@@ -32,6 +32,9 @@ jobs:
 
     - name: Install SunCAE Dependencies (FeenoX & Gmsh) standalone
       run: ./deps.sh
+      
+    - name: Check script
+      run: php html/check.php
 
     - name: Install Node Dependencies
       run: npm ci

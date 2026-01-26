@@ -35,6 +35,6 @@ for i in $(find . -name .gitignore); do
 done
 
 # more
-for i in x3dom.js x3dom.css
-  find . -name {$i} | xargs rm
+for i in x3dom.js x3dom.css; do
+  find . -name {$i} | xargs rm -f
 done
