@@ -10,7 +10,7 @@ ccx_tarball=ccx-${ccx_version}-linux-static
 if [ $force = 1 ] || [ ! -x bin/ccx ] || [ ! -f deps/${ccx_tarball}.tar.gz ]; then
   cd deps
   if [ ! -e  ${ccx_tarball}.tar.gz ]; then
-    wget -c https://www.seamplex.com/suncae/deps/${ccx_tarball}.tar.gz
+    wget -q -c https://www.seamplex.com/suncae/deps/${ccx_tarball}.tar.gz
   fi
   tar xzf ${ccx_tarball}.tar.gz
   cp ${ccx_tarball}/ccx ../bin
