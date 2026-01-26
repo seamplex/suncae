@@ -44,18 +44,13 @@ test('create new case from sample.step', async ({ page }) => {
     
     await page.setInputFiles('#cad', sampleFile);
     
-    const importResponse = await importResponsePromise;
-    const importBody = await importResponse.text();
-    console.log('import_cad.php response:', importBody);
+    await importResponsePromise;
 
     // Wait for the process response
     const processResponse = await page.waitForResponse(response => 
         response.url().includes('process.php') && response.status() === 200,
         { timeout: 30000 }
     );
-    
-    const processBody = await processResponse.text();
-    console.log('process.php response:', processBody);
 
     // Wait for the file to be processed and preview to be shown
     try {
