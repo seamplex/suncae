@@ -1,6 +1,6 @@
 #!/bin/false
 
-feenox_version=1.2
+feenox_version=1.2.1
 feenox_version_min=1.72
 
 # feenox
@@ -16,14 +16,14 @@ echo -n "meshers/feenox... "
 use_system_binary=0
 if [ -x "$(which feenox 2>/dev/null)" ] && [ $force = 0 ]; then
   installed_version=$(get_feenox_version "$(which feenox)")
-  if [ -n "$installed_version" ] && version_ge "$installed_version" "$feenox_min_version"; then
-    echo "found system version $installed_version (>= $feenox_min_version), using it"
+  if [ -n "$installed_version" ] && version_ge "$installed_version" "$feenox_version_min"; then
+    echo "found system version $installed_version (>= $feenox_version_min), using it"
     use_system_binary=1
     # Create symlink to system binary
     mkdir -p bin
     ln -sf "$(which feenox)" bin/feenox
   else
-    echo "system version $installed_version is too old (need >= $feenox_min_version), will download"
+    echo "system version $installed_version is too old (need >= $feenox_version_min), will download"
   fi
 fi
 

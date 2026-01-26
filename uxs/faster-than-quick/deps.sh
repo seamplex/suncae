@@ -4,7 +4,7 @@ bootstrap_version=5.3.3
 bootstrap_icons_version=1.11.3
 katex_version=0.16.11
 pandoc_version=3.5
-pandoc_version_min=3.2
+pandoc_version_min=3.1
 
 # boostrap (we only need the js, the css comes from bootswatch)
 echo -n "uxs/faster-than-quick/bootstrap.js... "
@@ -105,6 +105,7 @@ if [ $use_system_binary = 0 ]; then
     if [ ! -d pandoc-${pandoc_version} ]; then
       tar xvzf ${pandoc_tarball}.tar.gz
     fi
+    rm -f ../bin/pandoc
     cp pandoc-${pandoc_version}/bin/pandoc        ../bin
     echo "done"
     cd .. 
