@@ -82,6 +82,9 @@ jobs:
         sudo apt-get install -y python3-gmsh pandoc
         ./deps.sh
 
+    - name: Check script
+      run: php html/check.php
+
     - name: Install Node Dependencies
       run: npm ci
 

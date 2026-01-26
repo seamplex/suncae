@@ -194,5 +194,7 @@ if ($cadprocessor == "gmsh") {
     exit(18);
   }
   
+  // TODO: check python and binary versions match
+  
   
 }
