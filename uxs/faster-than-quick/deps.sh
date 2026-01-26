@@ -15,7 +15,7 @@ if [ $force = 1 ] || [ ! -e uxs/faster-than-quick/js/bootstrap.min.js ] || [ ! -
     wget -q -c https://github.com/twbs/bootstrap/releases/download/v${bootstrap_version}/${bootstrap_tarball}.zip
   fi
   if [ ! -d ${bootstrap_tarball} ]; then
-    unzip ${bootstrap_tarball}.zip
+    unzip -q ${bootstrap_tarball}.zip
   fi
   cp ${bootstrap_tarball}/js/bootstrap.min.js        ../uxs/faster-than-quick/js
   cp ${bootstrap_tarball}/js/bootstrap.bundle.min.js ../uxs/faster-than-quick/js
@@ -36,7 +36,7 @@ if [ $force = 1 ] || [ ! -e uxs/faster-than-quick/css/bootstrap-icons.min.css ] 
     wget -q -c https://github.com/twbs/icons/releases/download/v${bootstrap_icons_version}/${bootstrap_icons_tarball}.zip
   fi
   if [ ! -d ${bootstrap_icons_tarball} ]; then
-    unzip ${bootstrap_icons_tarball}.zip
+    unzip -q ${bootstrap_icons_tarball}.zip
   fi
   cp ${bootstrap_icons_tarball}/font/bootstrap-icons.min.css     ../uxs/faster-than-quick/css
   mkdir -p ../uxs/faster-than-quick/css/fonts

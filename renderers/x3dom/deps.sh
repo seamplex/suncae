@@ -14,7 +14,7 @@ if [ $force = 1 ] || [ ! -e renderers/x3dom/x3dom.js ]; then
 #   fi
 #   if [ ! -d x3dom ]; then
 #     mkdir -p x3dom
-#     unzip ${x3dom_tarball}.zip -d x3dom
+#     unzip -q ${x3dom_tarball}.zip -d x3dom
 #   fi  
 #   cp x3dom/x3dom.js  ../renderers/x3dom
 #   cp x3dom/x3dom.css ../renderers/x3dom
