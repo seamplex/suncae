@@ -68,6 +68,10 @@ test('create new case from sample.step', async ({ page }) => {
         
         throw error;
     }
+    await page.setInputFiles('#cad', sampleFile);
+
+    // Wait for the file to be processed and preview to be shown
+    await expect(page.locator('#cad_preview')).toBeVisible({ timeout: 30000 });
 
     // 3. Select "Solid mechanics" in the combo box for physics
     await page.selectOption('#physics', 'solid');
@@ -79,6 +83,7 @@ test('create new case from sample.step', async ({ page }) => {
     await page.selectOption('#solver', 'feenox');
 
     // 6. Select "Gmsh" in the combo box for mesher
+    // 6. Select "Gmsh" in thecombo box for mesher
     await page.selectOption('#mesher', 'gmsh');
 
     // Verify start button is enabled before clicking
