@@ -83,7 +83,7 @@ test('create new case from sample.step', async ({ page }) => {
     // 5. Select "FeenoX" in the combo box for solver
     await page.selectOption('#solver', 'feenox');
 
-    // 6. Select "Gmsh" in thecombo box for mesher
+    // 6. Select "Gmsh" in the combo box for mesher
     await page.selectOption('#mesher', 'gmsh');
 
     // Verify start button is enabled before clicking
