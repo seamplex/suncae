@@ -1,5 +1,17 @@
 <?php
 
+function check_error($level = 255) {
+?>
+
+<p>
+There is something off with your setup.
+Please post these results 
+</p>
+
+<?php
+  exit($level);
+}
+
 // --- data dir ----------------------------------
 $data_dir = __DIR__ . "/../data";
 echo "[info] data_dir is {$data_dir}<br>\n";
@@ -195,6 +207,34 @@ if ($cadprocessor == "gmsh") {
   }
   
   // TODO: check python and binary versions match
-  
-  
 }
+
+
+// feenox
+if (file_exists("{$bin_dir}/feenox")) {
+  echo "[good] feenox binary exists<br>\n";
+  echo "[info] " . shell_exec("ls -la {$bin_dir}/feenox") . "<br>\n";
+} else {
+  echo "[error] feenox binary does not exist<br>\n";
+  exit(19);
+}
+$exec_output = [];
+exec("{$bin_dir}/feenox --version 2>&1", $exec_output, $err);
+// TODO: check version is good enough
+if ($err == 0) {
+  echo "[good] feenox version is {$exec_output[0]}<br>\n";
+} else {
+  echo "[error] feenox binary does not work<br>\n";
+  for ($i = 0; $i < count($exec_output); $i++) {
+    echo "[info] {$exec_output[$i]}<br>\n";
+  }
+  exit(20);
+}
+
+// great!
+touch("{$data_dir}/check-ok");
+?>
+
+<p>
+[good] all set! <a href="<?=$_SERVER['HTTP_REFERER']?>">Proceed to SunCAE</a>
+</p>
