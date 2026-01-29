@@ -7,13 +7,9 @@ include("common.php");
 
 $what = isset($_GET["what"]) ? $_GET["what"] : "physics";
 
-if (file_exists("../../data") === false) {
-  mkdir("../../data", $permissions, true);
-}
 $log = fopen("../../data/problems.log", "a");
 if ($log === false) {
-  echo "Cannot open data directory, please check permissions.";
-  exit(1);
+  suncae_error("cannot open data directory");
 }
 fprintf($log, "%s\t%s\t%s\n", date("c"), $_SERVER['REMOTE_ADDR'], $what);
 fclose($log);

@@ -17,7 +17,7 @@ include("../../solvers/{$solver}/input_initial_{$problem}.php");
 
 
 if (file_exists("../../data/{$owner}/cases") ==  false) {
-  if (mkdir("../../data/{$owner}/cases", $permissions, true) == false) {
+  if (mkdir("../../data/{$owner}/cases", 0755, true) == false) {
     suncae_error("error: cannot create cases directory");
   }
 }
@@ -31,7 +31,9 @@ $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 if (file_exists($id) === true) {
   suncae_error("project {$id} already exists");
 }
-mkdir($id, $permissions, true);
+if (mkdir($id, 0775, true)) {
+  suncae_error("cannot create case {$id} directory");
+}
 chdir($id);
 
 // TODO: per mesher

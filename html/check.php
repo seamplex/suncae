@@ -5,7 +5,7 @@ function check_error($level = 255) {
 
 <p>
 There is something off with your setup.
-Please post these results 
+Please post these results in the <a href="https://github.com/seamplex/suncae/discussions">Github discussions</a>.
 </p>
 
 <?php
@@ -23,14 +23,14 @@ $user = $username_output[0];
 echo "[info] username running the web server is {$user}<br>\n";
 
 if (file_exists($data_dir) === false) {
-  if (mkdir($data_dir, 0777) === false) {
+  if (mkdir($data_dir, 0755) === false) {
     echo "[error] cannot create data dir {$data_dir}<br>\n";
-    exit(1);
+    check_error(1);
   }
 } else {
   if (is_dir($data_dir) === false) {
     echo "[error] data dir exists but is not a directory<br>\n";
-    exit(2);
+    check_error(2);
   }
 }
 
@@ -38,7 +38,7 @@ if (is_writable($data_dir)) {
   echo "[good] {$data_dir} is writable by user {$user}<br>\n";
 } else {
   echo "[error] {$data_dir} is not writable by user {$user}<br>\n";
-  exit(3);
+  check_error(3);
 }
 
 // --- bin dir ----------------
@@ -49,7 +49,7 @@ if (file_exists($bin_dir) && is_dir($bin_dir)) {
   echo "[good] {$bin_dir} exists<br>\n";
 } else {
   echo "[error] {$bin_dir} does not exist<br>\n";
-  exit(4);
+  check_error(4);
 }
 
 
@@ -64,7 +64,7 @@ if ($err == 0) {
   echo "[good] logging works<br>\n";
 } else {
   echo "[error] cannot create a log entry<br>\n";
-  exit(5);
+  check_error(5);
 }
 
 
@@ -76,7 +76,7 @@ if (file_exists(__DIR__ . "/../auths/{$auth}/auth.php")) {
   echo "[good] auth {$auth} exists<br>\n";
 } else {
   echo "[error] auth {$auth} does not exist<br>\n";
-  exit(6);
+  check_error(6);
 }
 
 // --- ux ----------------------------------
@@ -84,7 +84,7 @@ if (file_exists(__DIR__ . "/../uxs/{$ux}/index.php")) {
   echo "[good] ux {$ux} exists<br>\n";
 } else {
   echo "[error] ux {$ux} does not exist<br>\n";
-  exit(7);
+  check_error(7);
 }
 
 if ($ux == "faster-than-quick") {
@@ -93,7 +93,7 @@ if ($ux == "faster-than-quick") {
       echo "[good] {$i} exists<br>\n";
     } else {
       echo "[error] {$i} does not exist<br>\n";
-      exit(8);
+      check_error(8);
     }
   }
 
@@ -103,7 +103,7 @@ if ($ux == "faster-than-quick") {
     echo "[info] " . shell_exec("ls -la {$bin_dir}/pandoc") . "<br>\n";
   } else {
     echo "[error] pandoc binary does not exist<br>\n";
-    exit(9);
+    check_error(9);
   }
   $exec_output = [];
   exec("{$bin_dir}/pandoc --version 2>&1", $exec_output, $err);
@@ -115,7 +115,7 @@ if ($ux == "faster-than-quick") {
     for ($i = 0; $i < count($exec_output); $i++) {
       echo "[info] {$exec_output[$i]}<br>\n";
     }
-    exit(10);
+    check_error(10);
   }
 }
 
@@ -125,7 +125,7 @@ if (file_exists(__DIR__ . "/../cadimporters/{$cadimporter}/import_cad.php")) {
   echo "[good] cadimporter {$cadimporter} exists<br>\n";
 } else {
   echo "[error] cadimporters {$cadimporter} does not exist<br>\n";
-  exit(11);
+  check_error(11);
 }
 
 
@@ -135,7 +135,7 @@ if (file_exists(__DIR__ . "/../cadprocessors/{$cadprocessor}/process.php")) {
   echo "[good] cadprocessor {$cadprocessor} exists<br>\n";
 } else {
   echo "[error] cadprocessor {$cadprocessor} does not exist<br>\n";
-  exit(12);
+  check_error(12);
 }
 
 
@@ -145,7 +145,7 @@ if ($cadprocessor == "gmsh") {
       echo "[good] {$i} exists<br>\n";
     } else {
       echo "[error] {$i} does not exist<br>\n";
-      exit(13);
+      check_error(13);
     }
   }
 
@@ -155,7 +155,7 @@ if ($cadprocessor == "gmsh") {
     echo "[info] " . shell_exec("ls -la {$bin_dir}/gmsh") . "<br>\n";
   } else {
     echo "[error] gmsh binary does not exist<br>\n";
-    exit(14);
+    check_error(14);
   }
   $exec_output = [];
   exec("{$bin_dir}/gmsh -version 2>&1", $exec_output, $err);
@@ -167,7 +167,7 @@ if ($cadprocessor == "gmsh") {
     for ($i = 0; $i < count($exec_output); $i++) {
       echo "[info] {$exec_output[$i]}<br>\n";
     }
-    exit(15);
+    check_error(15);
   }
   
   // python
@@ -177,7 +177,7 @@ if ($cadprocessor == "gmsh") {
     echo "[good] python binary exists at {$exec_output[0]}<br>\n";
   } else {
     echo "[error] python binary does not exist<br>\n";
-    exit(16);
+    check_error(16);
   }
   $exec_output = [];
   exec("python --version 2>&1", $exec_output, $err);
@@ -189,7 +189,7 @@ if ($cadprocessor == "gmsh") {
     for ($i = 0; $i < count($exec_output); $i++) {
       echo "[info] {$exec_output[$i]}<br>\n";
     }
-    exit(17);
+    check_error(17);
   }
   
   // gmsh python wrapper
@@ -203,7 +203,7 @@ if ($cadprocessor == "gmsh") {
     for ($i = 0; $i < count($exec_output); $i++) {
       echo "[info] {$exec_output[$i]}<br>\n";
     }
-    exit(18);
+    check_error(18);
   }
   
   // TODO: check python and binary versions match
@@ -216,7 +216,7 @@ if (file_exists("{$bin_dir}/feenox")) {
   echo "[info] " . shell_exec("ls -la {$bin_dir}/feenox") . "<br>\n";
 } else {
   echo "[error] feenox binary does not exist<br>\n";
-  exit(19);
+  check_error(19);
 }
 $exec_output = [];
 exec("{$bin_dir}/feenox --version 2>&1", $exec_output, $err);
@@ -228,13 +228,15 @@ if ($err == 0) {
   for ($i = 0; $i < count($exec_output); $i++) {
     echo "[info] {$exec_output[$i]}<br>\n";
   }
-  exit(20);
+  check_error(20);
 }
 
 // great!
 touch("{$data_dir}/check-ok");
-?>
 
-<p>
-[good] all set! <a href="<?=$_SERVER['HTTP_REFERER']?>">Proceed to SunCAE</a>
-</p>
+echo "<p>\n";
+echo "[good] all set!\n";
+if (isset($_SERVER['HTTP_REFERER'])) {
+  echo "<a href='{$_SERVER['HTTP_REFERER']}'>Proceed to SunCAE</a>\n";
+}
+echo "</p>\n";
