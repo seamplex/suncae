@@ -676,7 +676,7 @@ include("small_axes.html");
             <li><a class="dropdown-item" href="#" onclick="change_step(-4)">Case properties&hellip;</a></li>
             <li><a class="dropdown-item" href="#" onclick="change_step(+4)">Expert zone&hellip;</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item disabled" href="#" onclick="change_step(-5)">History&hellip;</a></li>
+            <li><a class="dropdown-item" href="#" onclick="change_step(-5)">History&hellip;</a></li>
             <li><a class="dropdown-item" href="#" onclick="change_step(+5)">Share&hellip;</a></li>
           </ul>
          </li>

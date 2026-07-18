@@ -424,7 +424,7 @@ async function cancel_meshing(mesh_hash) {
     theseus_log(exception);
     return false;
   }
-  return change_step(1);
+  return change_step(3);
 }
 
 async function relaunch_meshing(mesh_hash) {
@@ -537,6 +537,14 @@ function render_solve_job_status(response) {
   solve_job_title.textContent = response["title"] || "Solving";
   solve_job_status.textContent = response["status"] || "unknown";
   solve_job_status.className = "badge " + mesh_status_class(response["status"]);
+  let cancel_button = document.getElementById("solve_cancel_button");
+  if (cancel_button !== null) {
+    cancel_button.classList.toggle("d-none", !response["can_cancel"]);
+  }
+  let relaunch_button = document.getElementById("solve_relaunch_button");
+  if (relaunch_button !== null) {
+    relaunch_button.classList.toggle("d-none", !response["can_relaunch"]);
+  }
   let solve_log = document.getElementById("solve_log");
   if (solve_log !== null) {
     let log = response["error_tail"] || response["log_tail"] || "No solver output yet.";

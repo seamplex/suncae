@@ -6,8 +6,10 @@
 if ($problem_hash == "") {
 	return_error_json("missing problem hash");
 }
-foreach (glob("../data/{$owner}/cases/{$id}/run/{$problem_hash}*") as $path) {
-	unlink($path);
+$error = suncae_delete_hashed_artifacts("../data/{$owner}/cases/{$id}/run", $problem_hash, [".json", "-status.json", "-solve.log", "-check.2", ".fee", ".inp", ".1", ".2", ".vtk", "-1.vtk", "-max.json", "-displacements.dat", "-sigma.dat", "-T.dat"], "solve");
+if ($error != "") {
+	return_error_json($error);
+	exit();
 }
 $result["status"] = "ok";
 return_back_json($result);

@@ -76,9 +76,12 @@ include("ux.php");
     <pre id="solve_log" class="small m-0 p-0">Waiting for solver output...</pre>
         </div>
 
-     <button class="btn btn-lg btn-outline-danger w-100" onclick="cancel_solving('<?=$problem_hash?>')">
+    <button class="btn btn-lg btn-outline-danger w-100" id="solve_cancel_button" onclick="cancel_solving('<?=$problem_hash?>')">
       <i class="fa fa-fw fa-ban"></i>&nbsp;Cancel solving
      </button>
+    <button class="btn btn-lg btn-outline-success w-100 d-none" id="solve_relaunch_button" onclick="relaunch_solving('<?=$problem_hash?>')">
+     <i class="fa fa-fw fa-rotate-right"></i>&nbsp;Re-launch solving
+    </button>
      
     </div>
   
