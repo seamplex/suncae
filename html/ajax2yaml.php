@@ -19,8 +19,8 @@ $response["inline"] = array();
 $response["hide"] = array();
 
 $update_yaml = false;
-$field = $_GET["field"];
-$value = $_GET["value"];
+$field = isset($_GET["field"]) ? $_GET["field"] : "";
+$value = isset($_GET["value"]) ? $_GET["value"] : "";
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
@@ -30,7 +30,7 @@ if (chdir("../data/{$owner}/cases/{$id}") === false) {
 // ---- case properties ----------------------------
 // TODO: validate fields
 if ($field == "name" ||
-    $field == "visibility") {
+  $field == "visibility") {
 
   if ($field == "name") {
     array_push($response["content_id"], "span_name");
@@ -46,12 +46,14 @@ if ($field == "name" ||
 
   $case[$field] = $value;
   $update_yaml = true;
+} else {
+  return_error_json("invalid case field");
 }
 if ($update_yaml) {
   file_put_contents("case.yaml", yaml_emit($case));
 }
 
-exec("git commit -a -m 'case {$field} = {$value}'", $output, $result);
+suncae_git_commit_all("case {$field} = {$value}", $output, $result);
 if ($result != 0) {
   suncae_log_error("cannot git commit {$problem} {$id}");
   echo "cannot git commit {$case["problem"]} {$id}";

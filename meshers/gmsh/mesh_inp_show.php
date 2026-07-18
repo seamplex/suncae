@@ -4,12 +4,13 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 chdir("../data/{$owner}/cases/{$id}/");
-$response["plain"] = shell_exec("grep -vi merge mesh.geo");
-$response["html"] = shell_exec("cat << EOF | ../../../../bin/pandoc -t html
-~~~c
-Merge \"../../cads/{$case["cad"]}/cad.xao\";
-{$response["plain"]}
-~~~
-EOF");
+$response["plain"] = "";
+foreach (file("mesh.geo", FILE_IGNORE_NEW_LINES) as $line) {
+	if (stripos($line, "merge") === false) {
+		$response["plain"] .= $line . "\n";
+	}
+}
+$mesh_input = "Merge \"../../cads/{$case["cad"]}/cad.xao\";\n" . $response["plain"];
+$response["html"] = "<pre><code>" . htmlspecialchars($mesh_input) . "</code></pre>";
 
 return_back_json($response);

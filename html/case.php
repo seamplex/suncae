@@ -12,8 +12,11 @@ if ($username == "") {
   suncae_error("empty username");
 }
 
-$mesh_hash = (isset($_POST["mesh_hash"])) ? $_POST["mesh_hash"] : ((isset($_GET["mesh_hash"])) ? $_GET["mesh_hash"] : "");
-$problem_hash = (isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((isset($_GET["problem_hash"])) ? $_GET["problem_hash"] : "");
+$id = suncae_require_hash($id, "case id");
+$owner = suncae_require_path_component($owner, "owner");
+
+$mesh_hash = suncae_require_optional_hash((isset($_POST["mesh_hash"])) ? $_POST["mesh_hash"] : ((isset($_GET["mesh_hash"])) ? $_GET["mesh_hash"] : ""), "mesh hash");
+$problem_hash = suncae_require_optional_hash((isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((isset($_GET["problem_hash"])) ? $_GET["problem_hash"] : ""), "problem hash");
 
 
 // TODO: per mesher
@@ -39,6 +42,10 @@ if (($case = yaml_parse($case_yaml)) == null) {
 $problem = $case["problem"];
 $solver = $case["solver"];
 $mesher = $case["mesher"];
+$case["cad"] = suncae_require_hash($case["cad"], "cad hash");
+$problem = suncae_require_path_component($problem, "problem");
+$solver = suncae_require_path_component($solver, "solver");
+$mesher = suncae_require_path_component($mesher, "mesher");
 
 $cad_dir = "../data/{$owner}/cads/{$case["cad"]}";
 if (is_dir("{$cad_dir}/meshes") == false) {

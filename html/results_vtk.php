@@ -8,7 +8,7 @@ include("../auths/{$auth}/auth.php");
 include("common.php");
 include("case.php");
 
-$hash = $_GET["hash"];
+$hash = isset($_GET["hash"]) ? suncae_require_hash($_GET["hash"], "results hash") : suncae_error("missing results hash");
 
 $vtk_path = "{$case_dir}/run/{$hash}.vtk";
 if (file_exists($vtk_path)) {

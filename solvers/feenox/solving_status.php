@@ -3,7 +3,7 @@
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-$problem_hash = $_GET["problem_hash"];
+$problem_hash = isset($_GET["problem_hash"]) ? suncae_require_hash($_GET["problem_hash"], "problem hash") : suncae_error("missing problem hash");
 chdir("../data/{$owner}/cases/{$id}");
 
 // first, see if the solve is finished or running
@@ -31,7 +31,7 @@ if (($results_status = json_decode(file_get_contents($results_json_path), true))
 
 if ($results_status["status"] == "running" && isset($results_status["pid"]) && posix_getpgid($results_status["pid"])) {
   
-  exec("../../../../solvers/feenox/solve_status.sh {$problem_hash}");
+  exec("../../../../solvers/feenox/solve_status.sh " . escapeshellarg($problem_hash));
   
 
   $results_json_path = "run/{$problem_hash}-status.json";  

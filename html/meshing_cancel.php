@@ -9,6 +9,7 @@ include("common.php");
 include("case.php");
 
 chdir($case_dir);
+$mesh_meta["status"] = "not_running";
 
 // first, see if the mesh is finished or running
 $mesh_json_path = "run/meshes/{$mesh_hash}.json";

@@ -12,7 +12,7 @@ if (($cad = json_decode($cad_json, true)) == null) {
 }
 
 
-$mesh_hash = $_GET["mesh_hash"];
+$mesh_hash = isset($_GET["mesh_hash"]) ? suncae_require_hash($_GET["mesh_hash"], "mesh hash") : suncae_error("missing mesh hash");
 chdir("../data/{$owner}/cases/{$id}");
 
 // first, see if the mesh is finished or running
@@ -41,7 +41,7 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
 }
 
 if ($mesh_status["status"] == "running" && (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"]))) {
-  exec("../../../../meshers/gmsh/mesh_status.sh {$mesh_hash}");
+  exec("../../../../meshers/gmsh/mesh_status.sh " . escapeshellarg($mesh_hash));
 
   $mesh_json_path = "run/meshes/{$mesh_hash}-status.json";  
   if (file_exists($mesh_json_path) === false) {

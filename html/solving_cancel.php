@@ -9,6 +9,7 @@ include("common.php");
 include("case.php");
 
 chdir($case_dir);
+$problem_meta["status"] = "not_running";
 
 // first, see if the problem is finished or running
 $problem_json_path = "run/{$problem_hash}.json";

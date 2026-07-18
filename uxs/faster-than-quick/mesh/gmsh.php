@@ -78,28 +78,34 @@ if ($mesh_meta["status"] == "success") {
     </button>
 <?php
   } else if ($mesh_meta["status"] == "syntax_error") {
-    suncae_log_error("problem {$id} mesh syntax error " . file_get_contents("{$cad_dir}/meshes/{$mesh_hash}-check.2"));
+    $check_error_path = file_exists("{$cad_dir}/meshes/{$mesh_hash}-check.2") ? "{$cad_dir}/meshes/{$mesh_hash}-check.2" : "{$cad_dir}/meshes/{$mesh_hash}.2";
+    $check_error = file_exists($check_error_path) ? file_get_contents($check_error_path) : "No Gmsh syntax error log was found.";
+    suncae_log_error("problem {$id} mesh syntax error " . $check_error);
     
 ?>
 <pre class="small alert alert-danger">
-<?=file_get_contents("{$cad_dir}/meshes/{$mesh_hash}-check.2")?>
+<?=htmlspecialchars($check_error)?>
 </pre>
+
+    <button class="btn btn-lg btn-outline-success w-100" onclick="relaunch_meshing('<?=$mesh_hash?>')">
+     <i class="bi bi-arrow-repeat me-2"></i>&nbsp;Re-launch mesher
+    </button>
 
 <?php
   } else {
-    suncae_log_error("problem {$id} mesh error " . file_get_contents("{$cad_dir}/meshes/{$mesh_hash}.2"));
+    $mesh_error_path = "{$cad_dir}/meshes/{$mesh_hash}.2";
+    $mesh_error = file_exists($mesh_error_path) ? file_get_contents($mesh_error_path) : "No Gmsh error log was found.";
+    suncae_log_error("problem {$id} mesh error " . $mesh_error);
 ?>
 <pre class="small alert alert-danger">
 <?php
 
-    $error_file = fopen("{$cad_dir}/meshes/{$mesh_hash}.2", "r");
-    while (($line = fgets($error_file, 4096)) !== false) {
+    foreach (explode("\n", $mesh_error) as $line) {
       $line_exploded = explode(":", $line);
       for ($j = 1; $j < count($line_exploded); $j++) {
-        printf("%s", $line_exploded[$j]);
+        printf("%s", htmlspecialchars($line_exploded[$j]));
       }
     }
-    fclose($error_file);
     
 ?>
 </pre>

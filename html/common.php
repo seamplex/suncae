@@ -25,6 +25,7 @@ function suncae_log_write($file_path, $username, $message) {
 }
 
 function suncae_log_error($message, $level = 0) {
+  global $permissions;
   global $username;
   if ($username == "") {
     $username = "anonymous";
@@ -94,7 +95,7 @@ function return_back_html($response) {
 
 function return_error_html($error) {
   header("Content-Type: text/html");
-  echo $response;
+  echo $error;
   suncae_log_error($error);
   exit();
 }
@@ -111,4 +112,63 @@ function return_error_json($error) {
   suncae_log_error($error);
   return_back_json($response);
   exit();
+}
+
+function suncae_is_hash($value) {
+  return is_string($value) && preg_match('/^[a-f0-9]{32}$/', $value) === 1;
+}
+
+function suncae_require_hash($value, $name) {
+  if (!suncae_is_hash($value)) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
+}
+
+function suncae_require_optional_hash($value, $name) {
+  if ($value != "" && !suncae_is_hash($value)) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
+}
+
+function suncae_is_path_component($value) {
+  return is_string($value) && preg_match('/^[A-Za-z0-9._@-]+$/', $value) === 1;
+}
+
+function suncae_require_path_component($value, $name) {
+  if (!suncae_is_path_component($value)) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
+}
+
+function suncae_git_commit_all($message, &$output = null, &$result = null) {
+  exec("git commit -a -m " . escapeshellarg($message), $output, $result);
+  return $result == 0;
+}
+
+function suncae_require_field_name($value, $name) {
+  if (!is_string($value) || preg_match('/^[A-Za-z0-9_.-]+$/', $value) !== 1) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
+}
+
+function suncae_require_single_line($value, $name, $max_length = 1024) {
+  if (!is_string($value) || strlen($value) > $max_length || preg_match('/[\r\n\x00]/', $value) === 1) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
+}
+
+function suncae_require_numeric_expression($value, $name) {
+  if ($value == "remove") {
+    return $value;
+  }
+  $value = suncae_require_single_line($value, $name, 128);
+  if (preg_match('/^[0-9eE+\-*\/()., \t]+$/', $value) !== 1) {
+    suncae_error("invalid {$name}");
+  }
+  return $value;
 }

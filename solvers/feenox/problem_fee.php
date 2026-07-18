@@ -4,12 +4,9 @@
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
 chdir("../data/{$owner}/cases/{$id}/");
-$response["header"] = shell_exec("head -n1 case.fee | sed 's/$/<br>/'");
-$response["plain"] = shell_exec("tail -n+2 case.fee");
-$response["html"] = shell_exec("cat << EOF | ../../../../bin/pandoc -t html --syntax-definition=../../../../solvers/feenox/feenox.xml
-~~~feenox
-$(cat case.fee)
-~~~
-EOF");
+$fee = file("case.fee", FILE_IGNORE_NEW_LINES);
+$response["header"] = isset($fee[0]) ? htmlspecialchars($fee[0]) . "<br>" : "";
+$response["plain"] = implode("\n", array_slice($fee, 1));
+$response["html"] = "<pre><code>" . htmlspecialchars(implode("\n", $fee)) . "</code></pre>";
 
 return_back_json($response);
