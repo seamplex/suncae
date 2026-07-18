@@ -214,3 +214,42 @@ function suncae_require_post_csrf() {
     return_error_json("invalid CSRF token");
   }
 }
+
+function suncae_write_json_file($path, $data) {
+  $tmp_path = sprintf("%s.tmp.%d.%s", $path, getmypid(), bin2hex(random_bytes(4)));
+  if (file_put_contents($tmp_path, json_encode($data)) === false) {
+    return false;
+  }
+  return rename($tmp_path, $path);
+}
+
+function suncae_pid_is_running($pid) {
+  return is_int($pid) && $pid > 1 && posix_getpgid($pid) !== false;
+}
+
+function suncae_local_job_start($command, $log_path, $pid_path, &$output = null, &$result = null) {
+  $shell = "setsid {$command} > " . escapeshellarg($log_path) . " 2>&1 & echo $! > " . escapeshellarg($pid_path);
+  exec($shell, $output, $result);
+  if ($result != 0 || file_exists($pid_path) === false) {
+    return 0;
+  }
+  $pid = intval(trim(file_get_contents($pid_path)));
+  return $pid > 1 ? $pid : 0;
+}
+
+function suncae_cancel_process_group($pid) {
+  $pid = intval($pid);
+  if ($pid <= 1 || suncae_pid_is_running($pid) === false) {
+    return false;
+  }
+  if (@posix_kill(-$pid, 15) === false) {
+    @posix_kill($pid, 15);
+  }
+  usleep(300000);
+  if (suncae_pid_is_running($pid)) {
+    if (@posix_kill(-$pid, 9) === false) {
+      @posix_kill($pid, 9);
+    }
+  }
+  return true;
+}

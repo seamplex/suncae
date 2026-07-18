@@ -7,9 +7,15 @@ if (chdir($case_dir) == false) {
 }
 exec("../../../../bin/feenox -c case.fee 2> run/{$problem_hash}-check.2", $output, $result);
 if ($result == 0) {
-  exec("../../../../solvers/ccx/solve.sh " . escapeshellarg($problem) . " > run/{$problem_hash}-solve.log 2>&1 & echo $! > run/solving.pid");
-  $results_meta["status"] = "running";
-  suncae_log("{$id} problem running");
+  $pid = suncae_local_job_start("../../../../solvers/ccx/solve.sh " . escapeshellarg($problem), "run/{$problem_hash}-solve.log", "run/solving.pid", $output, $result);
+  if ($pid > 0) {
+    $results_meta["status"] = "running";
+    $results_meta["pid"] = $pid;
+    suncae_log("{$id} problem running pid {$pid}");
+  } else {
+    $results_meta["status"] = "error";
+    suncae_log_error("{$id} cannot launch problem job");
+  }
 } else {
   $results_meta["status"] = "syntax_error";
   suncae_log("{$id} problem syntax error");

@@ -46,14 +46,20 @@ switch ($next_step) {
       if ($result == 0) {
         // https://www.php.net/manual/en/function.exec.php
         // https://stackoverflow.com/questions/45953/php-execute-a-background-process
-        exec("../../../../meshers/gmsh/mesh.sh > run/meshing.log 2>&1 & echo $! > run/meshing.pid");
-        $mesh_meta["status"] = "running";
-        suncae_log("{$id} mesh running");
+        $pid = suncae_local_job_start("../../../../meshers/gmsh/mesh.sh", "run/meshing.log", "run/meshing.pid", $output, $result);
+        if ($pid > 0) {
+          $mesh_meta["status"] = "running";
+          $mesh_meta["pid"] = $pid;
+          suncae_log("{$id} mesh running pid {$pid}");
+        } else {
+          $mesh_meta["status"] = "error";
+          suncae_log_error("{$id} cannot launch mesh job");
+        }
       } else {
         $mesh_meta["status"] = "syntax_error";
         suncae_log("{$id} mesh syntax error");
       }
-      file_put_contents("run/meshes/{$mesh_hash}.json", json_encode($mesh_meta));
+      suncae_write_json_file("run/meshes/{$mesh_hash}.json", $mesh_meta);
     }
     // if running, go to meshing.php otherwise go to mesh.php, it will know what to show}
     // TODO: AND or OR?
@@ -69,7 +75,7 @@ switch ($next_step) {
     if ($has_results_attempt == false) {
       
       include("../solvers/{$solver}/change_step_solve.php");
-      file_put_contents("run/{$problem_hash}.json", json_encode($results_meta));
+      suncae_write_json_file("run/{$problem_hash}.json", $results_meta);
       suncae_log("{$id} change_step {$current_step} -> {$next_step}");
       
     }

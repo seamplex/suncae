@@ -31,11 +31,9 @@ if (($problem_status = json_decode(file_get_contents($problem_json_path), true))
   }
 }
 
-if (isset($problem_status["pid"]) && posix_getpgid($problem_status["pid"])) {
-  posix_kill($problem_status["pid"], 15);
-  sleep(1);
+if (isset($problem_status["pid"]) && suncae_cancel_process_group($problem_status["pid"])) {
   $problem_meta["status"] = "canceled";
-  file_put_contents($problem_json_path, json_encode($problem_meta));
+  suncae_write_json_file($problem_json_path, $problem_meta);
 }
 
 return_back_json($problem_meta);

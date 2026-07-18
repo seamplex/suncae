@@ -31,11 +31,9 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
   }
 }
 
-if (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"])) {
-  posix_kill($mesh_status["pid"], 15);
-  sleep(1);
+if (isset($mesh_status["pid"]) && suncae_cancel_process_group($mesh_status["pid"])) {
   $mesh_meta["status"] = "canceled";
-  file_put_contents($mesh_json_path, json_encode($mesh_meta));
+  suncae_write_json_file($mesh_json_path, $mesh_meta);
 }
 
 return_back_json($mesh_meta);

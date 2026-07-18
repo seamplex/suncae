@@ -6,6 +6,13 @@ else
   problem_hash=${1}
 fi
 
+write_json() {
+  local path="${1}"
+  local tmp="${path}.tmp.$$"
+  cat > "${tmp}"
+  mv "${tmp}" "${path}"
+}
+
 status=$(jq -r .status run/${problem_hash}.json) || exit 1
 if [ "x${status}" == "xrunning" ]; then
   feenox_pid=$(jq -r .pid run/${problem_hash}.json)
@@ -48,7 +55,7 @@ if [ "x${status}" == "xrunning" ]; then
   
   done_data=0
   
-  cat << EOF > run/${problem_hash}-status.json
+  write_json run/${problem_hash}-status.json << EOF
 {
   "status": "running",
   "pid": ${feenox_pid},

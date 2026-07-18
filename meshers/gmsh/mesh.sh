@@ -24,10 +24,17 @@ if [ ! -e ./${mesh}.geo ]; then
   echo "error: run from case directory"
   exit 1
 fi
+  
+write_json() {
+  local path="${1}"
+  local tmp="${path}.tmp.$$"
+  cat > "${tmp}"
+  mv "${tmp}" "${path}"
+}
 
 mesh_hash=($(md5sum ${mesh}.geo))
 
-cat << EOF > ${dir}/meshes/${mesh_hash}.json
+write_json ${dir}/meshes/${mesh_hash}.json << EOF
 {
   "status": "running",
   "pid": $$
@@ -70,7 +77,7 @@ if [ $? -eq 0 ]; then
 #   rm -f ${dir}/meshes/${mesh_hash}-status.json
 
 else
-  cat << EOF > ${dir}/meshes/${mesh_hash}.json
+  write_json ${dir}/meshes/${mesh_hash}.json << EOF
 {
   "status": "syntax_error"
 }
@@ -78,4 +85,4 @@ EOF
 fi
 
 # sync run/meshes/${mesh_hash}.json
-rm -f ${dir}/${mesh_hash}.pid
+rm -f ${dir}/meshing.pid
