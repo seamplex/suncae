@@ -530,6 +530,7 @@ function render_solve_job_status(response) {
   let solve_job_title = document.getElementById("solve_job_title");
   if (solve_job_title === null) return;
   document.getElementById("solve_job_next_action").textContent = response["next_action"] || "Refreshing status...";
+  document.getElementById("solve_job_phase").textContent = response["phase_label"] || "-";
   document.getElementById("solve_job_elapsed").textContent = format_elapsed(response["elapsed_seconds"]);
   document.getElementById("solve_job_pid").textContent = response["pid"] ? response["pid"] : "-";
   let solve_job_status = document.getElementById("solve_job_status");

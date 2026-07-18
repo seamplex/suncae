@@ -59,6 +59,11 @@ assert_false(suncae_is_hash("0123456789abcdef0123456789abcdeg"), "invalid md5 ha
 assert_true(suncae_is_path_component("gmsh-1.0_alpha"), "safe path component accepted");
 assert_false(suncae_is_path_component("../gmsh"), "path traversal component rejected");
 
+$served_js_path = __DIR__ . "/../../html/js/faster-than-quick";
+$source_js_path = __DIR__ . "/../../uxs/faster-than-quick/js";
+assert_true(is_link($served_js_path), "served faster-than-quick js is a symlink");
+assert_true(realpath($served_js_path) == realpath($source_js_path), "served faster-than-quick js resolves to ux source");
+
 $json_dir = runner_tmpdir();
 $json_path = "{$json_dir}/meta.json";
 assert_true(suncae_write_json_file($json_path, ["status" => "running", "pid" => 123]), "atomic json write returns true");

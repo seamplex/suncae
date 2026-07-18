@@ -31,8 +31,9 @@ include("ux.php");
       <span id="solve_job_status" class="badge bg-secondary">pending</span>
      </div>
      <div class="row small text-muted g-2">
-      <div class="col-6">Elapsed: <span id="solve_job_elapsed">0s</span></div>
-      <div class="col-6 text-end">PID: <span id="solve_job_pid">-</span></div>
+        <div class="col-12">Phase: <span id="solve_job_phase">-</span></div>
+        <div class="col-6">Elapsed: <span id="solve_job_elapsed">0s</span></div>
+        <div class="col-6 text-end">PID: <span id="solve_job_pid">-</span></div>
      </div>
     </div>
 
