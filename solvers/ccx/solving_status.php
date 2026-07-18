@@ -29,9 +29,9 @@ if (($results_status = json_decode(file_get_contents($results_json_path), true))
   }
 }
 
-if ($results_status["status"] == "running" && isset($results_status["pid"]) && posix_getpgid($results_status["pid"])) {
+if ($results_status["status"] == "running" && isset($results_status["pid"]) && suncae_pid_is_running(intval($results_status["pid"]))) {
   
-  exec("../../../../solvers/feenox/solve_status.sh " . escapeshellarg($problem_hash));
+  exec("../../../../solvers/ccx/solve_status.sh " . escapeshellarg($problem_hash));
   
 
   $results_json_path = "run/{$problem_hash}-status.json";  

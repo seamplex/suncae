@@ -80,10 +80,10 @@ if ($has_mesh_attempt && ($mesh_meta = json_decode(file_get_contents($mesh_meta_
   if ($mesh_meta["status"] == "success" && ($mesh_meta["nodes"] <= $max_nodes)) {
     $has_mesh_valid = true;
   } else if ($mesh_meta["status"] == "running") {
-    if (isset($mesh_meta["pid"]) == false || posix_getpgid($mesh_meta["pid"]) == false) {
+    if (isset($mesh_meta["pid"]) == false || suncae_pid_is_running(intval($mesh_meta["pid"])) == false) {
       // TODO: look at the .2
       $mesh_meta["status"] = "error";
-      // TODO: update json
+      suncae_write_json_file($mesh_meta_path, $mesh_meta);
     } else {
       // TODO: calculate progress
     }
@@ -103,10 +103,10 @@ if ($has_results_attempt && ($results_meta = json_decode(file_get_contents($resu
   if ($results_meta["status"] == "success") {
     $has_results_valid = true;
   } else if ($results_meta["status"] == "running") {
-    if (isset($results_meta["pid"]) && posix_getpgid($results_meta["pid"]) == false) {
+    if (isset($results_meta["pid"]) == false || suncae_pid_is_running(intval($results_meta["pid"])) == false) {
       // TODO: mirar el .2
       $results_meta["status"] = "error";
-      // TODO: update json
+      suncae_write_json_file($results_meta_path, $results_meta);
     } else {
       // TODO: calcular progress
     }

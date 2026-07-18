@@ -227,8 +227,29 @@ function suncae_pid_is_running($pid) {
   return is_int($pid) && $pid > 1 && posix_getpgid($pid) !== false;
 }
 
+function suncae_local_job_command($command) {
+  global $runner_time_limit;
+  global $runner_memory_limit_kb;
+  global $runner_nice;
+
+  $script = "";
+  if (isset($runner_memory_limit_kb) && intval($runner_memory_limit_kb) > 0) {
+    $script .= "ulimit -v " . intval($runner_memory_limit_kb) . " || exit 125; ";
+  }
+  $script .= "exec {$command}";
+  $limited_command = "sh -c " . escapeshellarg($script);
+
+  if (isset($runner_time_limit) && intval($runner_time_limit) > 0) {
+    $limited_command = "timeout --foreground --kill-after=30s " . intval($runner_time_limit) . "s " . $limited_command;
+  }
+  if (isset($runner_nice) && intval($runner_nice) != 0) {
+    $limited_command = "nice -n " . intval($runner_nice) . " " . $limited_command;
+  }
+  return $limited_command;
+}
+
 function suncae_local_job_start($command, $log_path, $pid_path, &$output = null, &$result = null) {
-  $shell = "setsid {$command} > " . escapeshellarg($log_path) . " 2>&1 & echo $! > " . escapeshellarg($pid_path);
+  $shell = "setsid " . suncae_local_job_command($command) . " > " . escapeshellarg($log_path) . " 2>&1 & echo $! > " . escapeshellarg($pid_path);
   exec($shell, $output, $result);
   if ($result != 0 || file_exists($pid_path) === false) {
     return 0;

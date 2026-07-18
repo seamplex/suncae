@@ -9,3 +9,6 @@ $cadimporter = "upload";
 $cadprocessor = "gmsh";
 $runner = "local";
 $max_nodes = 100e3;
+$runner_time_limit = 3600;
+$runner_memory_limit_kb = 0;
+$runner_nice = 10;

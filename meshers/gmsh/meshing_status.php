@@ -40,7 +40,7 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
   }
 }
 
-if ($mesh_status["status"] == "running" && (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"]))) {
+if ($mesh_status["status"] == "running" && isset($mesh_status["pid"]) && suncae_pid_is_running(intval($mesh_status["pid"]))) {
   exec("../../../../meshers/gmsh/mesh_status.sh " . escapeshellarg($mesh_hash));
 
   $mesh_json_path = "run/meshes/{$mesh_hash}-status.json";  
