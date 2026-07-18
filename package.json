@@ -1,0 +1,26 @@
+{
+  "name": "suncae",
+  "version": "1.0.0",
+  "description": "![](doc/logo.svg)",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seamplex/suncae.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/seamplex/suncae/issues"
+  },
+  "homepage": "https://github.com/seamplex/suncae#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}

@@ -16,7 +16,8 @@ if [ ! -d auths ]; then
   echo 1
 fi
 
-for i in bin deps data; do
+# cat .gitgnore?
+for i in bin deps data node_modules test-results playwright-report; do
   echo -n "cleaning ${i}... "
   rm -rf ${i} || exit 1
   echo "ok"
@@ -31,4 +32,9 @@ for i in $(find . -name .gitignore); do
     cat .gitignore | sed '/^#.*/ d' | sed '/^\s*$/ d' | sed 's/^/rm -rf /' | bash || exit 1
     cd ${pwd}
   fi
+done
+
+# more
+for i in x3dom.js x3dom.css; do
+  find . -name {$i} | xargs rm -f
 done

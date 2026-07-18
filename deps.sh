@@ -19,15 +19,21 @@ for i in wget tar unzip python3; do
   fi
 done
 
+# this one needs to be either world writable or owned by the user running the web server
+# we start with 0777 but a sane admin would change it back to 0744 (or less)
 if [ ! -d data ]; then
   mkdir -p data
   chmod 0777 data
 fi
 
-mkdir -p deps
+# mark that deps.sh has been run (not that it succeeded yet)
+touch data/deps-run
+
+# create gitignored directories
+mkdir -p deps bin
 
 
-# Function to compare versions (include in main deps.sh or source from a utils file)
+# Function to compare versions
 version_ge() {
   printf '%s\n%s\n' "$2" "$1" | sort -V -C
   return $?
@@ -40,3 +46,6 @@ version_ge() {
 . meshers/gmsh/deps.sh
 . solvers/feenox/deps.sh
 . solvers/ccx/deps.sh
+
+# mark that deps.sh has been succeeded
+touch data/deps-ok

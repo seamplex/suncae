@@ -18,16 +18,15 @@
 <h5>Versions</h5>
 
 <?php
-echo `../bin/feenox -v | head -n1`;
-echo "<br>";
-echo "Gmsh ".`../bin/gmsh -info | head -n1`;
+// get versions from a txt file?
 ?>
+To be done.
 
 <h5>License</h5>
 
 <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" target="_blank">GNU Affero General Public License</a> version 3, or at your option, any later version.
 You can get a copy of the source code of this web interface <a href="https://github.com/seamplex/suncae" target="_blank">here</a>.
-    
+
    </div>
    <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

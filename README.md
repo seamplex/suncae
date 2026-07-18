@@ -8,8 +8,8 @@
 
 SunCAE is a web-based front end and a cloud-based back end to perform finite-element calculations directly on the browser.
 
- * The front end is an HTML client with plain vanilla javascript code (i.e. no Angular, no React, not even jQuery) that provide interactivity by sending JSON-based AJAX request to the server backe end. 
- * The back end is written in PHP and responds to the client requests by creating the input files, executing the appropriate binaries and returning back 3D data to the client.
+ * The front end is an HTML client with plain vanilla javascript code (i.e. no Angular, no React, not even jQuery) that provide interactivity by sending JSON-based AJAX request to the server back end. 
+ * The back end is written in PHP and responds to the client requests by creating the input files, executing the appropriate binaries and returning back 3D data to the client (browser).
 
 Both front end and back ends are free software, released under the terms of the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). See the [licenses table](LICENSES.md) and [licensing details](#licensing) below for more information.
 
@@ -65,6 +65,9 @@ You can use SunCAE either by...
 
 
 For more detailed instructions including setting up production web servers and using virtualization tools (e.g. docker and/or virtual machines) read the [installation guide](doc/INSTALL.md).
+
+> [!TIP]
+> If you have trouble getting SunCAE up and running in your server, please state your situation in the  [community](https://github.com/seamplex/suncae/discussions).
 
 
 ### Configuration
