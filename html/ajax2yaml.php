@@ -6,6 +6,7 @@
 include("../conf.php");
 include("../auths/{$auth}/auth.php");
 include("common.php");
+suncae_require_post_csrf();
 include("case.php");
 
 $response["mesh_hash"] = $mesh_hash;
@@ -19,8 +20,8 @@ $response["inline"] = array();
 $response["hide"] = array();
 
 $update_yaml = false;
-$field = isset($_GET["field"]) ? $_GET["field"] : "";
-$value = isset($_GET["value"]) ? $_GET["value"] : "";
+$field = isset($_POST["field"]) ? $_POST["field"] : "";
+$value = isset($_POST["value"]) ? $_POST["value"] : "";
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
@@ -53,11 +54,12 @@ if ($update_yaml) {
   file_put_contents("case.yaml", yaml_emit($case));
 }
 
-suncae_git_commit_all("case {$field} = {$value}", $output, $result);
-if ($result != 0) {
-  suncae_log_error("cannot git commit {$problem} {$id}");
-  echo "cannot git commit {$case["problem"]} {$id}";
-  exit(1);
+exec("git status --porcelain", $output, $result);
+if (count($output) > 0) {
+  suncae_git_commit_all("case {$field} = {$value}", $output, $result);
+  if ($result != 0) {
+    return_error_json("cannot git commit {$case["problem"]} {$id}");
+  }
 }
 suncae_log("case {$id} ajax2yaml {$field} = {$value}", 0);
 

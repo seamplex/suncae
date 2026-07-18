@@ -7,8 +7,8 @@ $response["mesh_hash"] = $mesh_hash;
 $response["error"] = "";
 $response["warning"] = "";
 
-$field = isset($_GET["field"]) ? suncae_require_field_name($_GET["field"], "mesh field") : suncae_error("missing mesh field");
-$value = isset($_GET["value"]) ? suncae_require_numeric_expression($_GET["value"], "mesh value") : suncae_error("missing mesh value");
+$field = isset($_POST["field"]) ? suncae_require_field_name($_POST["field"], "mesh field") : suncae_error("missing mesh field");
+$value = isset($_POST["value"]) ? suncae_require_numeric_expression($_POST["value"], "mesh value") : suncae_error("missing mesh value");
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");

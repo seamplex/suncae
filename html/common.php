@@ -6,6 +6,12 @@
 $permissions = 0777;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 $data_dir = __DIR__ . "/../data/";
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+if (!isset($_SESSION["csrf_token"])) {
+  $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
 if (file_exists($data_dir) === false) {
   if (mkdir($data_dir, $permissions, true) === false) {
     echo "cannot mkdir {$data_dir}, please check permissions";
@@ -184,4 +190,27 @@ function suncae_require_numeric_expression($value, $name) {
     suncae_error("invalid {$name}");
   }
   return $value;
+}
+
+function suncae_csrf_token() {
+  return $_SESSION["csrf_token"];
+}
+
+function suncae_request_csrf_token() {
+  if (isset($_POST["csrf_token"])) {
+    return $_POST["csrf_token"];
+  }
+  if (isset($_SERVER["HTTP_X_CSRF_TOKEN"])) {
+    return $_SERVER["HTTP_X_CSRF_TOKEN"];
+  }
+  return "";
+}
+
+function suncae_require_post_csrf() {
+  if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    return_error_json("invalid request method");
+  }
+  if (!hash_equals(suncae_csrf_token(), suncae_request_csrf_token())) {
+    return_error_json("invalid CSRF token");
+  }
 }

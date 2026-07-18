@@ -100,11 +100,28 @@ async function update_results(problem_hash = "") {
   }
 }
 
+function suncae_post_body(params) {
+  let body = new URLSearchParams();
+  body.set("csrf_token", csrf_token);
+  for (const [key, value] of Object.entries(params)) {
+    body.set(key, value);
+  }
+  return body.toString();
+}
+
+function suncae_post_options(params) {
+  return {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: suncae_post_body(params)
+  };
+}
+
 async function ajax2yaml(field, value) {
   theseus_log("ajax2yaml("+field+","+value+")");
   let response;
   try {
-    let res = await fetch("ajax2yaml.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2yaml.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -141,7 +158,7 @@ async function ajax2problem(field, value) {
 
   let response;
   try {
-    let res = await fetch("ajax2problem.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2problem.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -182,7 +199,7 @@ async function ajax2mesh(field, value) {
 
   let response;
   try {
-    let res = await fetch("ajax2mesh.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2mesh.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -220,11 +237,7 @@ async function ajax_change_step() {
   html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
   let ajax_step;
   try {
-    let res = await fetch("change_step.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&next_step=" + next_step + "&current_step=" + current_step
-    });
+    let res = await fetch("change_step.php", suncae_post_options({ id: id, next_step: next_step, current_step: current_step }));
     if (!res.ok) throw new Error("Network error");
     ajax_step = await res.json();
     theseus_log(ajax_step);
@@ -268,11 +281,7 @@ async function ajax_change_step() {
   html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
   let ajax_step;
   try {
-    let res = await fetch("change_step.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&next_step=" + next_step + "&current_step=" + current_step
-    });
+    let res = await fetch("change_step.php", suncae_post_options({ id: id, next_step: next_step, current_step: current_step }));
     if (!res.ok) throw new Error("Network error");
     ajax_step = await res.json();
     theseus_log(ajax_step);
@@ -371,7 +380,7 @@ async function cancel_meshing(mesh_hash) {
   theseus_log("cancel_meshing("+mesh_hash+")");
   let response;
   try {
-    let res = await fetch("meshing_cancel.php?id="+id+"&mesh_hash="+mesh_hash);
+    let res = await fetch("meshing_cancel.php", suncae_post_options({ id: id, mesh_hash: mesh_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -386,7 +395,7 @@ async function relaunch_meshing(mesh_hash) {
   theseus_log("relaunch_meshing("+mesh_hash+")");
   let response;
   try {
-    let res = await fetch("meshing_relaunch.php?id="+id+"&mesh_hash="+mesh_hash);
+    let res = await fetch("meshing_relaunch.php", suncae_post_options({ id: id, mesh_hash: mesh_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -401,7 +410,7 @@ async function cancel_solving(problem_hash) {
   theseus_log("cancel_solving("+problem_hash+")");
   let response;
   try {
-    let res = await fetch("solving_cancel.php?id="+id+"&problem_hash="+problem_hash);
+    let res = await fetch("solving_cancel.php", suncae_post_options({ id: id, problem_hash: problem_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -417,7 +426,7 @@ async function relaunch_solving(problem_hash) {
   theseus_log("relaunch_solving("+problem_hash+")");
   let response;
   try {
-    let res = await fetch("solving_relaunch.php?id="+id+"&problem_hash="+problem_hash);
+    let res = await fetch("solving_relaunch.php", suncae_post_options({ id: id, problem_hash: problem_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -523,11 +532,7 @@ async function geo_log(mesh_hash) {
 
 async function geo_save() {
   try {
-    let res = await fetch("mesh_inp_save.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&geo=" + encodeURIComponent(text_geo_edit.value)
-    });
+    let res = await fetch("mesh_inp_save.php", suncae_post_options({ id: id, geo: text_geo_edit.value }));
     if (!res.ok) throw new Error("Network error");
     let response = await res.json();
     if (response["status"] == "ok") {
@@ -569,11 +574,7 @@ async function fee_show() {
 
 async function fee_save() {
   try {
-    let res = await fetch("problem_fee_save.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&fee=" + encodeURIComponent(text_fee_edit.value)
-    });
+    let res = await fetch("problem_fee_save.php", suncae_post_options({ id: id, fee: text_fee_edit.value }));
     if (!res.ok) throw new Error("Network error");
     let response = await res.json();
     if (response["status"] == "ok") {

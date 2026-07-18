@@ -42,6 +42,7 @@ function upload_cad_file() {
 
   fileupload.open("POST", "import_cad.php", true);
   fileupload.setRequestHeader("X_FILENAME", files[0].name.replace(/[^a-zA-Z0-9\-]/gi, ''));
+  fileupload.setRequestHeader("X-CSRF-Token", csrf_token);
   fileupload.send(files[0]);
 }
 </script>

@@ -10,7 +10,7 @@ get_feenox_version() {
   "$binary" --version 2>&1 | head -n1 | cut -d" " -f2
 }
 
-echo -n "meshers/feenox... "
+echo -n "solvers/feenox... "
 
 # Check if feenox is already installed system-wide
 use_system_binary=0

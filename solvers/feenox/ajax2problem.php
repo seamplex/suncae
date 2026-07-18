@@ -6,8 +6,8 @@
 $response["error"] = "";
 $response["warning"] = "";
 
-$field = isset($_GET["field"]) ? suncae_require_field_name($_GET["field"], "problem field") : suncae_error("missing problem field");
-$value = isset($_GET["value"]) ? suncae_require_single_line($_GET["value"], "problem value") : suncae_error("missing problem value");
+$field = isset($_POST["field"]) ? suncae_require_field_name($_POST["field"], "problem field") : suncae_error("missing problem field");
+$value = isset($_POST["value"]) ? suncae_require_single_line($_POST["value"], "problem value") : suncae_error("missing problem value");
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");

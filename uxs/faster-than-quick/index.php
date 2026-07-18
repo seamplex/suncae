@@ -751,6 +751,7 @@ include("small_axes.html");
 <script type="text/javascript" src="js/faster-than-quick/<?=$problem?>.js"></script>
 <script>
 var id = "<?=$id?>";
+var csrf_token = "<?=htmlspecialchars(suncae_csrf_token())?>";
 var problem = "<?=$problem?>";
 function geo_ready() {
   // console.log("GEO READY!");

@@ -8,6 +8,8 @@ include("../../auths/{$auth}/auth.php");
 include("../common.php");
 include("../../solvers/common.php");
 
+suncae_require_post_csrf();
+
 $problem = isset($_POST["problem"]) ? suncae_require_path_component($_POST["problem"], "problem") : suncae_error("missing problem");
 $mesher = isset($_POST["mesher"]) ? suncae_require_path_component($_POST["mesher"], "mesher") : suncae_error("missing mesher");
 $solver = isset($_POST["solver"]) ? suncae_require_path_component($_POST["solver"], "solver") : suncae_error("missing solver");
