@@ -42,15 +42,15 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: npx playwright test
+    - name: Run tests
+      run: npm run test:ci
 
     - name: Upload Playwright Report
       if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: playwright-report-standalone
-        path: playwright-report-stanadlone/
+        path: playwright-report/
         retention-days: 30
 
   playwrigth-apt:
@@ -91,8 +91,8 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: npx playwright test
+    - name: Run tests
+      run: npm run test:ci
 
     - name: Upload Playwright Report
       if: failure()

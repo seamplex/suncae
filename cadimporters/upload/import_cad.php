@@ -24,12 +24,14 @@ $cad_dir = "../../data/{$username}/cads/{$response["cad_hash"]}";
 // upload it only if it does not exist
 // TODO: first just send the md5 to check if this exists intead of the whole file
 if (file_exists($cad_dir) === false) {
-  // TODO: check error
-  mkdir($cad_dir, $permissions, true);
+  if (mkdir($cad_dir, $permissions, true) === false) {
+    return_error_json("cannot mkdir {$cad_dir}");
+  }
 }
 
-// TODO: check error
-chdir($cad_dir);
+if (chdir($cad_dir) === false) {
+  return_error_json("cannot chdir to cad dir {$cad_dir}");
+}
 
 if (file_exists("original.step") === false) {
   file_put_contents("original.step", $file_content);
