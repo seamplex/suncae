@@ -50,6 +50,7 @@ switch ($next_step) {
         if ($pid > 0) {
           $mesh_meta["status"] = "running";
           $mesh_meta["pid"] = $pid;
+          $mesh_meta["started_at"] = date("c");
           suncae_log("{$id} mesh running pid {$pid}");
         } else {
           $mesh_meta["status"] = "error";

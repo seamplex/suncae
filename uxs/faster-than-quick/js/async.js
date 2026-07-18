@@ -336,44 +336,80 @@ async function update_mesh_status(mesh_hash) {
   }
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);
+  render_mesh_job_status(response);
   if (response["status"] == "running") {
-    mesh_status_edges.innerHTML = response["edges"];
-    mesh_status_faces.innerHTML = response["faces"];
-    mesh_status_volumes.innerHTML = response["volumes"];
+    mesh_status_edges.textContent = response["edges"] ?? 0;
+    mesh_status_faces.textContent = response["faces"] ?? 0;
+    mesh_status_volumes.textContent = response["volumes"] ?? 0;
     if (response["done_edges"]) {
       progress_edges.classList.remove("bg-info");
       progress_edges.classList.add("bg-success");
       progress_edges.style.width = "100%";
     } else {
-      progress_edges.style.width = response["progress_edges"] + "%";
+      progress_edges.style.width = (response["progress_edges"] ?? 0) + "%";
     }
     if (response["done_faces"]) {
       progress_faces.classList.remove("bg-info");
       progress_faces.classList.add("bg-success");
       progress_faces.style.width = "100%";
     } else {
-      progress_faces.style.width = response["progress_faces"] + "%";
+      progress_faces.style.width = (response["progress_faces"] ?? 0) + "%";
     }
     if (response["done_volumes"]) {
       progress_volumes.classList.remove("bg-info");
       progress_volumes.classList.add("bg-success");
       progress_volumes.style.width = "100%";
     } else {
-      progress_volumes.style.width = response["progress_volumes"] + "%";
+      progress_volumes.style.width = (response["progress_volumes"] ?? 0) + "%";
     }
     if (response["done_data"]) {
       progress_data.classList.remove("bg-info");
       progress_data.classList.add("bg-success");
       progress_data.style.width = "100%";
     } else {
-      progress_data.style.width = response["progress_data"] + "%";
+      progress_data.style.width = (response["progress_data"] ?? 0) + "%";
     }
-    mesh_log.innerHTML = response["log"];
     setTimeout(() => update_mesh_status(mesh_hash), 1000);
   } else {
     setTimeout(() => change_step(1), 1000);
   }
   return true;
+}
+
+function format_elapsed(seconds) {
+  seconds = Number(seconds) || 0;
+  let minutes = Math.floor(seconds / 60);
+  let hours = Math.floor(minutes / 60);
+  seconds = seconds % 60;
+  minutes = minutes % 60;
+  if (hours > 0) return hours + "h " + minutes + "m " + seconds + "s";
+  if (minutes > 0) return minutes + "m " + seconds + "s";
+  return seconds + "s";
+}
+
+function render_mesh_job_status(response) {
+  let mesh_job_title = document.getElementById("mesh_job_title");
+  if (mesh_job_title === null) return;
+  document.getElementById("mesh_job_next_action").textContent = response["next_action"] || "Refreshing status...";
+  document.getElementById("mesh_job_elapsed").textContent = format_elapsed(response["elapsed_seconds"]);
+  document.getElementById("mesh_job_pid").textContent = response["pid"] ? response["pid"] : "-";
+  let mesh_job_status = document.getElementById("mesh_job_status");
+  mesh_job_title.textContent = response["title"] || "Meshing with Gmsh";
+  mesh_job_status.textContent = response["status"] || "unknown";
+  mesh_job_status.className = "badge " + mesh_status_class(response["status"]);
+  let mesh_log = document.getElementById("mesh_log");
+  if (mesh_log !== null) {
+    let log = response["error_tail"] || response["log_tail"] || "No mesher output yet.";
+    mesh_log.textContent = log;
+  }
+}
+
+function mesh_status_class(status) {
+  if (status == "running") return "bg-info text-dark";
+  if (status == "success") return "bg-success";
+  if (status == "canceled" || status == "not_running") return "bg-warning text-dark";
+  if (status == "error" || status == "syntax_error") return "bg-danger";
+  return "bg-secondary";
 }
 
 async function cancel_meshing(mesh_hash) {
@@ -451,13 +487,14 @@ async function update_problem_status(problem_hash) {
   }
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);
+  render_solve_job_status(response);
   if (response["status"] == "running") {
     if (response["done_mesh"]) {
       progress_mesh.classList.remove("bg-info");
       progress_mesh.classList.add("bg-success");
       progress_mesh.style.width = "100%";
     } else {
-      progress_mesh.style.width = response["mesh"] + "%";
+      progress_mesh.style.width = (response["mesh"] ?? 0) + "%";
     }
 
     if (response["done_build"]) {
@@ -465,7 +502,7 @@ async function update_problem_status(problem_hash) {
       progress_build.classList.add("bg-success");
       progress_build.style.width = "100%";
     } else {
-      progress_build.style.width = response["build"] + "%";
+      progress_build.style.width = (response["build"] ?? 0) + "%";
     }
 
     if (response["done_solve"]) {
@@ -473,20 +510,37 @@ async function update_problem_status(problem_hash) {
       progress_solve.classList.add("bg-success");
       progress_solve.style.width = "100%";
     } else {
-      progress_solve.style.width = response["solve"] + "%";
+      progress_solve.style.width = (response["solve"] ?? 0) + "%";
     }
     if (response["done_post"]) {
       progress_post.classList.remove("bg-info");
       progress_post.classList.add("bg-success");
       progress_post.style.width = "100%";
     } else {
-      progress_post.style.width = response["post"] + "%";
+      progress_post.style.width = (response["post"] ?? 0) + "%";
     }
     setTimeout(() => update_problem_status(problem_hash), 1000);
   } else {
     setTimeout(() => change_step(3), 1000);
   }
   return true;
+}
+
+function render_solve_job_status(response) {
+  let solve_job_title = document.getElementById("solve_job_title");
+  if (solve_job_title === null) return;
+  document.getElementById("solve_job_next_action").textContent = response["next_action"] || "Refreshing status...";
+  document.getElementById("solve_job_elapsed").textContent = format_elapsed(response["elapsed_seconds"]);
+  document.getElementById("solve_job_pid").textContent = response["pid"] ? response["pid"] : "-";
+  let solve_job_status = document.getElementById("solve_job_status");
+  solve_job_title.textContent = response["title"] || "Solving";
+  solve_job_status.textContent = response["status"] || "unknown";
+  solve_job_status.className = "badge " + mesh_status_class(response["status"]);
+  let solve_log = document.getElementById("solve_log");
+  if (solve_log !== null) {
+    let log = response["error_tail"] || response["log_tail"] || "No solver output yet.";
+    solve_log.textContent = log;
+  }
 }
 
 

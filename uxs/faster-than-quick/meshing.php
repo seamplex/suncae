@@ -32,6 +32,20 @@ if (($cad = json_decode($cad_json, true)) == null) {
    
 <!--  TODO: the php in charge of informing the progress should also send the legends  -->
 
+    <div class="border rounded-2 p-3 mb-4 bg-light">
+     <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+      <div>
+       <div id="mesh_job_title" class="fw-semibold">Meshing with Gmsh</div>
+       <div id="mesh_job_next_action" class="small text-muted">Preparing status...</div>
+      </div>
+      <span id="mesh_job_status" class="badge bg-secondary">pending</span>
+     </div>
+     <div class="row small text-muted g-2">
+      <div class="col-6">Elapsed: <span id="mesh_job_elapsed">0s</span></div>
+      <div class="col-6 text-end">PID: <span id="mesh_job_pid">-</span></div>
+     </div>
+    </div>
+
     <legend>1D :&nbsp;: <span id="mesh_status_edges">0</span>/<?=$cad["edges"]?>&nbsp;edges</legend>
     <div class="progress mt-2 mb-4" role="progressbar">
      <div class="progress-bar bg-info" style="width=0%" id="progress_edges"></div>
@@ -64,10 +78,7 @@ if (($cad = json_decode($cad_json, true)) == null) {
      <div class="alert alert-light w-100 text-small m-0 p-0">
 <pre id="mesh_log" class="small m-0 p-0">
 
-
-
-
-
+Waiting for mesher output...
 </pre>
      </div>
      

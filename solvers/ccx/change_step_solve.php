@@ -11,6 +11,7 @@ if ($result == 0) {
   if ($pid > 0) {
     $results_meta["status"] = "running";
     $results_meta["pid"] = $pid;
+    $results_meta["started_at"] = date("c");
     suncae_log("{$id} problem running pid {$pid}");
   } else {
     $results_meta["status"] = "error";
@@ -22,7 +23,7 @@ if ($result == 0) {
 }
 
 
-if ($response["error"] != "") {
+if (isset($response["error"]) && $response["error"] != "") {
   suncae_log_error("case {$id} chage step failed: {$response["error"]}");
 }
 

@@ -27,11 +27,13 @@ write_json() {
 problem_type=${1}
 problem_hash=($(md5sum case.fee))
 mesh_hash=($(md5sum mesh.geo))
+started_at=$(date --iso-8601=seconds)
 
 write_json run/${problem_hash}.json << EOF
 {
   "status": "running",
-  "pid": $$
+  "pid": $$,
+  "started_at": "${started_at}"
 }
 EOF
 
@@ -74,7 +76,8 @@ fi
 
 write_json ${problem_hash}.json << EOF
 {
-  "status": "${status}"
+  "status": "${status}",
+  "started_at": "${started_at}"
 }
 EOF
 

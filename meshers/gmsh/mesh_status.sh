@@ -61,8 +61,7 @@ if [ "x${status}" == "xrunning" ]; then
   "done_edges": ${done_edges},
   "done_faces": ${done_faces},
   "done_volumes": ${done_volumes},
-  "done_data": ${done_data},
-  "log": "$(tail -n5 run/meshes/${mesh_hash}.1 | cut -d: -f 2- | awk '{printf "%s\\n", $0}')"
+  "done_data": ${done_data}
 }
 EOF
 #   sync run/meshes/${mesh_hash}.json

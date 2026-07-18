@@ -37,7 +37,8 @@ mesh_hash=($(md5sum ${mesh}.geo))
 write_json ${dir}/meshes/${mesh_hash}.json << EOF
 {
   "status": "running",
-  "pid": $$
+  "pid": $$,
+  "started_at": "$(date --iso-8601=seconds)"
 }
 EOF
 

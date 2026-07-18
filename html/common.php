@@ -222,6 +222,33 @@ function suncae_write_json_file($path, $data) {
   }
   return rename($tmp_path, $path);
 }
+function suncae_tail_file($path, $max_lines = 40, $max_bytes = 8192) {
+  if (!file_exists($path) || is_file($path) === false) {
+    return "";
+  }
+  $size = filesize($path);
+  $offset = ($size > $max_bytes) ? ($size - $max_bytes) : 0;
+  $file = fopen($path, "r");
+  if ($file === false) {
+    return "";
+  }
+  fseek($file, $offset);
+  $content = stream_get_contents($file);
+  fclose($file);
+  $lines = explode("\n", $content);
+  if ($offset > 0 && count($lines) > 0) {
+    array_shift($lines);
+  }
+  return implode("\n", array_slice($lines, -$max_lines));
+}
+
+function suncae_elapsed_seconds($started_at) {
+  $started = strtotime($started_at);
+  if ($started === false) {
+    return 0;
+  }
+  return max(0, time() - $started);
+}
 
 function suncae_pid_is_running($pid) {
   return is_int($pid) && $pid > 1 && posix_getpgid($pid) !== false;
