@@ -5,7 +5,7 @@ function check_error($level = 255) {
 
 <p>
 There is something off with your setup.
-Please post these results in the <a href="https://github.com/seamplex/suncae/discussions">Github discussions</a>.
+Please post these results in the <a href="https://github.com/seamplex/suncae/discussions">GitHub discussions</a>.
 </p>
 
 <?php
