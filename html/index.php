@@ -7,12 +7,12 @@ include("../conf.php");
 include("../auths/{$auth}/auth.php");
 include("common.php");
 
-if (file_exists("{$data_dir}/deps-run") == false) {
+if (file_exists("{$data_dir}/../deps-ran") == false) {
   echo "run ./deps.sh first, see installation instructions";
   exit();
 }
 
-if (file_exists("{$data_dir}/deps-run") == false) {
+if (file_exists("{$data_dir}/../deps-ok") == false) {
   echo "./deps.sh did not succeed, ask for help";
   exit();
 }

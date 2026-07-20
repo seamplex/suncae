@@ -59,6 +59,31 @@ assert_false(suncae_is_hash("0123456789abcdef0123456789abcdeg"), "invalid md5 ha
 assert_true(suncae_is_path_component("gmsh-1.0_alpha"), "safe path component accepted");
 assert_false(suncae_is_path_component("../gmsh"), "path traversal component rejected");
 
+$repo_data_dir = __DIR__ . "/../../data";
+$repo_data_backup = null;
+if (file_exists($repo_data_dir)) {
+  $repo_data_backup = __DIR__ . "/../../data-backup-" . bin2hex(random_bytes(4));
+  if (rename($repo_data_dir, $repo_data_backup) === false) {
+    throw new RuntimeException("cannot back up repo data dir");
+  }
+}
+try {
+  $username = "";
+  $date = date("Y-m-d");
+  assert_true(suncae_log("php common test log line") === 0, "suncae_log creates missing logs directory and reports success");
+  assert_true(file_exists("{$repo_data_dir}/logs/0-{$date}.log"), "suncae_log writes the default log entry");
+
+  runner_rmrf($repo_data_dir);
+  mkdir($repo_data_dir);
+  file_put_contents("{$repo_data_dir}/logs", "blocker");
+  assert_true(suncae_log("php common test blocked log line") !== 0, "suncae_log returns non-zero when the default log write fails");
+} finally {
+  runner_rmrf($repo_data_dir);
+  if ($repo_data_backup !== null) {
+    rename($repo_data_backup, $repo_data_dir);
+  }
+}
+
 $served_js_path = __DIR__ . "/../../html/js/faster-than-quick";
 $source_js_path = __DIR__ . "/../../uxs/faster-than-quick/js";
 assert_true(is_link($served_js_path), "served faster-than-quick js is a symlink");

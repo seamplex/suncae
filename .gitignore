@@ -4,3 +4,5 @@ data
 node_modules/
 test-results/
 playwright-report/
+deps-ok
+deps-ran

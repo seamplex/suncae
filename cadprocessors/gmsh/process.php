@@ -16,7 +16,7 @@ if (isset($username) == false || $username == "") {
 
 $cad_dir = $data_dir . "{$username}/cads/{$cad_hash}";
 if (file_exists($cad_dir) === false) {
-  if (mkdir($cad_dir, $permissions, true) === false) {
+  if (mkdir($cad_dir, 0755, true) === false) {
     return_error_json("cannot mkdir {$cad_dir}");
   }
 }

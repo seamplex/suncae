@@ -3,7 +3,7 @@
 // SunCAE is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 // SunCAE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-$permissions = 0777;
+$permissions = 0755;
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 $data_dir = __DIR__ . "/../data/";
 if (session_status() === PHP_SESSION_NONE) {
@@ -11,12 +11,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 if (!isset($_SESSION["csrf_token"])) {
   $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
-}
-if (file_exists($data_dir) === false) {
-  if (mkdir($data_dir, $permissions, true) === false) {
-    echo "cannot mkdir {$data_dir}, please check permissions";
-    exit(1);
-  }
 }
 
 // based on original work from the PHP Laravel framework
@@ -40,18 +34,12 @@ function suncae_log_write($file_path, $username, $message) {
 }
 
 function suncae_log_error($message, $level = 0) {
-  global $permissions;
   global $username;
   if ($username == "") {
     $username = "anonymous";
   }
 
   $log_dir = __DIR__ . "/../data/logs/";
-  if (file_exists($log_dir) ==  false) {
-    if (mkdir($log_dir, $permissions, true) == false) {
-      exit(1);
-    }
-  }
 
   $date = date('Y-m-d');
   suncae_log_write("{$log_dir}error.log", $username, $message);
@@ -70,21 +58,23 @@ function suncae_error($error) {
 }
 
 function suncae_log($message, $level = 0) {
-  global $permissions;
   global $username;
   if ($username == "") {
     $username = "anonymous";
   }
 
-  $log_dir = __DIR__ . "/../data/logs/";
-  if (file_exists($log_dir) ==  false) {
-    if (mkdir($log_dir, $permissions, true) == false) {
-      return 1;
+  $log_dir_path = __DIR__ . "/../data/logs";
+  if (is_dir($log_dir_path) === false) {
+    if (file_exists($log_dir_path) || (mkdir($log_dir_path, 0755, true) === false && is_dir($log_dir_path) === false)) {
+      return 2;
     }
   }
+  $log_dir = "{$log_dir_path}/";
 
   $date = date('Y-m-d');
-  suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
+  if (suncae_log_write("{$log_dir}0-{$date}.log", $username, $message) !== 0) {
+    return 1;
+  }
   if ($level > 0) {
     if (suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message) != 0) {
       return 1;
@@ -94,7 +84,7 @@ function suncae_log($message, $level = 0) {
   if ($username != "anonymous") {
     $log_dir = __DIR__ . "/../data/{$username}/";
     if (file_exists($log_dir) ==  false) {
-      if (mkdir($log_dir, $permissions, true) == false) {
+      if (mkdir($log_dir, 0755, true) == false) {
         return 2;
       }
     }

@@ -24,8 +24,8 @@ $cad_dir = "../../data/{$username}/cads/{$response["cad_hash"]}";
 // upload it only if it does not exist
 // TODO: first just send the md5 to check if this exists intead of the whole file
 if (file_exists($cad_dir) === false) {
-  if (mkdir($cad_dir, $permissions, true) === false) {
-    return_error_json("cannot mkdir {$cad_dir}");
+  if (mkdir($cad_dir, 0755, true) === false) {
+    return_error_json("cannot create directory {$cad_dir}");
   }
 }
 
