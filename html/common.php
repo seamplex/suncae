@@ -5,6 +5,12 @@
 
 $id = (isset($_POST["id"])) ? $_POST["id"] : ((isset($_GET["id"])) ? $_GET["id"] : "");
 $data_dir = __DIR__ . "/../data/";
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+if (!isset($_SESSION["csrf_token"])) {
+  $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
 
 // based on original work from the PHP Laravel framework
 if (!function_exists('str_contains')) {
