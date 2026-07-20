@@ -13,6 +13,13 @@ if [ -z "${1}" ]; then
   exit 1
 fi
 
+write_json() {
+  local path="${1}"
+  local tmp="${path}.tmp.$$"
+  cat > "${tmp}"
+  mv "${tmp}" "${path}"
+}
+
 
 # https://stackoverflow.com/questions/3679296/only-get-hash-value-using-md5sum-without-filename
 # A simple array assignment works... Note that the first element of a Bash array can be addressed by just the name without the [0] index, i.e., $md5 contains only the 32 characters of md5sum.
@@ -20,11 +27,13 @@ fi
 problem_type=${1}
 problem_hash=($(md5sum case.fee))
 mesh_hash=($(md5sum mesh.geo))
+started_at=$(date --iso-8601=seconds)
 
-cat << EOF > run/${problem_hash}.json
+write_json run/${problem_hash}.json << EOF
 {
   "status": "running",
-  "pid": $$
+  "pid": $$,
+  "started_at": "${started_at}"
 }
 EOF
 
@@ -65,11 +74,12 @@ else
   status="syntax_error"
 fi
 
-cat << EOF > ${problem_hash}.json
+write_json ${problem_hash}.json << EOF
 {
-  "status": "${status}"
+  "status": "${status}",
+  "started_at": "${started_at}"
 }
 EOF
 
 # sync run/meshes/${mesh_hash}.json
-rm -f ${dir}/${problem_hash}.pid
+rm -f solving.pid

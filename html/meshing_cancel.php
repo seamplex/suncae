@@ -6,34 +6,26 @@
 include("../conf.php");
 include("../auths/{$auth}/auth.php");
 include("common.php");
+suncae_require_post_csrf();
 include("case.php");
 
 chdir($case_dir);
+$mesh_meta["status"] = "not_running";
 
 // first, see if the mesh is finished or running
 $mesh_json_path = "run/meshes/{$mesh_hash}.json";
-if (file_exists($mesh_json_path) === false) {
-  // maybe there's some locking thing here
-  usleep(200);
-  if (file_exists($mesh_json_path) === false) {
-    return_error_json("mesh meta json {$mesh_json_path} does not exist");
-    exit();
-  }
-}
-if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
-  // maybe there's some locking thing here
-  usleep(200);
-  if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == null) {
-    return_error_json("cannot decode mesh meta json");
-    exit();
-  }
+[$mesh_status, $error] = suncae_read_json_file_with_retries($mesh_json_path, "mesh meta");
+if ($error != "") {
+  return_error_json($error);
+  exit();
 }
 
-if (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"])) {
-  posix_kill($mesh_status["pid"], 15);
-  sleep(1);
+if (isset($mesh_status["pid"]) && suncae_cancel_process_group($mesh_status["pid"])) {
   $mesh_meta["status"] = "canceled";
-  file_put_contents($mesh_json_path, json_encode($mesh_meta));
+  if (isset($mesh_status["started_at"])) {
+    $mesh_meta["started_at"] = $mesh_status["started_at"];
+  }
+  suncae_write_json_file($mesh_json_path, $mesh_meta);
 }
 
 return_back_json($mesh_meta);

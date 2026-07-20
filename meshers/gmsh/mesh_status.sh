@@ -6,6 +6,13 @@ else
   mesh_hash=${1}
 fi
 
+write_json() {
+  local path="${1}"
+  local tmp="${path}.tmp.$$"
+  cat > "${tmp}"
+  mv "${tmp}" "${path}"
+}
+
 status=$(jq -r .status run/meshes/${mesh_hash}.json) || exit 1
 if [ "x${status}" == "xrunning" ]; then
   gmsh_pid=$(jq -r .pid run/meshes/${mesh_hash}.json)
@@ -43,7 +50,7 @@ if [ "x${status}" == "xrunning" ]; then
     done_data=0
   fi
   
-  cat << EOF > run/meshes/${mesh_hash}-status.json
+  write_json run/meshes/${mesh_hash}-status.json << EOF
 {
   "status": "running",
   "pid": ${gmsh_pid},
@@ -54,8 +61,7 @@ if [ "x${status}" == "xrunning" ]; then
   "done_edges": ${done_edges},
   "done_faces": ${done_faces},
   "done_volumes": ${done_volumes},
-  "done_data": ${done_data},
-  "log": "$(tail -n5 run/meshes/${mesh_hash}.1 | cut -d: -f 2- | awk '{printf "%s\\n", $0}')"
+  "done_data": ${done_data}
 }
 EOF
 #   sync run/meshes/${mesh_hash}.json

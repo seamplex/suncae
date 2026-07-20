@@ -6,34 +6,26 @@
 include("../conf.php");
 include("../auths/{$auth}/auth.php");
 include("common.php");
+suncae_require_post_csrf();
 include("case.php");
 
 chdir($case_dir);
+$problem_meta["status"] = "not_running";
 
 // first, see if the problem is finished or running
 $problem_json_path = "run/{$problem_hash}.json";
-if (file_exists($problem_json_path) === false) {
-  // maybe there's some locking thing here
-  usleep(200);
-  if (file_exists($problem_json_path) === false) {
-    return_error_json("problem meta json {$problem_json_path} does not exist");
-    exit();
-  }
-}
-if (($problem_status = json_decode(file_get_contents($problem_json_path), true)) == null) {
-  // maybe there's some locking thing here
-  usleep(200);
-  if (($problem_status = json_decode(file_get_contents($problem_json_path), true)) == null) {
-    return_error_json("cannot decode problem meta json");
-    exit();
-  }
+[$problem_status, $error] = suncae_read_json_file_with_retries($problem_json_path, "problem meta");
+if ($error != "") {
+  return_error_json($error);
+  exit();
 }
 
-if (isset($problem_status["pid"]) && posix_getpgid($problem_status["pid"])) {
-  posix_kill($problem_status["pid"], 15);
-  sleep(1);
+if (isset($problem_status["pid"]) && suncae_cancel_process_group($problem_status["pid"])) {
   $problem_meta["status"] = "canceled";
-  file_put_contents($problem_json_path, json_encode($problem_meta));
+  if (isset($problem_status["started_at"])) {
+    $problem_meta["started_at"] = $problem_status["started_at"];
+  }
+  suncae_write_json_file($problem_json_path, $problem_meta);
 }
 
 return_back_json($problem_meta);

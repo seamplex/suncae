@@ -22,6 +22,21 @@ include("ux.php");
 
 <!--  TODO: the php in charge of informing the progress should also send the legends  -->
 
+    <div class="border rounded-2 p-3 mb-4 bg-light">
+     <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+      <div>
+       <div id="solve_job_title" class="fw-semibold">Solving</div>
+       <div id="solve_job_next_action" class="small text-muted">Preparing status...</div>
+      </div>
+      <span id="solve_job_status" class="badge bg-secondary">pending</span>
+     </div>
+     <div class="row small text-muted g-2">
+        <div class="col-12">Phase: <span id="solve_job_phase">-</span></div>
+        <div class="col-6">Elapsed: <span id="solve_job_elapsed">0s</span></div>
+        <div class="col-6 text-end">PID: <span id="solve_job_pid">-</span></div>
+     </div>
+    </div>
+
     <legend class="<?=$problem=="mechanical"?"":"d-none"?>">Second-order mesh</legend>
     <div class="progress mt-2 mb-4 <?=$problem=="mechanical"?"":"d-none"?>" role="progressbar">
      <div class="progress-bar bg-info" style="width=0%" id="progress_mesh"></div>
@@ -57,9 +72,16 @@ include("ux.php");
     </div>
     
     <div class="col-12 mt-3 py-2">
-     <button class="btn btn-lg btn-outline-danger w-100" onclick="cancel_solving('<?=$problem_hash?>')">
+        <div class="alert alert-light w-100 text-small m-0 p-0 mb-4">
+    <pre id="solve_log" class="small m-0 p-0">Waiting for solver output...</pre>
+        </div>
+
+    <button class="btn btn-lg btn-outline-danger w-100" id="solve_cancel_button" onclick="cancel_solving('<?=$problem_hash?>')">
       <i class="fa fa-fw fa-ban"></i>&nbsp;Cancel solving
      </button>
+    <button class="btn btn-lg btn-outline-success w-100 d-none" id="solve_relaunch_button" onclick="relaunch_solving('<?=$problem_hash?>')">
+     <i class="fa fa-fw fa-rotate-right"></i>&nbsp;Re-launch solving
+    </button>
      
     </div>
   

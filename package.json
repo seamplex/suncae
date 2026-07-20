@@ -7,7 +7,12 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:php && npm run test:shell && npm run test:e2e:security",
+    "test:ci": "npm run test:php && npm run test:shell && npm run test:e2e",
+    "test:e2e": "playwright test",
+    "test:e2e:security": "playwright test tests/e2e/security.spec.js",
+    "test:php": "php tests/php/common_test.php",
+    "test:shell": "bash tests/shell/solve_status_test.sh"
   },
   "repository": {
     "type": "git",

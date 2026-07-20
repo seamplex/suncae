@@ -6,12 +6,20 @@
 include("../../conf.php");
 include("../../auths/{$auth}/auth.php");
 include("../common.php");
+include("../../solvers/common.php");
 
-// TODO: check isset()
-$problem = $_POST["problem"];
-$mesher = $_POST["mesher"];
-$solver = $_POST["solver"];
-$owner = $username;
+suncae_require_post_csrf();
+
+$problem = isset($_POST["problem"]) ? suncae_require_path_component($_POST["problem"], "problem") : suncae_error("missing problem");
+$mesher = isset($_POST["mesher"]) ? suncae_require_path_component($_POST["mesher"], "mesher") : suncae_error("missing mesher");
+$solver = isset($_POST["solver"]) ? suncae_require_path_component($_POST["solver"], "solver") : suncae_error("missing solver");
+$owner = suncae_require_path_component($username, "owner");
+if (!isset($solvers[$problem]) || !in_array($solver, $solvers[$problem], true)) {
+  suncae_error("invalid solver for problem");
+}
+if (!isset($meshers[$solver]) || !in_array($mesher, $meshers[$solver], true)) {
+  suncae_error("invalid mesher for solver");
+}
 include("../../solvers/{$solver}/input_initial_{$problem}.php");
 
 
@@ -25,7 +33,7 @@ if (chdir("../../data/{$owner}/cases") == false) {
   suncae_error("error: cannot chdir to cases");
 }
 
-$cad = $_POST["cad_hash"];
+$cad = isset($_POST["cad_hash"]) ? suncae_require_hash($_POST["cad_hash"], "cad hash") : suncae_error("missing cad hash");
 $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 
 if (file_exists($id) === true) {
@@ -63,12 +71,12 @@ if ($result != 0) {
   return_error_json("cannot git init {$case["problem"]} {$id}");
 }
 
-exec("git config user.name '{$owner}'", $output, $result);
+exec("git config user.name " . escapeshellarg($owner), $output, $result);
 if ($result != 0) {
   return_error_json("cannot set user.name {$case["problem"]} {$id}");
 }
 
-exec("git config user.email '{$owner}@suncae'", $output, $result);
+exec("git config user.email " . escapeshellarg("{$owner}@suncae"), $output, $result);
 if ($result != 0) {
   return_error_json("cannot set user.email {$case["problem"]} {$id}");
 }

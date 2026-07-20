@@ -100,11 +100,28 @@ async function update_results(problem_hash = "") {
   }
 }
 
+function suncae_post_body(params) {
+  let body = new URLSearchParams();
+  body.set("csrf_token", csrf_token);
+  for (const [key, value] of Object.entries(params)) {
+    body.set(key, value);
+  }
+  return body.toString();
+}
+
+function suncae_post_options(params) {
+  return {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: suncae_post_body(params)
+  };
+}
+
 async function ajax2yaml(field, value) {
   theseus_log("ajax2yaml("+field+","+value+")");
   let response;
   try {
-    let res = await fetch("ajax2yaml.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2yaml.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -141,7 +158,7 @@ async function ajax2problem(field, value) {
 
   let response;
   try {
-    let res = await fetch("ajax2problem.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2problem.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -182,7 +199,7 @@ async function ajax2mesh(field, value) {
 
   let response;
   try {
-    let res = await fetch("ajax2mesh.php?id="+id+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value));
+    let res = await fetch("ajax2mesh.php", suncae_post_options({ id: id, field: field, value: value }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -220,11 +237,7 @@ async function ajax_change_step() {
   html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
   let ajax_step;
   try {
-    let res = await fetch("change_step.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&next_step=" + next_step + "&current_step=" + current_step
-    });
+    let res = await fetch("change_step.php", suncae_post_options({ id: id, next_step: next_step, current_step: current_step }));
     if (!res.ok) throw new Error("Network error");
     ajax_step = await res.json();
     theseus_log(ajax_step);
@@ -268,11 +281,7 @@ async function ajax_change_step() {
   html_leftcol.removeEventListener("hidden.bs.collapse", wrapper_leftcol_collape);
   let ajax_step;
   try {
-    let res = await fetch("change_step.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&next_step=" + next_step + "&current_step=" + current_step
-    });
+    let res = await fetch("change_step.php", suncae_post_options({ id: id, next_step: next_step, current_step: current_step }));
     if (!res.ok) throw new Error("Network error");
     ajax_step = await res.json();
     theseus_log(ajax_step);
@@ -327,39 +336,39 @@ async function update_mesh_status(mesh_hash) {
   }
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);
+  render_mesh_job_status(response);
   if (response["status"] == "running") {
-    mesh_status_edges.innerHTML = response["edges"];
-    mesh_status_faces.innerHTML = response["faces"];
-    mesh_status_volumes.innerHTML = response["volumes"];
+    mesh_status_edges.textContent = response["edges"] ?? 0;
+    mesh_status_faces.textContent = response["faces"] ?? 0;
+    mesh_status_volumes.textContent = response["volumes"] ?? 0;
     if (response["done_edges"]) {
       progress_edges.classList.remove("bg-info");
       progress_edges.classList.add("bg-success");
       progress_edges.style.width = "100%";
     } else {
-      progress_edges.style.width = response["progress_edges"] + "%";
+      progress_edges.style.width = (response["progress_edges"] ?? 0) + "%";
     }
     if (response["done_faces"]) {
       progress_faces.classList.remove("bg-info");
       progress_faces.classList.add("bg-success");
       progress_faces.style.width = "100%";
     } else {
-      progress_faces.style.width = response["progress_faces"] + "%";
+      progress_faces.style.width = (response["progress_faces"] ?? 0) + "%";
     }
     if (response["done_volumes"]) {
       progress_volumes.classList.remove("bg-info");
       progress_volumes.classList.add("bg-success");
       progress_volumes.style.width = "100%";
     } else {
-      progress_volumes.style.width = response["progress_volumes"] + "%";
+      progress_volumes.style.width = (response["progress_volumes"] ?? 0) + "%";
     }
     if (response["done_data"]) {
       progress_data.classList.remove("bg-info");
       progress_data.classList.add("bg-success");
       progress_data.style.width = "100%";
     } else {
-      progress_data.style.width = response["progress_data"] + "%";
+      progress_data.style.width = (response["progress_data"] ?? 0) + "%";
     }
-    mesh_log.innerHTML = response["log"];
     setTimeout(() => update_mesh_status(mesh_hash), 1000);
   } else {
     setTimeout(() => change_step(1), 1000);
@@ -367,11 +376,47 @@ async function update_mesh_status(mesh_hash) {
   return true;
 }
 
+function format_elapsed(seconds) {
+  seconds = Number(seconds) || 0;
+  let minutes = Math.floor(seconds / 60);
+  let hours = Math.floor(minutes / 60);
+  seconds = seconds % 60;
+  minutes = minutes % 60;
+  if (hours > 0) return hours + "h " + minutes + "m " + seconds + "s";
+  if (minutes > 0) return minutes + "m " + seconds + "s";
+  return seconds + "s";
+}
+
+function render_mesh_job_status(response) {
+  let mesh_job_title = document.getElementById("mesh_job_title");
+  if (mesh_job_title === null) return;
+  document.getElementById("mesh_job_next_action").textContent = response["next_action"] || "Refreshing status...";
+  document.getElementById("mesh_job_elapsed").textContent = format_elapsed(response["elapsed_seconds"]);
+  document.getElementById("mesh_job_pid").textContent = response["pid"] ? response["pid"] : "-";
+  let mesh_job_status = document.getElementById("mesh_job_status");
+  mesh_job_title.textContent = response["title"] || "Meshing with Gmsh";
+  mesh_job_status.textContent = response["status"] || "unknown";
+  mesh_job_status.className = "badge " + mesh_status_class(response["status"]);
+  let mesh_log = document.getElementById("mesh_log");
+  if (mesh_log !== null) {
+    let log = response["error_tail"] || response["log_tail"] || "No mesher output yet.";
+    mesh_log.textContent = log;
+  }
+}
+
+function mesh_status_class(status) {
+  if (status == "running") return "bg-info text-dark";
+  if (status == "success") return "bg-success";
+  if (status == "canceled" || status == "not_running") return "bg-warning text-dark";
+  if (status == "error" || status == "syntax_error") return "bg-danger";
+  return "bg-secondary";
+}
+
 async function cancel_meshing(mesh_hash) {
   theseus_log("cancel_meshing("+mesh_hash+")");
   let response;
   try {
-    let res = await fetch("meshing_cancel.php?id="+id+"&mesh_hash="+mesh_hash);
+    let res = await fetch("meshing_cancel.php", suncae_post_options({ id: id, mesh_hash: mesh_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -379,14 +424,14 @@ async function cancel_meshing(mesh_hash) {
     theseus_log(exception);
     return false;
   }
-  return change_step(1);
+  return change_step(3);
 }
 
 async function relaunch_meshing(mesh_hash) {
   theseus_log("relaunch_meshing("+mesh_hash+")");
   let response;
   try {
-    let res = await fetch("meshing_relaunch.php?id="+id+"&mesh_hash="+mesh_hash);
+    let res = await fetch("meshing_relaunch.php", suncae_post_options({ id: id, mesh_hash: mesh_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -401,7 +446,7 @@ async function cancel_solving(problem_hash) {
   theseus_log("cancel_solving("+problem_hash+")");
   let response;
   try {
-    let res = await fetch("solving_cancel.php?id="+id+"&problem_hash="+problem_hash);
+    let res = await fetch("solving_cancel.php", suncae_post_options({ id: id, problem_hash: problem_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -417,7 +462,7 @@ async function relaunch_solving(problem_hash) {
   theseus_log("relaunch_solving("+problem_hash+")");
   let response;
   try {
-    let res = await fetch("solving_relaunch.php?id="+id+"&problem_hash="+problem_hash);
+    let res = await fetch("solving_relaunch.php", suncae_post_options({ id: id, problem_hash: problem_hash }));
     if (!res.ok) throw new Error("Network error");
     response = await res.json();
   } catch (exception) {
@@ -442,13 +487,14 @@ async function update_problem_status(problem_hash) {
   }
   set_warning((response["warning"] === undefined) ? "" : response["warning"]);
   set_error((response["error"] === undefined) ? "" : response["error"]);
+  render_solve_job_status(response);
   if (response["status"] == "running") {
     if (response["done_mesh"]) {
       progress_mesh.classList.remove("bg-info");
       progress_mesh.classList.add("bg-success");
       progress_mesh.style.width = "100%";
     } else {
-      progress_mesh.style.width = response["mesh"] + "%";
+      progress_mesh.style.width = (response["mesh"] ?? 0) + "%";
     }
 
     if (response["done_build"]) {
@@ -456,7 +502,7 @@ async function update_problem_status(problem_hash) {
       progress_build.classList.add("bg-success");
       progress_build.style.width = "100%";
     } else {
-      progress_build.style.width = response["build"] + "%";
+      progress_build.style.width = (response["build"] ?? 0) + "%";
     }
 
     if (response["done_solve"]) {
@@ -464,20 +510,46 @@ async function update_problem_status(problem_hash) {
       progress_solve.classList.add("bg-success");
       progress_solve.style.width = "100%";
     } else {
-      progress_solve.style.width = response["solve"] + "%";
+      progress_solve.style.width = (response["solve"] ?? 0) + "%";
     }
     if (response["done_post"]) {
       progress_post.classList.remove("bg-info");
       progress_post.classList.add("bg-success");
       progress_post.style.width = "100%";
     } else {
-      progress_post.style.width = response["post"] + "%";
+      progress_post.style.width = (response["post"] ?? 0) + "%";
     }
     setTimeout(() => update_problem_status(problem_hash), 1000);
   } else {
     setTimeout(() => change_step(3), 1000);
   }
   return true;
+}
+
+function render_solve_job_status(response) {
+  let solve_job_title = document.getElementById("solve_job_title");
+  if (solve_job_title === null) return;
+  document.getElementById("solve_job_next_action").textContent = response["next_action"] || "Refreshing status...";
+  document.getElementById("solve_job_phase").textContent = response["phase_label"] || "-";
+  document.getElementById("solve_job_elapsed").textContent = format_elapsed(response["elapsed_seconds"]);
+  document.getElementById("solve_job_pid").textContent = response["pid"] ? response["pid"] : "-";
+  let solve_job_status = document.getElementById("solve_job_status");
+  solve_job_title.textContent = response["title"] || "Solving";
+  solve_job_status.textContent = response["status"] || "unknown";
+  solve_job_status.className = "badge " + mesh_status_class(response["status"]);
+  let cancel_button = document.getElementById("solve_cancel_button");
+  if (cancel_button !== null) {
+    cancel_button.classList.toggle("d-none", !response["can_cancel"]);
+  }
+  let relaunch_button = document.getElementById("solve_relaunch_button");
+  if (relaunch_button !== null) {
+    relaunch_button.classList.toggle("d-none", !response["can_relaunch"]);
+  }
+  let solve_log = document.getElementById("solve_log");
+  if (solve_log !== null) {
+    let log = response["error_tail"] || response["log_tail"] || "No solver output yet.";
+    solve_log.textContent = log;
+  }
 }
 
 
@@ -523,11 +595,7 @@ async function geo_log(mesh_hash) {
 
 async function geo_save() {
   try {
-    let res = await fetch("mesh_inp_save.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&geo=" + encodeURIComponent(text_geo_edit.value)
-    });
+    let res = await fetch("mesh_inp_save.php", suncae_post_options({ id: id, geo: text_geo_edit.value }));
     if (!res.ok) throw new Error("Network error");
     let response = await res.json();
     if (response["status"] == "ok") {
@@ -569,11 +637,7 @@ async function fee_show() {
 
 async function fee_save() {
   try {
-    let res = await fetch("problem_fee_save.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "id=" + id + "&fee=" + encodeURIComponent(text_fee_edit.value)
-    });
+    let res = await fetch("problem_fee_save.php", suncae_post_options({ id: id, fee: text_fee_edit.value }));
     if (!res.ok) throw new Error("Network error");
     let response = await res.json();
     if (response["status"] == "ok") {

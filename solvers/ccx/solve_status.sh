@@ -6,6 +6,13 @@ else
   problem_hash=${1}
 fi
 
+write_json() {
+  local path="${1}"
+  local tmp="${path}.tmp.$$"
+  cat > "${tmp}"
+  mv "${tmp}" "${path}"
+}
+
 status=$(jq -r .status run/${problem_hash}.json) || exit 1
 if [ "x${status}" == "xrunning" ]; then
   feenox_pid=$(jq -r .pid run/${problem_hash}.json)
@@ -29,6 +36,22 @@ if [ "x${status}" == "xrunning" ]; then
   post=$(grep = ${logfile}  | tr -d '\n' | wc -c)
   data=50
 
+  phase="prepare_mesh"
+  phase_label="Preparing second-order mesh"
+  if [ ${post} -gt 0 ]; then
+    phase="postprocess"
+    phase_label="Post-processing results"
+  elif [ ${solve} -gt 0 ]; then
+    phase="solve"
+    phase_label="Solving linear system"
+  elif [ ${build} -gt 0 ]; then
+    phase="assemble"
+    phase_label="Assembling matrix"
+  elif [ ${mesh} = 100 ]; then
+    phase="assemble"
+    phase_label="Assembling matrix"
+  fi
+
   done_mesh=0
   if [ ${mesh} = 100 ]; then
     done_mesh=1
@@ -48,10 +71,12 @@ if [ "x${status}" == "xrunning" ]; then
   
   done_data=0
   
-  cat << EOF > run/${problem_hash}-status.json
+  write_json run/${problem_hash}-status.json << EOF
 {
   "status": "running",
   "pid": ${feenox_pid},
+  "phase": "${phase}",
+  "phase_label": "${phase_label}",
   "mesh": ${mesh},
   "build": ${build},
   "solve": ${solve},

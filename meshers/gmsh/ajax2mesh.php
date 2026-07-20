@@ -7,8 +7,8 @@ $response["mesh_hash"] = $mesh_hash;
 $response["error"] = "";
 $response["warning"] = "";
 
-$field = $_GET["field"];
-$value = $_GET["value"];
+$field = isset($_POST["field"]) ? suncae_require_field_name($_POST["field"], "mesh field") : suncae_error("missing mesh field");
+$value = isset($_POST["value"]) ? suncae_require_numeric_expression($_POST["value"], "mesh value") : suncae_error("missing mesh value");
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
@@ -74,7 +74,7 @@ if ($current && $new) {
 }
 $mesh_hash = mesh_hash();
 
-exec("git commit -a -m 'mesh {$field} = {$value}'", $output, $result);
+suncae_git_commit_all("mesh {$field} = {$value}", $output, $result);
 if ($result != 0) {
   return_error_json("cannot git commit {$id}: {$output[0]}");
 }

@@ -6,5 +6,6 @@
 include("../conf.php");
 include("../auths/{$auth}/auth.php");
 include("common.php");
+suncae_require_post_csrf();
 include("case.php");
 include("../meshers/{$mesher}/ajax2mesh.php");

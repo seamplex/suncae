@@ -22,6 +22,8 @@ $default_solver = "feenox";
  <link href="../css/faster-than-quick/ftq.css" rel="stylesheet">
  <link href="../css/faster-than-quick/x3dom.css" rel="stylesheet">
 <script>
+var csrf_token = "<?=htmlspecialchars(suncae_csrf_token())?>";
+
 function bootstrap_hide(id) {
   document.getElementById(id).classList.remove("d-block");
   document.getElementById(id).classList.remove("d-inline");
@@ -76,8 +78,9 @@ function process_cad(cad) {
     }
   };
 
-  ajax.open("GET", "./process.php?cad_hash=" + cad, true);
-  ajax.send();
+  ajax.open("POST", "./process.php", true);
+  ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  ajax.send("csrf_token=" + encodeURIComponent(csrf_token) + "&cad_hash=" + encodeURIComponent(cad));
 
 }
 
@@ -226,6 +229,7 @@ include("about.php");
   </div>
 
   <form action="create.php" method="post">
+   <input type="hidden" name="csrf_token" value="<?=htmlspecialchars(suncae_csrf_token())?>">
    <div class="container">
     <div class="row">
      <div class="col-lg-6">

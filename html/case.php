@@ -12,8 +12,11 @@ if ($username == "") {
   suncae_error("empty username");
 }
 
-$mesh_hash = (isset($_POST["mesh_hash"])) ? $_POST["mesh_hash"] : ((isset($_GET["mesh_hash"])) ? $_GET["mesh_hash"] : "");
-$problem_hash = (isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((isset($_GET["problem_hash"])) ? $_GET["problem_hash"] : "");
+$id = suncae_require_hash($id, "case id");
+$owner = suncae_require_path_component($owner, "owner");
+
+$mesh_hash = suncae_require_optional_hash((isset($_POST["mesh_hash"])) ? $_POST["mesh_hash"] : ((isset($_GET["mesh_hash"])) ? $_GET["mesh_hash"] : ""), "mesh hash");
+$problem_hash = suncae_require_optional_hash((isset($_POST["problem_hash"])) ? $_POST["problem_hash"] : ((isset($_GET["problem_hash"])) ? $_GET["problem_hash"] : ""), "problem hash");
 
 
 // TODO: per mesher
@@ -39,6 +42,10 @@ if (($case = yaml_parse($case_yaml)) == null) {
 $problem = $case["problem"];
 $solver = $case["solver"];
 $mesher = $case["mesher"];
+$case["cad"] = suncae_require_hash($case["cad"], "cad hash");
+$problem = suncae_require_path_component($problem, "problem");
+$solver = suncae_require_path_component($solver, "solver");
+$mesher = suncae_require_path_component($mesher, "mesher");
 
 $cad_dir = "../data/{$owner}/cads/{$case["cad"]}";
 if (is_dir("{$cad_dir}/meshes") == false) {
@@ -73,10 +80,10 @@ if ($has_mesh_attempt && ($mesh_meta = json_decode(file_get_contents($mesh_meta_
   if ($mesh_meta["status"] == "success" && ($mesh_meta["nodes"] <= $max_nodes)) {
     $has_mesh_valid = true;
   } else if ($mesh_meta["status"] == "running") {
-    if (isset($mesh_meta["pid"]) == false || posix_getpgid($mesh_meta["pid"]) == false) {
+    if (isset($mesh_meta["pid"]) == false || suncae_pid_is_running(intval($mesh_meta["pid"])) == false) {
       // TODO: look at the .2
       $mesh_meta["status"] = "error";
-      // TODO: update json
+      suncae_write_json_file($mesh_meta_path, $mesh_meta);
     } else {
       // TODO: calculate progress
     }
@@ -96,10 +103,10 @@ if ($has_results_attempt && ($results_meta = json_decode(file_get_contents($resu
   if ($results_meta["status"] == "success") {
     $has_results_valid = true;
   } else if ($results_meta["status"] == "running") {
-    if (isset($results_meta["pid"]) && posix_getpgid($results_meta["pid"]) == false) {
+    if (isset($results_meta["pid"]) == false || suncae_pid_is_running(intval($results_meta["pid"])) == false) {
       // TODO: mirar el .2
       $results_meta["status"] = "error";
-      // TODO: update json
+      suncae_write_json_file($results_meta_path, $results_meta);
     } else {
       // TODO: calcular progress
     }

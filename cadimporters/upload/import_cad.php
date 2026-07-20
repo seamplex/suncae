@@ -29,7 +29,9 @@ if (file_exists($cad_dir) === false) {
   }
 }
 
-chdir($cad_dir);
+if (chdir($cad_dir) === false) {
+  return_error_json("cannot chdir to cad dir {$cad_dir}");
+}
 
 if (file_exists("original.step") === false) {
   file_put_contents("original.step", $file_content);

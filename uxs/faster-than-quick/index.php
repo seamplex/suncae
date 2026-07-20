@@ -676,7 +676,7 @@ include("small_axes.html");
             <li><a class="dropdown-item" href="#" onclick="change_step(-4)">Case properties&hellip;</a></li>
             <li><a class="dropdown-item" href="#" onclick="change_step(+4)">Expert zone&hellip;</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item disabled" href="#" onclick="change_step(-5)">History&hellip;</a></li>
+            <li><a class="dropdown-item" href="#" onclick="change_step(-5)">History&hellip;</a></li>
             <li><a class="dropdown-item" href="#" onclick="change_step(+5)">Share&hellip;</a></li>
           </ul>
          </li>
@@ -746,11 +746,12 @@ include("small_axes.html");
 
 <script type="text/javascript" src="js/faster-than-quick/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="js/faster-than-quick/x3dom.js"></script>
-<script type="text/javascript" src="js/faster-than-quick/ftq.js"></script>
-<script type="text/javascript" src="js/faster-than-quick/async.js"></script>
-<script type="text/javascript" src="js/faster-than-quick/<?=$problem?>.js"></script>
+<script type="text/javascript" src="js/faster-than-quick/ftq.js?v=<?=filemtime("js/faster-than-quick/ftq.js")?>"></script>
+<script type="text/javascript" src="js/faster-than-quick/async.js?v=<?=filemtime("js/faster-than-quick/async.js")?>"></script>
+<script type="text/javascript" src="js/faster-than-quick/<?=$problem?>.js?v=<?=filemtime("js/faster-than-quick/{$problem}.js")?>"></script>
 <script>
 var id = "<?=$id?>";
+var csrf_token = "<?=htmlspecialchars(suncae_csrf_token())?>";
 var problem = "<?=$problem?>";
 function geo_ready() {
   // console.log("GEO READY!");

@@ -6,4 +6,5 @@
 include("../../conf.php");
 include("../../auths/{$auth}/auth.php");
 include("../common.php");
+suncae_require_post_csrf();
 include("../../cadprocessors/{$cadprocessor}/process.php");

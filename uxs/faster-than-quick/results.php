@@ -95,7 +95,12 @@ pop_accordion_item();
 
 $console = "";
 if (file_exists("{$case_dir}/run/{$problem_hash}.1")) {
-  $console = shell_exec("grep -v ^[-=\\.]*$ {$case_dir}/run/{$problem_hash}.1");
+  $console_lines = file("{$case_dir}/run/{$problem_hash}.1", FILE_IGNORE_NEW_LINES);
+  foreach ($console_lines as $line) {
+    if (preg_match('/^[-=.]*$/', $line) !== 1) {
+      $console .= $line . "\n";
+    }
+  }
 }
 
 if ($console != "") {
@@ -105,7 +110,7 @@ if ($console != "") {
     <div class="col-12">
      <div class="alert alert-light w-100 text-small m-0 p-0">
 <pre id="mesh_log" class="small mx-1 mt-3 p-1">
-<?=$console?>
+<?=htmlspecialchars($console)?>
 </pre>
      </div>
 <?php

@@ -6,8 +6,8 @@
 $response["error"] = "";
 $response["warning"] = "";
 
-$field = $_GET["field"];
-$value = $_GET["value"];
+$field = isset($_POST["field"]) ? suncae_require_field_name($_POST["field"], "problem field") : suncae_error("missing problem field");
+$value = isset($_POST["value"]) ? suncae_require_single_line($_POST["value"], "problem value") : suncae_error("missing problem value");
 
 if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
@@ -22,6 +22,10 @@ if ($field == "PC" ||
     $field == "k" ||
     $field == "q" ||
     strncmp($field, "bc_", 3) == 0) {
+
+  if (strncmp($field, "bc_", 3) == 0 && preg_match('/^bc_[0-9]+_(face|edge|value|remove)$/', $field) !== 1) {
+    return_error_json("invalid boundary-condition field");
+  }
 
   $bc_n = 0;
   if (strncmp($field, "bc_", 3) == 0) {
@@ -224,7 +228,7 @@ if ($field == "PC" ||
 // see if there's something to commit
 exec("git status --porcelain", $output, $result);
 if (count($output) > 0) {
-  exec("git commit -a -m 'problem {$field} = {$value}'", $output, $result);
+  suncae_git_commit_all("problem {$field} = {$value}", $output, $result);
   if ($result != 0) {
     return_error_json("cannot git commit {$id}: {$output[0]} {$output[1]}");
   }

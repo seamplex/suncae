@@ -8,7 +8,7 @@ include("../auths/{$auth}/auth.php");
 include("common.php");
 include("case.php");
 
-$hash = $_GET["hash"];
+$hash = isset($_GET["hash"]) ? suncae_require_hash($_GET["hash"], "mesh hash") : suncae_error("missing mesh hash");
 
 $msh_path = "{$case_dir}/run/meshes/{$hash}.msh";
 if (file_exists($msh_path)) {

@@ -12,7 +12,7 @@ if (($cad = json_decode($cad_json, true)) == null) {
 }
 
 
-$mesh_hash = $_GET["mesh_hash"];
+$mesh_hash = isset($_GET["mesh_hash"]) ? suncae_require_hash($_GET["mesh_hash"], "mesh hash") : suncae_error("missing mesh hash");
 chdir("../data/{$owner}/cases/{$id}");
 
 // first, see if the mesh is finished or running
@@ -39,9 +39,10 @@ if (($mesh_status = json_decode(file_get_contents($mesh_json_path), true)) == nu
     }
   }
 }
+$mesh_meta = $mesh_status;
 
-if ($mesh_status["status"] == "running" && (isset($mesh_status["pid"]) && posix_getpgid($mesh_status["pid"]))) {
-  exec("../../../../meshers/gmsh/mesh_status.sh {$mesh_hash}");
+if ($mesh_status["status"] == "running" && isset($mesh_status["pid"]) && suncae_pid_is_running(intval($mesh_status["pid"]))) {
+  exec("../../../../meshers/gmsh/mesh_status.sh " . escapeshellarg($mesh_hash));
 
   $mesh_json_path = "run/meshes/{$mesh_hash}-status.json";  
   if (file_exists($mesh_json_path) === false) {
@@ -58,6 +59,18 @@ if ($mesh_status["status"] == "running" && (isset($mesh_status["pid"]) && posix_
   $mesh_status["progress_volumes"] = round(100 * $mesh_status["volumes"] / $cad["solids"]);
   $mesh_status["progress_data"] = round(100 * $mesh_status["data"] / 4);
 }
+
+$mesh_status["kind"] = "mesh";
+$mesh_status["tool"] = "gmsh";
+$mesh_status["title"] = "Meshing with Gmsh";
+$mesh_status["pid"] = isset($mesh_meta["pid"]) ? intval($mesh_meta["pid"]) : (isset($mesh_status["pid"]) ? intval($mesh_status["pid"]) : 0);
+$mesh_status["started_at"] = isset($mesh_meta["started_at"]) ? $mesh_meta["started_at"] : "";
+$mesh_status["elapsed_seconds"] = ($mesh_status["started_at"] != "") ? suncae_elapsed_seconds($mesh_status["started_at"]) : 0;
+$mesh_status["can_cancel"] = ($mesh_status["status"] == "running" && $mesh_status["pid"] > 0 && suncae_pid_is_running($mesh_status["pid"]));
+$mesh_status["can_relaunch"] = in_array($mesh_status["status"], ["error", "syntax_error", "canceled", "not_running"]);
+$mesh_status["next_action"] = ($mesh_status["status"] == "running") ? "Wait, cancel, or inspect the log" : (($mesh_status["status"] == "success") ? "Continue to mesh review" : "Review the log and re-launch meshing");
+$mesh_status["log_tail"] = suncae_tail_file("run/meshes/{$mesh_hash}.1", 25, 8192);
+$mesh_status["error_tail"] = suncae_tail_file("run/meshes/{$mesh_hash}.2", 25, 8192);
 
 return_back_json($mesh_status);
 ?>
