@@ -70,13 +70,13 @@ if (file_exists($repo_data_dir)) {
 try {
   $username = "";
   $date = date("Y-m-d");
-  assert_true(suncae_log("php common test log line") == 0, "suncae_log creates missing logs directory and reports success");
+  assert_true(suncae_log("php common test log line") === 0, "suncae_log creates missing logs directory and reports success");
   assert_true(file_exists("{$repo_data_dir}/logs/0-{$date}.log"), "suncae_log writes the default log entry");
 
   runner_rmrf($repo_data_dir);
   mkdir($repo_data_dir);
   file_put_contents("{$repo_data_dir}/logs", "blocker");
-  assert_true(suncae_log("php common test blocked log line") != 0, "suncae_log returns non-zero when the default log write fails");
+  assert_true(suncae_log("php common test blocked log line") !== 0, "suncae_log returns non-zero when the default log write fails");
 } finally {
   runner_rmrf($repo_data_dir);
   if ($repo_data_backup !== null) {

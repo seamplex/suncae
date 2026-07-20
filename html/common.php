@@ -74,7 +74,7 @@ function suncae_log($message, $level = 0) {
   $log_dir = "{$log_dir_path}/";
 
   $date = date('Y-m-d');
-  if (suncae_log_write("{$log_dir}0-{$date}.log", $username, $message) != 0) {
+  if (suncae_log_write("{$log_dir}0-{$date}.log", $username, $message) !== 0) {
     return 1;
   }
   if ($level > 0) {
