@@ -64,12 +64,10 @@ function suncae_log($message, $level = 0) {
   }
 
   $log_dir_path = __DIR__ . "/../data/logs";
-  if (file_exists($log_dir_path) === false) {
-    if (mkdir($log_dir_path, 0755, true) === false) {
+  if (is_dir($log_dir_path) === false) {
+    if (file_exists($log_dir_path) || (mkdir($log_dir_path, 0755, true) === false && is_dir($log_dir_path) === false)) {
       return 2;
     }
-  } else if (is_dir($log_dir_path) === false) {
-    return 2;
   }
   $log_dir = "{$log_dir_path}/";
 
