@@ -39,7 +39,7 @@ $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 if (file_exists($id) === true) {
   suncae_error("project {$id} already exists");
 }
-if (mkdir($id, 0775, true)) {
+if (mkdir($id, 0775, true) == false) {
   suncae_error("cannot create case {$id} directory");
 }
 chdir($id);
