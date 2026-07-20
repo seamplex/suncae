@@ -9,7 +9,7 @@ $what = isset($_GET["what"]) ? $_GET["what"] : "physics";
 
 $log = fopen("../../data/problems.log", "a");
 if ($log === false) {
-  suncae_error("cannot open data directory");
+  return_error_json("cannot open data directory");
 }
 fprintf($log, "%s\t%s\t%s\n", date("c"), $_SERVER['REMOTE_ADDR'], $what);
 fclose($log);
