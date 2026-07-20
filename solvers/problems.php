@@ -7,9 +7,14 @@ include("common.php");
 
 $what = isset($_GET["what"]) ? $_GET["what"] : "physics";
 
-$log = fopen("../../data/problems.log", "a");
+$data_dir = __DIR__ . "/../data";
+if (is_dir($data_dir) === false && mkdir($data_dir, 0755, true) === false && is_dir($data_dir) === false) {
+  return_error_json("cannot create data directory");
+}
+
+$log = fopen("{$data_dir}/problems.log", "a");
 if ($log === false) {
-  return_error_json("cannot open data directory");
+  return_error_json("cannot open problems log");
 }
 fprintf($log, "%s\t%s\t%s\n", date("c"), $_SERVER['REMOTE_ADDR'], $what);
 fclose($log);
