@@ -235,8 +235,5 @@ if ($err == 0) {
 touch("{$data_dir}/check-ok");
 
 echo "<p>\n";
-echo "[good] all set!\n";
-if (isset($_SERVER['HTTP_REFERER'])) {
-  echo "<a href='{$_SERVER['HTTP_REFERER']}'>Proceed to SunCAE</a>\n";
-}
+echo "[good] all set! <a href='index.php'>Proceed to SunCAE</a>\n";
 echo "</p>\n";
