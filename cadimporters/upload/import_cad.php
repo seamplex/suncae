@@ -25,7 +25,7 @@ $cad_dir = "../../data/{$username}/cads/{$response["cad_hash"]}";
 // TODO: first just send the md5 to check if this exists intead of the whole file
 if (file_exists($cad_dir) === false) {
   if (mkdir($cad_dir, 0755, true) == false) {
-    suncae_error("error: cannot create directory {$cad_dir}");
+    return_error_json("cannot create directory {$cad_dir}");
   }
 }
 
