@@ -63,10 +63,20 @@ function suncae_log($message, $level = 0) {
     $username = "anonymous";
   }
 
-  $log_dir = __DIR__ . "/../data/logs/";
+  $log_dir_path = __DIR__ . "/../data/logs";
+  if (file_exists($log_dir_path) === false) {
+    if (mkdir($log_dir_path, 0755, true) === false) {
+      return 2;
+    }
+  } else if (is_dir($log_dir_path) === false) {
+    return 2;
+  }
+  $log_dir = "{$log_dir_path}/";
 
   $date = date('Y-m-d');
-  suncae_log_write("{$log_dir}0-{$date}.log", $username, $message);
+  if (suncae_log_write("{$log_dir}0-{$date}.log", $username, $message) != 0) {
+    return 1;
+  }
   if ($level > 0) {
     if (suncae_log_write("{$log_dir}{$level}-{$date}.log", $username, $message) != 0) {
       return 1;
