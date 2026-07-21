@@ -17,8 +17,10 @@ import json
 def main():
   gmsh.initialize()
   gmsh.option.setNumber("General.Terminal", 0)
+
+  cad_path = "original.brep" if os.path.exists("original.brep") else "original.step"
   
-  gmsh.open("original.step")
+  gmsh.open(cad_path)
   
 # TODO: take into account surface colors
 # groups = defaultdict(list)

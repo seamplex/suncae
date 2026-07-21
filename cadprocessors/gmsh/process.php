@@ -65,15 +65,15 @@ if ($solids > 1) {
     return_error_json("cannot mkdir {$fused_cad_dir}");
   }
 
-  $fused_step = "{$fused_cad_dir}/original.step";
-  if (file_exists($fused_step) === false) {
+  $fused_brep = "{$fused_cad_dir}/original.brep";
+  if (file_exists($fused_brep) === false) {
     $input_step = "{$base_cad_dir}/original.step";
     $command = sprintf(
       "python3 %s %s %s %s 2>&1",
       escapeshellarg(__DIR__ . "/cadtreat.py"),
       escapeshellarg("single_material"),
       escapeshellarg($input_step),
-      escapeshellarg($fused_step)
+      escapeshellarg($fused_brep)
     );
     $output = array();
     exec($command, $output, $error_level);
@@ -126,15 +126,15 @@ if ($effective_mode != "keep") {
     return_error_json("cannot mkdir {$target_cad_dir}");
   }
 
-  $target_step = "{$target_cad_dir}/original.step";
-  if (file_exists($target_step) === false) {
+  $target_brep = "{$target_cad_dir}/original.brep";
+  if (file_exists($target_brep) === false) {
     $input_step = "{$base_cad_dir}/original.step";
     $command = sprintf(
       "python3 %s %s %s %s 2>&1",
       escapeshellarg(__DIR__ . "/cadtreat.py"),
       escapeshellarg($effective_mode),
       escapeshellarg($input_step),
-      escapeshellarg($target_step)
+      escapeshellarg($target_brep)
     );
     $output = array();
     exec($command, $output, $error_level);

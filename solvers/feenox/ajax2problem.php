@@ -13,6 +13,65 @@ if (chdir("../data/{$owner}/cases/{$id}") === false) {
   return_error_json("cannot chdir to user dir {$id}");
 }
 
+function suncae_material_token_quote($token) {
+  if (preg_match('/\s/', $token) === 1) {
+    return '"' . str_replace('"', '\\"', $token) . '"';
+  }
+  return $token;
+}
+
+function suncae_material_parse_line($line) {
+  $trimmed = trim($line);
+  if (preg_match('/^MATERIAL\s+([A-Za-z0-9_.-]+)\s*(.*)$/', $trimmed, $matches) !== 1) {
+    return null;
+  }
+  $label = $matches[1];
+  $rest = isset($matches[2]) ? $matches[2] : "";
+  $tokens = array_values(array_filter(str_getcsv($rest, ' ', '"'), function($token) {
+    return $token !== "";
+  }));
+
+  $properties = array();
+  $other_tokens = array();
+  foreach ($tokens as $token) {
+    if (preg_match('/^(E|nu|k|q)=(.+)$/', $token, $property_match) === 1) {
+      $properties[$property_match[1]] = $property_match[2];
+    } else {
+      $other_tokens[] = $token;
+    }
+  }
+
+  return array(
+    "label" => $label,
+    "properties" => $properties,
+    "other_tokens" => $other_tokens
+  );
+}
+
+function suncae_material_write_line($label, $tokens) {
+  if (count($tokens) == 0) {
+    return "";
+  }
+  $quoted = array();
+  foreach ($tokens as $token) {
+    $quoted[] = suncae_material_token_quote($token);
+  }
+  return "MATERIAL {$label} " . implode(" ", $quoted);
+}
+
+function suncae_material_parse_function_line($line) {
+  if (preg_match('/^(E|nu|k|q)_([A-Za-z0-9_.-]+)\s*\(x,y,z\)\s*=\s*(.+)$/', trim($line), $matches) === 1) {
+    return array(
+      "property" => $matches[1],
+      "label" => $matches[2],
+      "expression" => trim($matches[3])
+    );
+  }
+  return null;
+}
+
+$is_material_field = preg_match('/^mat_([A-Za-z0-9_.-]+)_(E|nu|k|q)$/', $field, $material_field_match) === 1;
+
 // ---- case.fee ----------------------------
 // first we update the material properties & bcs
 // TODO: per-physics
@@ -21,7 +80,142 @@ if ($field == "PC" ||
     $field == "nu" ||
     $field == "k" ||
     $field == "q" ||
+    $is_material_field ||
     strncmp($field, "bc_", 3) == 0) {
+
+  if ($is_material_field) {
+    $material_label = $material_field_match[1];
+    $material_property = $material_field_match[2];
+    if (strpos($value, ",") !== false) {
+      $response["warning"] = "Note that the decimal separator is dot, not comma.";
+    }
+
+    $fee_lines = file("case.fee", FILE_IGNORE_NEW_LINES);
+    if ($fee_lines === false) {
+      return_error_json("cannot open case.fee");
+    }
+
+    $label_properties = array();
+    foreach ($fee_lines as $line) {
+      $function_data = suncae_material_parse_function_line($line);
+      if ($function_data !== null) {
+        $label = $function_data["label"];
+        if (!isset($label_properties[$label])) {
+          $label_properties[$label] = array();
+        }
+        $label_properties[$label][$function_data["property"]] = $function_data["expression"];
+        continue;
+      }
+
+      $material_data = suncae_material_parse_line($line);
+      if ($material_data !== null) {
+        $label = $material_data["label"];
+        if (!isset($label_properties[$label])) {
+          $label_properties[$label] = array();
+        }
+        foreach ($material_data["properties"] as $property_name => $property_expression) {
+          $label_properties[$label][$property_name] = $property_expression;
+        }
+      }
+    }
+
+    if (!isset($label_properties[$material_label])) {
+      $label_properties[$material_label] = array();
+    }
+    if (trim($value) == "") {
+      unset($label_properties[$material_label][$material_property]);
+    } else {
+      $label_properties[$material_label][$material_property] = trim($value);
+    }
+
+    $material_lines = array();
+    ksort($label_properties, SORT_NATURAL);
+    foreach ($label_properties as $label => $properties) {
+      $tokens = array();
+      if (isset($properties["E"]) && trim($properties["E"]) != "") {
+        $tokens[] = "E=" . $properties["E"];
+      }
+      if (isset($properties["nu"]) && trim($properties["nu"]) != "") {
+        $tokens[] = "nu=" . $properties["nu"];
+      }
+      if (isset($properties["k"]) && trim($properties["k"]) != "") {
+        $tokens[] = "k=" . $properties["k"];
+      }
+      if (isset($properties["q"]) && trim($properties["q"]) != "") {
+        $tokens[] = "q=" . $properties["q"];
+      }
+      $line = suncae_material_write_line($label, $tokens);
+      if ($line != "") {
+        $material_lines[] = $line;
+      }
+    }
+
+    $new_lines = array();
+    $inserted_materials = false;
+    foreach ($fee_lines as $line) {
+      if (suncae_material_parse_function_line($line) !== null) {
+        continue;
+      }
+
+      $material_data = suncae_material_parse_line($line);
+      if ($material_data !== null) {
+        if (count($material_data["other_tokens"]) > 0) {
+          $rebuilt = suncae_material_write_line($material_data["label"], $material_data["other_tokens"]);
+          if ($rebuilt != "") {
+            $new_lines[] = $rebuilt;
+          }
+        }
+        continue;
+      }
+
+      if ($inserted_materials == false && preg_match('/^\s*SOLVE_PROBLEM\b/', $line) === 1) {
+        foreach ($material_lines as $material_line) {
+          $new_lines[] = $material_line;
+        }
+        if (count($material_lines) > 0) {
+          $new_lines[] = "";
+        }
+        $inserted_materials = true;
+      }
+
+      if (trim($line) != "") {
+        $new_lines[] = $line;
+      }
+    }
+
+    if ($inserted_materials == false && count($material_lines) > 0) {
+      foreach ($material_lines as $material_line) {
+        $new_lines[] = $material_line;
+      }
+      $new_lines[] = "";
+    }
+
+    $new_content = implode("\n", $new_lines) . "\n";
+    if (file_put_contents("new.fee", $new_content) === false || rename("new.fee", "case.fee") !== true) {
+      return_error_json("Cannot update fee");
+    }
+
+    exec("../../../../bin/feenox -c case.fee 2>&1", $output, $result);
+    if ($result != 0) {
+      for ($i = 0; $i < count($output); $i++) {
+        if ($output[$i] != "" && strncasecmp($output[$i], "Authorization", 13) != 0) {
+          if (strncmp("error", $output[$i], 5) == 0) {
+            $output_exploded = explode(":", $output[$i]);
+            for ($j = 3; $j < count($output_exploded); $j++) {
+              $response["error"] .= $output_exploded[$j];
+            }
+            $response["error"] .= "<br>";
+          } else {
+            $response["error"] .= $output[$i] . "<br>";
+          }
+        }
+      }
+    }
+
+    if ($response["error"] != "") {
+      suncae_log_error("case {$id} ajax2problem failed: {$response["error"]}");
+    }
+  } else {
 
   if (strncmp($field, "bc_", 3) == 0 && preg_match('/^bc_[0-9]+_(face|edge|value|remove)$/', $field) !== 1) {
     return_error_json("invalid boundary-condition field");
@@ -222,6 +416,7 @@ if ($field == "PC" ||
 
   } else {
     return_error_json("cannot open case.fee");
+  }
   }
 }
 

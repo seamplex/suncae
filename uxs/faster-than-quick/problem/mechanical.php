@@ -10,6 +10,36 @@ $E = "200";
 $nu = "0.3";
 $alpha = "0";
 $bc = array();
+$material_by_label = array();
+
+function mechanical_parse_material_line($line) {
+  $trimmed = trim($line);
+  if (preg_match('/^MATERIAL\s+([A-Za-z0-9_.-]+)\s*(.*)$/', $trimmed, $matches) !== 1) {
+    return null;
+  }
+  $label = $matches[1];
+  $tokens = array_values(array_filter(str_getcsv(isset($matches[2]) ? $matches[2] : "", ' ', '"'), function($token) {
+    return $token !== "";
+  }));
+  $properties = array();
+  foreach ($tokens as $token) {
+    if (preg_match('/^(E|nu)=(.+)$/', $token, $property_match) === 1) {
+      $properties[$property_match[1]] = trim($property_match[2]);
+    }
+  }
+  return array("label" => $label, "properties" => $properties);
+}
+
+function mechanical_parse_material_function_line($line) {
+  if (preg_match('/^(E|nu)_([A-Za-z0-9_.-]+)\s*\(x,y,z\)\s*=\s*(.+)$/', trim($line), $matches) === 1) {
+    return array(
+      "property" => $matches[1],
+      "label" => $matches[2],
+      "expression" => trim($matches[3])
+    );
+  }
+  return null;
+}
 
 $fee = fopen("../data/{$owner}/cases/{$id}/case.fee", "r");
 if ($fee) {
@@ -35,6 +65,20 @@ if ($fee) {
       }
     } else if (strncmp("nu = ", $line, 5) == 0) {
       $nu = substr($line, 5);
+
+    } else if (($material_function = mechanical_parse_material_function_line($line)) != null) {
+      if (isset($material_by_label[$material_function["label"]]) == false) {
+        $material_by_label[$material_function["label"]] = array();
+      }
+      $material_by_label[$material_function["label"]][$material_function["property"]] = $material_function["expression"];
+
+    } else if (($material_line = mechanical_parse_material_line($line)) != null) {
+      if (isset($material_by_label[$material_line["label"]]) == false) {
+        $material_by_label[$material_line["label"]] = array();
+      }
+      foreach ($material_line["properties"] as $property_name => $property_expression) {
+        $material_by_label[$material_line["label"]][$property_name] = $property_expression;
+      }
 
     } else if ($line_exploded[0] == "BC") {
 
@@ -108,6 +152,23 @@ if ($fee) {
   echo "error opening fee";
   exit();
 }
+
+$material_labels = array();
+$cad_json_path = "../data/{$owner}/cads/{$case["cad"]}/cad.json";
+if (file_exists($cad_json_path)) {
+  $cad_json = json_decode(file_get_contents($cad_json_path), true);
+  if ($cad_json != null && isset($cad_json["solids"])) {
+    for ($solid = 1; $solid <= intval($cad_json["solids"]); $solid++) {
+      $material_labels[] = "solid{$solid}";
+    }
+  }
+}
+foreach (array_keys($material_by_label) as $label_name) {
+  if (in_array($label_name, $material_labels, true) == false) {
+    $material_labels[] = $label_name;
+  }
+}
+sort($material_labels, SORT_NATURAL);
 
 // TODO: use the ones from the javascript: create a script to create both php and js
 $color = array();
@@ -440,6 +501,36 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
       </div>
      </div>
     </div>
+
+<?php if (count($material_labels) > 0) { ?>
+    <div class="row mt-3 mb-1">
+     <div class="col-12 small text-muted text-center">Per-label properties from <code>case.fee</code> (`MATERIAL` or `E_label`/`nu_label`)</div>
+    </div>
+<?php
+  foreach ($material_labels as $material_label_name) {
+    $material_E = isset($material_by_label[$material_label_name]["E"]) ? $material_by_label[$material_label_name]["E"] : "";
+    $material_nu = isset($material_by_label[$material_label_name]["nu"]) ? $material_by_label[$material_label_name]["nu"] : "";
+?>
+    <div class="row mt-2 mb-1">
+     <label class="col-2 col-form-label text-end"><?=$material_label_name?></label>
+     <div class="col-4">
+      <div class="input-group">
+       <span class="input-group-text">E=</span>
+       <input type="text" class="form-control" name="mat_<?=$material_label_name?>_E" value="<?=htmlspecialchars($material_E)?>" placeholder="200e3" onblur="ajax2problem(this.name, this.value)">
+      </div>
+     </div>
+     <div class="col-4">
+      <div class="input-group">
+       <span class="input-group-text">nu=</span>
+       <input type="text" class="form-control" name="mat_<?=$material_label_name?>_nu" value="<?=htmlspecialchars($material_nu)?>" placeholder="0.3" onblur="ajax2problem(this.name, this.value)">
+      </div>
+     </div>
+     <div class="col-2 small text-muted pt-2">label</div>
+    </div>
+<?php
+  }
+?>
+<?php } ?>
 
     <div class="row mt-2 mb-1">
      <label for="material_model" class="col-4 col-form-label text-end">Thermal expansion</label>

@@ -28,12 +28,12 @@ def _fragment_all(volumes):
 
 def main():
   if len(sys.argv) != 4:
-    print("usage: cadtreat.py <mode> <input.step> <output.step>")
+    print("usage: cadtreat.py <mode> <input_cad> <output_cad>")
     sys.exit(2)
 
   mode = sys.argv[1]
-  input_step = sys.argv[2]
-  output_step = sys.argv[3]
+  input_cad = sys.argv[2]
+  output_cad = sys.argv[3]
 
   if mode not in ["single_material", "multi_material"]:
     print("invalid mode")
@@ -43,10 +43,10 @@ def main():
   gmsh.option.setNumber("General.Terminal", 0)
 
   try:
-    gmsh.open(input_step)
+    gmsh.open(input_cad)
   except Exception:
     gmsh.finalize()
-    print("cannot open input STEP")
+    print("cannot open input CAD")
     sys.exit(1)
 
   volumes = _volume_entities()
@@ -66,11 +66,11 @@ def main():
     print("operation produced zero solids")
     sys.exit(4)
 
-  output_dir = os.path.dirname(output_step)
+  output_dir = os.path.dirname(output_cad)
   if output_dir != "":
     os.makedirs(output_dir, exist_ok=True)
 
-  gmsh.write(output_step)
+  gmsh.write(output_cad)
   gmsh.finalize()
   sys.exit(0)
 

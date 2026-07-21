@@ -14,11 +14,23 @@ import json
 def main():
   gmsh.initialize()
   gmsh.option.setNumber("General.Terminal", 0)
+
+  cad_path = ""
+  cad_format = ""
+  if os.path.exists("original.brep"):
+    cad_path = "original.brep"
+    cad_format = "brep"
+  elif os.path.exists("original.step"):
+    cad_path = "original.step"
+    cad_format = "step"
+  else:
+    print("missing original CAD")
+    sys.exit(1)
   
   try:
-    gmsh.open("original.step")
+    gmsh.open(cad_path)
   except:
-    print("invalid STEP");
+    print("invalid CAD");
     sys.exit(1)
   
   try:
@@ -44,9 +56,8 @@ def main():
   orig["edges"] = len(gmsh.model.getEntities(1))
   orig["vertices"] = len(gmsh.model.getEntities(0))
   
-  # orig["format"] = options.ext
-  orig["format"] = "step"
-  orig["size"] = os.path.getsize("original.step")
+  orig["format"] = cad_format
+  orig["size"] = os.path.getsize(cad_path)
   
   
   
