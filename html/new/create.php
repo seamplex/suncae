@@ -29,11 +29,38 @@ if (file_exists("../../data/{$owner}/cases") ==  false) {
     suncae_error("error: cannot create cases directory");
   }
 }
+
+$owner_data_dir = realpath(__DIR__ . "/../../data/{$owner}");
+if ($owner_data_dir === false) {
+  suncae_error("error: cannot resolve owner data directory");
+}
+
+$cad = isset($_POST["cad_hash"]) ? suncae_require_hash($_POST["cad_hash"], "cad hash") : suncae_error("missing cad hash");
+$cad_dir = "{$owner_data_dir}/cads/{$cad}";
+if (is_dir($cad_dir) === false) {
+  suncae_error("cannot find CAD {$cad}");
+}
+
+$cad_original_json_path = "{$cad_dir}/original.json";
+if (file_exists($cad_original_json_path) === false) {
+  suncae_error("CAD metadata is missing, please reprocess the CAD");
+}
+$cad_preview_json_path = "{$cad_dir}/cad.json";
+if (file_exists($cad_preview_json_path) === false) {
+  suncae_error("CAD preview is not ready yet, please wait a few seconds and try again");
+}
+$cad_original = json_decode(file_get_contents($cad_original_json_path), true);
+if ($cad_original == null || isset($cad_original["solids"]) === false) {
+  suncae_error("cannot decode CAD metadata");
+}
+if (intval($cad_original["solids"]) <= 0) {
+  suncae_error("CAD contains no solids. SunCAE currently requires at least one 3D solid.");
+}
+
 if (chdir("../../data/{$owner}/cases") == false) {
   suncae_error("error: cannot chdir to cases");
 }
 
-$cad = isset($_POST["cad_hash"]) ? suncae_require_hash($_POST["cad_hash"], "cad hash") : suncae_error("missing cad hash");
 $id = md5((`which uuidgen`) ? shell_exec("uuidgen") : uniqid());
 
 if (file_exists($id) === true) {
@@ -45,7 +72,14 @@ if (mkdir($id, 0775, true) == false) {
 chdir($id);
 
 // TODO: per mesher
-copy("../../cads/{$cad}/default.geo", "mesh.geo");
+if (copy("../../cads/{$cad}/default.geo", "mesh.geo") === false) {
+  $mesh_geo = fopen("mesh.geo", "w");
+  if ($mesh_geo === false) {
+    suncae_error("cannot create mesh.geo");
+  }
+  fprintf($mesh_geo, "Merge \"../../cads/%s/cad.xao\";\n", $cad);
+  fclose($mesh_geo);
+}
 
 $case["id"] = $id;
 $case["owner"] = $owner;

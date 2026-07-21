@@ -23,6 +23,8 @@ $default_solver = "feenox";
  <link href="../css/faster-than-quick/x3dom.css" rel="stylesheet">
 <script>
 var csrf_token = "<?=htmlspecialchars(suncae_csrf_token())?>";
+var uploaded_cad_hash = "";
+var uploaded_cad_solids = 0;
 
 function bootstrap_hide(id) {
   document.getElementById(id).classList.remove("d-block");
@@ -47,11 +49,48 @@ function set_error(message) {
   bootstrap_block("cad_error");
 }
 
+function selected_treatment_mode() {
+  if (typeof select_treatment_mode === "undefined") {
+    return "single_material";
+  }
+  return select_treatment_mode.value;
+}
+
+function update_treatment_controls(solids, effective_mode) {
+  uploaded_cad_solids = solids;
+  if (solids > 1) {
+    bootstrap_block("div_treatment");
+    div_treatment_help.innerHTML = "This CAD has " + solids + " solids. By default, SunCAE fuses solids that share the same material. Use the second option only when solids may require different materials.";
+  } else {
+    bootstrap_hide("div_treatment");
+    select_treatment_mode.value = "single_material";
+    if (solids == 1) {
+      div_treatment_help.innerHTML = "Single-solid CAD detected. No extra geometry treatment is needed.";
+    } else {
+      div_treatment_help.innerHTML = "";
+    }
+  }
+  if (effective_mode && effective_mode != "") {
+    select_treatment_mode.value = effective_mode;
+  }
+}
+
+function treatment_mode_change() {
+  if (uploaded_cad_hash != "") {
+    process_cad(uploaded_cad_hash);
+  }
+}
+
 
 function process_cad(cad) {
   div_progress.classList.add("progress-bar-striped");
   div_progress.classList.add("progress-bar-animated");
   div_progress.innerHTML = "Processing CAD...";
+
+  uploaded_cad_hash = cad;
+  cad_hash.value = "";
+  enable_btn_start();
+  var treatment_mode = selected_treatment_mode();
 
   ajax = new XMLHttpRequest();
   ajax.onreadystatechange = function() {
@@ -70,8 +109,24 @@ function process_cad(cad) {
         div_progress.innerHTML = "";
 
         if (result["status"] == "ok") {
-          show_preview(cad, result["position"], result["orientation"], result["centerOfRotation"], result["fieldOfView"]);
+          if (typeof result["original_solids"] !== "undefined") {
+            update_treatment_controls(result["original_solids"], result["effective_mode"]);
+          }
+          if (typeof result["single_material_solids"] !== "undefined" && parseInt(result["single_material_solids"]) > 1) {
+            div_disjoint_warning_text.innerHTML = "Warning: after fusing, the geometry still has " + result["single_material_solids"] + " disjoint solids. You have to set fixation (Dirichlet) boundary conditions in each separate set of solids.";
+            bootstrap_block("div_disjoint_warning");
+          } else {
+            bootstrap_hide("div_disjoint_warning");
+          }
+          var processed_hash = (typeof result["cad_hash"] !== "undefined") ? result["cad_hash"] : cad;
+          show_preview(processed_hash, result["position"], result["orientation"], result["centerOfRotation"], result["fieldOfView"]);
         } else {
+          if (typeof result["original_solids"] !== "undefined") {
+            update_treatment_controls(result["original_solids"], "single_material");
+          }
+          bootstrap_hide("div_disjoint_warning");
+          cad_hash.value = "";
+          enable_btn_start();
           set_error(result["error"]);
         }
       }
@@ -80,7 +135,7 @@ function process_cad(cad) {
 
   ajax.open("POST", "./process.php", true);
   ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  ajax.send("csrf_token=" + encodeURIComponent(csrf_token) + "&cad_hash=" + encodeURIComponent(cad));
+  ajax.send("csrf_token=" + encodeURIComponent(csrf_token) + "&cad_hash=" + encodeURIComponent(cad) + "&treatment_mode=" + encodeURIComponent(treatment_mode));
 
 }
 
@@ -106,7 +161,13 @@ function show_preview(md5_sum, position, orientation, centerOfRotation, fieldOfV
 
 function choose_another_cad() {
   reset_error();
+  uploaded_cad_hash = "";
+  uploaded_cad_solids = 0;
   cad_hash.value = "";
+  select_treatment_mode.value = "single_material";
+  bootstrap_hide("div_treatment");
+  div_treatment_help.innerHTML = "";
+  bootstrap_hide("div_disjoint_warning");
   bootstrap_hide("cad_preview");
   bootstrap_hide("cad_again");
   bootstrap_block("cad_upload");
@@ -237,6 +298,7 @@ include("about.php");
      </div>
 
      <div class="col-lg-6">
+
 <!--
       <div class="col mb-3">
        <label for="name" class="form-label">Case name</label>
@@ -321,7 +383,7 @@ include("about.php");
 
        <div class="col-lg-6">
         <label for="mesher" class="form-label">
-         <span class="badge text-bg-success" id="badge_mesher">5</span>&nbsp;Mesher
+         <span class="badge text-bg-success" id="badge_mesher">4</span>&nbsp;Mesher
         </label>
         <select class="form-select col-6" id="mesher" name="mesher" onchange="enable_btn_start()">
          <option value="gmsh" selected>Gmsh</option>
@@ -333,6 +395,26 @@ include("about.php");
 -->
        </div>
       </div>
+
+      <div class="row mb-3 d-none" id="div_treatment">
+       <div class="col-12">
+        <label for="select_treatment_mode" class="form-label">
+         <span class="badge text-bg-success" id="badge_treatment">5</span>&nbsp;Geometry treatment
+        </label>
+        <select class="form-select" id="select_treatment_mode" onchange="treatment_mode_change()">
+         <option value="single_material" selected>All solids have the same material (fuse)</option>
+         <option value="multi_material">Solids may have different materials (conformal interfaces)</option>
+        </select>
+        <div id="div_treatment_help" class="form-text"></div>
+       </div>
+      </div>
+
+      <div class="row mb-3 d-none" id="div_disjoint_warning">
+       <div class="col-12">
+        <div class="alert alert-warning mb-0" id="div_disjoint_warning_text"></div>
+       </div>
+      </div>
+
       <div class="row mt-4 mb-3">
        <div class="d-grid gap-2 col-lg-6 mx-auto mt-3">
         <input type="hidden" id="cad_hash" name="cad_hash" value="">

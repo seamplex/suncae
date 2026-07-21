@@ -58,7 +58,8 @@ function upload_cad_file() {
         <div class="progress-bar bg-info" style="width: 0%" id="div_progress"></div>
        </div>
        <div id="cad_help" class="form-text">
-        Pick or drag-and-drop a single-solid CAD file in STEP format.<br>
+        Pick or drag-and-drop a CAD file with at least one 3D solid in STEP format.<br>
+        If it has multiple solids, you will be able to choose the geometry treatment before starting the case.<br>
         If you do not have one, <a href="sample.step">download a sample STEP file here</a>.
        </div>
       </div>

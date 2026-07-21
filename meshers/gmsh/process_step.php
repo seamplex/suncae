@@ -25,12 +25,10 @@ if (file_exists("original.json") === false) {
 if (file_exists("original.json")) {
   $original = json_decode(file_get_contents("original.json"), true);
   if ($original != null) {
+    $response["original_solids"] = intval($original["solids"]);
     if ($original["solids"] == 0) {
       $response["status"] = "error";
-      $response["error"] = "No solid found in CAD file.";
-    } else if ($original["solids"] > 1) {
-      $response["status"] = "error";
-      $response["error"] = "CAD file has {$original["solids"]} solids and this PoC works with single-solid CADs only.";
+      $response["error"] = "CAD contains no solids. SunCAE currently requires at least one 3D solid.";
     }
   } else {
     $response["status"] = "error";
