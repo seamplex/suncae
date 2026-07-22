@@ -24,7 +24,7 @@ function upload_cad_file() {
           return false;
         }
 
-        if (result["status"] != "ok") {
+        if (result["status"] != "ok" && !result["show_preview"]) {
           set_error(result["error"]);
         }
         if (result["show_preview"]) {

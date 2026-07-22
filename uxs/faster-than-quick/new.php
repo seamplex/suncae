@@ -28,6 +28,7 @@ var uploaded_cad_solids = 0;
 var preview_faces = 0;
 var preview_solid_colors = [];
 var preview_face_to_solids = {};
+var preview_inline_listener_bound = false;
 
 function preview_face_primary_solid(face_id) {
   if (preview_face_to_solids == null) {
@@ -61,9 +62,22 @@ function preview_apply_solid_colors(try_count = 0) {
     }
   }
 
-  if (applied == 0 && try_count < 30) {
+  if (applied == 0 && try_count < 120) {
     setTimeout(function() { preview_apply_solid_colors(try_count + 1); }, 100);
   }
+}
+
+function preview_bind_inline_listener() {
+  if (preview_inline_listener_bound) {
+    return;
+  }
+  if (typeof inline_x3d === "undefined" || inline_x3d == null) {
+    return;
+  }
+  inline_x3d.addEventListener("load", function() {
+    setTimeout(function() { preview_apply_solid_colors(0); }, 50);
+  });
+  preview_inline_listener_bound = true;
 }
 
 function bootstrap_hide(id) {
@@ -82,6 +96,14 @@ function reset_error(message) {
 }
 
 function set_error(message) {
+  if (message == null || message === "") {
+    return;
+  }
+  var current_lines = cad_error.innerHTML === "" ? [] : cad_error.innerHTML.split("<br>");
+  if (current_lines.indexOf(message) !== -1) {
+    bootstrap_block("cad_error");
+    return;
+  }
   if (cad_error.innerHTML != "") {
     cad_error.innerHTML += "<br>";
   }
@@ -148,6 +170,12 @@ function process_cad(cad) {
         div_progress.classList.remove("progress-bar-animated");
         div_progress.innerHTML = "";
 
+        var has_preview = (typeof result["position"] !== "undefined" &&
+                           typeof result["orientation"] !== "undefined" &&
+                           typeof result["centerOfRotation"] !== "undefined" &&
+                           typeof result["fieldOfView"] !== "undefined");
+        var processed_hash = (typeof result["cad_hash"] !== "undefined") ? result["cad_hash"] : cad;
+
         if (result["status"] == "ok") {
           if (typeof result["original_solids"] !== "undefined") {
             update_treatment_controls(result["original_solids"], result["effective_mode"]);
@@ -161,14 +189,20 @@ function process_cad(cad) {
           preview_faces = (typeof result["faces"] !== "undefined") ? parseInt(result["faces"]) : 0;
           preview_solid_colors = (typeof result["solid_colors"] !== "undefined") ? result["solid_colors"] : [];
           preview_face_to_solids = (typeof result["face_to_solids"] !== "undefined") ? result["face_to_solids"] : {};
-          var processed_hash = (typeof result["cad_hash"] !== "undefined") ? result["cad_hash"] : cad;
           show_preview(processed_hash, result["position"], result["orientation"], result["centerOfRotation"], result["fieldOfView"]);
         } else {
           if (typeof result["original_solids"] !== "undefined") {
             update_treatment_controls(result["original_solids"], "single_material");
           }
           bootstrap_hide("div_disjoint_warning");
-          cad_hash.value = "";
+          if (has_preview) {
+            preview_faces = (typeof result["faces"] !== "undefined") ? parseInt(result["faces"]) : 0;
+            preview_solid_colors = (typeof result["solid_colors"] !== "undefined") ? result["solid_colors"] : [];
+            preview_face_to_solids = (typeof result["face_to_solids"] !== "undefined") ? result["face_to_solids"] : {};
+            show_preview(processed_hash, result["position"], result["orientation"], result["centerOfRotation"], result["fieldOfView"]);
+          } else {
+            cad_hash.value = "";
+          }
           enable_btn_start();
           set_error(result["error"]);
         }
@@ -187,6 +221,8 @@ function show_preview(md5_sum, position, orientation, centerOfRotation, fieldOfV
   bootstrap_block("cad_preview");
   bootstrap_block("cad_again");
 
+  preview_bind_inline_listener();
+
   inline_x3d.setAttribute("url", "preview.php?id=" + md5_sum);
   inline_viewpoint.setAttribute("position", position);
   inline_viewpoint.setAttribute("orientation", orientation);
@@ -198,6 +234,7 @@ function show_preview(md5_sum, position, orientation, centerOfRotation, fieldOfV
   badge_cad.classList.add("text-bg-success");
 
   setTimeout(function() { canvas.runtime.fitAll(); }, 1000);
+  // Keep a fallback repaint in case some browsers miss inline load events.
   preview_apply_solid_colors(0);
 
   enable_btn_start();

@@ -14,6 +14,7 @@ if (in_array($treatment_mode, $allowed_modes, true) === false) {
 $response["status"] = "ok";
 $response["username"] = $username;
 $response["error"] = "";
+$no_solid_error = "";
 
 if (isset($username) == false || $username == "") {
   return_error_json("username is empty");
@@ -49,7 +50,9 @@ if ($original == null || isset($original["solids"]) === false) {
 $solids = intval($original["solids"]);
 $response["original_solids"] = $solids;
 if ($solids <= 0) {
-  return_error_json("CAD contains no solids. SunCAE currently requires at least one 3D solid.");
+  $no_solid_error = "CAD contains no solids. SunCAE currently requires at least one 3D solid.";
+  $response["status"] = "error";
+  $response["error"] = $no_solid_error;
 }
 
 $effective_mode = ($solids > 1) ? $treatment_mode : "keep";
@@ -268,11 +271,9 @@ if (file_exists("cad.json")) {
 
 // ------------------------------------------------------------
 // leave running the mesher in the background
-exec("../../../../cadprocessors/gmsh/initial_mesh.sh > cadmesh.log 2>&1 &");
-
-if ($response["error"] != "") {
-  return_error_json("CAD {$cad_hash} process failed: {$response["error"]}");
-} else {
-  return_back_json($response);
+if ($no_solid_error == "") {
+  exec("../../../../cadprocessors/gmsh/initial_mesh.sh > cadmesh.log 2>&1 &");
 }
+
+return_back_json($response);
 
