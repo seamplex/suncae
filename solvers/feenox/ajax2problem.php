@@ -195,7 +195,7 @@ if ($field == "PC" ||
       return_error_json("Cannot update fee");
     }
 
-    exec("../../../../bin/feenox -c case.fee 2>&1", $output, $result);
+    exec(suncae_with_runtime_env("../../../../bin/feenox -c case.fee 2>&1"), $output, $result);
     if ($result != 0) {
       for ($i = 0; $i < count($output); $i++) {
         if ($output[$i] != "" && strncasecmp($output[$i], "Authorization", 13) != 0) {
@@ -396,7 +396,7 @@ if ($field == "PC" ||
 
     // TODO: solver-dependent
     // validate .fee with feenox
-    exec("../../../../bin/feenox -c case.fee 2>&1", $output, $result);
+    exec(suncae_with_runtime_env("../../../../bin/feenox -c case.fee 2>&1"), $output, $result);
     if ($result != 0) {
       for ($i = 0; $i < count($output); $i++) {
         // this authorization comes from openmpi

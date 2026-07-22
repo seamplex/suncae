@@ -370,12 +370,24 @@ function suncae_pid_is_running($pid) {
   return is_int($pid) && $pid > 1 && posix_getpgid($pid) !== false;
 }
 
+function suncae_runtime_env_shell_prefix() {
+  return 'export HOME="${HOME:-$PWD/run/home}"; mkdir -p "$HOME"; '
+       . 'export TMPDIR="${TMPDIR:-$PWD/run/tmp}"; mkdir -p "$TMPDIR"; '
+       . 'export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$PWD/run/xdg-runtime}"; mkdir -p "$XDG_RUNTIME_DIR"; '
+       . 'chmod 700 "$XDG_RUNTIME_DIR" 2>/dev/null || true; ';
+}
+
+function suncae_with_runtime_env($command) {
+  $script = suncae_runtime_env_shell_prefix() . $command;
+  return "sh -c " . escapeshellarg($script);
+}
+
 function suncae_local_job_command($command) {
   global $runner_time_limit;
   global $runner_memory_limit_kb;
   global $runner_nice;
 
-  $script = "";
+  $script = suncae_runtime_env_shell_prefix();
   if (isset($runner_memory_limit_kb) && intval($runner_memory_limit_kb) > 0) {
     $script .= "ulimit -v " . intval($runner_memory_limit_kb) . " || exit 125; ";
   }

@@ -9,7 +9,7 @@ if (chdir($case_dir) == false) {
   $response["status"] = "error";
   $response["error"] = "cannot chdir to case dir";
 }
-exec("../../../../bin/feenox -c case.fee 2> run/{$problem_hash}-check.2", $output, $result);
+exec(suncae_with_runtime_env("../../../../bin/feenox -c case.fee 2> run/{$problem_hash}-check.2"), $output, $result);
 if ($result == 0) {
   $pid = suncae_local_job_start("../../../../solvers/feenox/solve.sh " . escapeshellarg($problem), "run/{$problem_hash}-solve.log", "run/solving.pid", $output, $result);
   if ($pid > 0) {

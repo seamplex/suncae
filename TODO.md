@@ -11,8 +11,16 @@
 
 ## General
 
+ * show better progress in new when processing the CAD file
+    - both in the initial process
+    - and when doing the fuse/fragments
+ * nicer error pages and deps.sh check
+ * in mesher if there are too many nodes/elements while meshing, stop
+ * filter out the progress bar in feenox for status
+ * output fields (stresses)
+ * output probe points
  * replace python with c++ to "process" msh and make it smarter
- * unit tests
+ * unit tests (ongoing)
  * choose units (SI, etc.)
  * choose points for BCs (and eventually refinements)
  * name in the BC should reflect the content

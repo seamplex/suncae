@@ -14,7 +14,7 @@ $response["error"] = "";
 
 // TODO: put this in a function and call it from ajax2yaml
 // validate .fee with feenox
-exec("../../../../bin/feenox -c case.fee 2>&1", $output, $result);
+exec(suncae_with_runtime_env("../../../../bin/feenox -c case.fee 2>&1"), $output, $result);
 if ($result != 0) {
   $response["status"] = "error";
   for ($i = 0; $i < count($output); $i++) {
