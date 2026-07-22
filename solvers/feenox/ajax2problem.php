@@ -125,7 +125,13 @@ if ($field == "PC" ||
     if (trim($value) == "") {
       unset($label_properties[$material_label][$material_property]);
     } else {
-      $label_properties[$material_label][$material_property] = trim($value);
+      $trimmed_value = trim($value);
+      if ($material_property == "E") {
+        // Keep UI values in GPa and store in fee expressions using MPa units.
+        $label_properties[$material_label][$material_property] = "(" . $trimmed_value . ")*1e3";
+      } else {
+        $label_properties[$material_label][$material_property] = $trimmed_value;
+      }
     }
 
     $material_lines = array();

@@ -41,6 +41,13 @@ function mechanical_parse_material_function_line($line) {
   return null;
 }
 
+function mechanical_material_E_display_from_fee($expression) {
+  if (preg_match('/^\((.*)\)\*1e3$/', trim($expression), $matches) === 1) {
+    return $matches[1];
+  }
+  return trim($expression);
+}
+
 $fee = fopen("../data/{$owner}/cases/{$id}/case.fee", "r");
 if ($fee) {
   $bc_i = 0;
@@ -154,11 +161,13 @@ if ($fee) {
 }
 
 $material_labels = array();
+$cad_solids = 1;
 $cad_json_path = "../data/{$owner}/cads/{$case["cad"]}/cad.json";
 if (file_exists($cad_json_path)) {
   $cad_json = json_decode(file_get_contents($cad_json_path), true);
   if ($cad_json != null && isset($cad_json["solids"])) {
-    for ($solid = 1; $solid <= intval($cad_json["solids"]); $solid++) {
+    $cad_solids = max(1, intval($cad_json["solids"]));
+    for ($solid = 1; $solid <= $cad_solids; $solid++) {
       $material_labels[] = "solid{$solid}";
     }
   }
@@ -169,6 +178,7 @@ foreach (array_keys($material_by_label) as $label_name) {
   }
 }
 sort($material_labels, SORT_NATURAL);
+$is_multi_solid_cad = ($cad_solids > 1);
 
 // TODO: use the ones from the javascript: create a script to create both php and js
 $color = array();
@@ -194,6 +204,7 @@ $color[17] = [0.25, 0.83, 0.60];
 $color[18] = [0.35, 0.75, 0.60];
 $color[19] = [0.21, 0.78, 0.78];
 
+// TODO: add mesh to the left and results to the right
 title_left("Problem definition");
 push_accordion("problem");
 push_accordion_item("bcs", "problem", "Constraints &amp; Loads", true);
@@ -454,6 +465,8 @@ pop_accordion_item();
 push_accordion_item("materialproperties", "problem", "Material properties", false);
 ?>
 
+<?php if ($is_multi_solid_cad == false) { ?>
+
     <div class="row mt-2 mb-1">
      <label for="material_model" class="col-4 col-form-label text-end">Mechanical model</label>
      <div class="col-8">
@@ -502,30 +515,59 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
      </div>
     </div>
 
-<?php if (count($material_labels) > 0) { ?>
+<?php } ?>
+
+<?php if ($is_multi_solid_cad) { ?>
     <div class="row mt-3 mb-1">
-     <div class="col-12 small text-muted text-center">Per-label properties from <code>case.fee</code> (`MATERIAL` or `E_label`/`nu_label`)</div>
+     <div class="col-12 small text-muted text-center">Per-solid properties from <code>case.fee</code> (`MATERIAL` or `E_label`/`nu_label`)</div>
     </div>
 <?php
   foreach ($material_labels as $material_label_name) {
-    $material_E = isset($material_by_label[$material_label_name]["E"]) ? $material_by_label[$material_label_name]["E"] : "";
+    $material_E = isset($material_by_label[$material_label_name]["E"]) ? mechanical_material_E_display_from_fee($material_by_label[$material_label_name]["E"]) : "";
     $material_nu = isset($material_by_label[$material_label_name]["nu"]) ? $material_by_label[$material_label_name]["nu"] : "";
 ?>
-    <div class="row mt-2 mb-1">
-     <label class="col-2 col-form-label text-end"><?=$material_label_name?></label>
-     <div class="col-4">
-      <div class="input-group">
-       <span class="input-group-text">E=</span>
-       <input type="text" class="form-control" name="mat_<?=$material_label_name?>_E" value="<?=htmlspecialchars($material_E)?>" placeholder="200e3" onblur="ajax2problem(this.name, this.value)">
+    <div class="row mt-3 mb-1">
+     <div class="col-12 border rounded p-2">
+      <div class="row mb-2">
+       <label class="col-4 col-form-label text-end">Material label</label>
+       <div class="col-8 pt-2"><span class="badge text-bg-light"><?=$material_label_name?></span></div>
+      </div>
+      <div class="row mb-2">
+       <label class="col-4 col-form-label text-end">Mechanical model</label>
+       <div class="col-8">
+        <select class="form-select" id="material_model_<?=$material_label_name?>" onchange="">
+         <option value="linear_elastic_isotropic">Linear elastic isotropic</option>
+<!--         <option value="linear_elastic_orthotropic">Linear elastic orthotropic</option> -->
+<!--         <option value="hyperelastic_neohookean">Hyperelastic neo-hookean</option> -->
+        </select>
+       </div>
+      </div>
+      <div class="row mb-1">
+        <label class="col-2 col-form-label text-end"><?=$label["E="]?></label>
+       <div class="col-4">
+        <div class="input-group">
+         <input type="text" class="form-control" name="mat_<?=$material_label_name?>_E" value="<?=htmlspecialchars($material_E)?>" placeholder="200" onblur="ajax2problem(this.name, this.value)">
+         <span class="input-group-text"><?=$label["GPa"]?></span>
+        </div>
+       </div>
+        <label class="col-2 col-form-label text-end"><?=$label["nu="]?></label>
+       <div class="col-4">
+        <div class="input-group">
+         <input type="text" class="form-control" name="mat_<?=$material_label_name?>_nu" value="<?=htmlspecialchars($material_nu)?>" placeholder="0.3" onblur="ajax2problem(this.name, this.value)">
+         <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-three-dots"></i>
+         </button>
+         <ul class="dropdown-menu">
+          <li>
+           <a class="dropdown-item" href="#" onclick="fee_show()">
+            <i class="bi bi-pencil-square me-2"></i>Edit full solver input
+           </a>
+          </li>
+         </ul>
+        </div>
+       </div>
       </div>
      </div>
-     <div class="col-4">
-      <div class="input-group">
-       <span class="input-group-text">nu=</span>
-       <input type="text" class="form-control" name="mat_<?=$material_label_name?>_nu" value="<?=htmlspecialchars($material_nu)?>" placeholder="0.3" onblur="ajax2problem(this.name, this.value)">
-      </div>
-     </div>
-     <div class="col-2 small text-muted pt-2">label</div>
     </div>
 <?php
   }
