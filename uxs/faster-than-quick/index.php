@@ -11,6 +11,79 @@ if (($cad_json = file_get_contents("../data/{$owner}/cads/{$case["cad"]}/cad.jso
 if (($cad = json_decode($cad_json, true)) == null) {
   return_error("cannot decode cad {$id}");
 }
+
+$solid_to_faces = array();
+$face_to_solids = array();
+$entities_path = "../data/{$owner}/cads/{$case["cad"]}/entities.json";
+if (file_exists($entities_path)) {
+  $entities_json = json_decode(file_get_contents($entities_path), true);
+  if (is_array($entities_json)) {
+    $face_tag_to_index = array();
+    if (isset($entities_json[2]) && is_array($entities_json[2])) {
+      $face_index = 1;
+      foreach ($entities_json[2] as $face_entity) {
+        if (is_array($face_entity) && isset($face_entity["tag"])) {
+          $face_tag_to_index[abs(intval($face_entity["tag"]))] = $face_index;
+        }
+        $face_index++;
+      }
+    }
+
+    $solid_tag_to_index = array();
+    if (isset($entities_json[3]) && is_array($entities_json[3])) {
+      $solid_index = 1;
+      foreach ($entities_json[3] as $solid_entity) {
+        if (is_array($solid_entity) && isset($solid_entity["tag"])) {
+          $solid_tag_to_index[intval($solid_entity["tag"])] = $solid_index;
+        }
+        $solid_index++;
+      }
+    }
+
+    if (isset($entities_json[3]) && is_array($entities_json[3])) {
+    foreach ($entities_json[3] as $solid_entity) {
+      if (is_array($solid_entity) == false || isset($solid_entity["tag"]) == false) {
+        continue;
+      }
+      $solid_tag = intval($solid_entity["tag"]);
+      if ($solid_tag <= 0) {
+        continue;
+      }
+      $solid_index = isset($solid_tag_to_index[$solid_tag]) ? intval($solid_tag_to_index[$solid_tag]) : $solid_tag;
+      if (isset($solid_to_faces[$solid_index]) == false) {
+        $solid_to_faces[$solid_index] = array();
+      }
+      if (isset($solid_entity["boundary"]) == false || is_array($solid_entity["boundary"]) == false) {
+        continue;
+      }
+      foreach ($solid_entity["boundary"] as $boundary_entity) {
+        if (is_array($boundary_entity) == false || count($boundary_entity) < 2) {
+          continue;
+        }
+        $boundary_dim = intval($boundary_entity[0]);
+        if ($boundary_dim !== 2) {
+          continue;
+        }
+        $face_tag = abs(intval($boundary_entity[1]));
+        if ($face_tag <= 0) {
+          continue;
+        }
+        $face_index = isset($face_tag_to_index[$face_tag]) ? intval($face_tag_to_index[$face_tag]) : $face_tag;
+        if (in_array($face_index, $solid_to_faces[$solid_index], true) == false) {
+          $solid_to_faces[$solid_index][] = $face_index;
+        }
+        if (isset($face_to_solids[$face_index]) == false) {
+          $face_to_solids[$face_index] = array();
+        }
+        if (in_array($solid_index, $face_to_solids[$face_index], true) == false) {
+          $face_to_solids[$face_index][] = $solid_index;
+        }
+      }
+      sort($solid_to_faces[$solid_index], SORT_NUMERIC);
+    }
+    }
+  }
+}
 ?>
 <!doctype html>
 <html lang="en" class="h-100">
@@ -232,6 +305,8 @@ var max_delta = <?=$max_delta?>;
 
 //var entity = json_encode($cad["entity"]);
 var solid_base_color = <?=json_encode($cad["color"])?>;
+var solid_to_faces = <?=json_encode($solid_to_faces)?>;
+var face_to_solids = <?=json_encode($face_to_solids)?>;
 //var color = json_encode($color);
 </script>
 

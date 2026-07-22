@@ -58,6 +58,9 @@ var results_indexedfaceset_set = "";
 var target_warp_fraction = 0;
 var warp_max = 1;
 
+var material_solid_mode = false;
+var material_active_solid = 0;
+
 // globals, same width
 var html_loadsing;
 var html_leftcol;
@@ -86,6 +89,204 @@ function theseus_log(s) {
 
 function fit_all_view() {
   canvas.runtime.fitAll();
+}
+
+function material_rgb_to_string(rgb) {
+  return rgb[0] + " " + rgb[1] + " " + rgb[2];
+}
+
+function material_mix_rgb(a, b, fraction) {
+  return [
+    (1-fraction) * a[0] + fraction * b[0],
+    (1-fraction) * a[1] + fraction * b[1],
+    (1-fraction) * a[2] + fraction * b[2]
+  ];
+}
+
+function material_label_to_solid(label) {
+  const match = /^solid([0-9]+)$/.exec(label);
+  if (match == null) {
+    return 0;
+  }
+  return parseInt(match[1], 10);
+}
+
+function material_solid_color(solid_id) {
+  if (typeof solid_base_color !== "undefined" &&
+      solid_base_color != null &&
+      typeof solid_base_color[solid_id] !== "undefined") {
+    return solid_base_color[solid_id];
+  }
+  return color["base"];
+}
+
+function material_face_solids(face_id) {
+  if (typeof face_to_solids === "undefined" || face_to_solids == null) {
+    return [];
+  }
+  const solids = face_to_solids[face_id];
+  if (Array.isArray(solids)) {
+    return solids.map((solid_id) => parseInt(solid_id, 10)).filter((solid_id) => !Number.isNaN(solid_id) && solid_id > 0);
+  }
+  return [];
+}
+
+function material_face_primary_solid(face_id) {
+  const solids = material_face_solids(face_id);
+  if (solids.length > 0) {
+    return parseInt(solids[0], 10);
+  }
+  return 0;
+}
+
+function material_has_solid_face_map() {
+  if (typeof face_to_solids === "undefined" || face_to_solids == null) {
+    return false;
+  }
+  return Object.keys(face_to_solids).length > 0;
+}
+
+function material_should_color_solids() {
+  return (typeof n_solids !== "undefined" && n_solids > 1 && material_has_solid_face_map());
+}
+
+function material_set_face_color(matface, rgb_string) {
+  matface.diffuseColor = rgb_string;
+  matface.setAttribute("diffuseColor", rgb_string);
+}
+
+function cad_face_default_color(face_id) {
+  if (material_should_color_solids()) {
+    const solid_id = material_face_primary_solid(face_id);
+    if (solid_id > 0) {
+      return material_solid_color(solid_id);
+    }
+  }
+  return color["base"];
+}
+
+function material_refresh_card_styles() {
+  const cards = document.querySelectorAll(".material-solid-card");
+  for (let i = 0; i < cards.length; i++) {
+    const solid_id = parseInt(cards[i].dataset.materialSolid || "0", 10);
+    if (solid_id > 0 && material_active_solid > 0 && solid_id == material_active_solid) {
+      cards[i].classList.add("border-primary");
+      cards[i].classList.remove("border-secondary-subtle");
+      cards[i].classList.add("shadow-sm");
+    } else {
+      cards[i].classList.remove("border-primary");
+      cards[i].classList.add("border-secondary-subtle");
+      cards[i].classList.remove("shadow-sm");
+    }
+  }
+}
+
+function material_apply_overlay() {
+  if (material_solid_mode == false) {
+    return;
+  }
+  if (current_dim == 2 && current_bc != 0) {
+    return;
+  }
+
+  for (let i = 1; i <= n_faces; i++) {
+    const matface = document.getElementById("cad__matface" + i);
+    if (matface == null) {
+      continue;
+    }
+    if (bc_groups_get(i, 2) != 0) {
+      continue;
+    }
+
+    const base_rgb = cad_face_default_color(i);
+    if (material_active_solid > 0) {
+      const solids = material_face_solids(i);
+      if (solids.includes(material_active_solid)) {
+        material_set_face_color(matface, material_rgb_to_string(material_mix_rgb(base_rgb, [1.0, 1.0, 1.0], 0.20)));
+      } else {
+        material_set_face_color(matface, material_rgb_to_string(material_mix_rgb(base_rgb, [0.85, 0.85, 0.85], 0.75)));
+      }
+    }
+  }
+}
+
+function material_highlight_solid(solid_id, scroll_to_card = false) {
+  if (material_solid_mode == false) {
+    return;
+  }
+  material_active_solid = solid_id;
+  cad_update_colors();
+  material_refresh_card_styles();
+
+  if (scroll_to_card) {
+    const card = document.querySelector('.material-solid-card[data-material-solid="' + solid_id + '"]');
+    if (card != null) {
+      const collapse = document.getElementById("collapse_materialproperties");
+      if (collapse != null) {
+        const instance = bootstrap.Collapse.getOrCreateInstance(collapse, { toggle: false });
+        instance.show();
+      }
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+}
+
+function material_clear_highlight() {
+  if (material_solid_mode == false) {
+    return;
+  }
+  material_active_solid = 0;
+  cad_update_colors();
+  material_refresh_card_styles();
+}
+
+function material_solid_setup_cards() {
+  const cards = document.querySelectorAll(".material-solid-card");
+  let face_map_count = 0;
+  if (typeof face_to_solids !== "undefined" && face_to_solids != null) {
+    face_map_count = Object.keys(face_to_solids).length;
+  }
+  material_solid_mode = material_should_color_solids();
+  material_active_solid = 0;
+
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const label = card.dataset.materialLabel || "";
+    let solid_id = parseInt(card.dataset.materialSolid || "0", 10);
+    if (solid_id <= 0) {
+      solid_id = material_label_to_solid(label);
+      if (solid_id > 0) {
+        card.dataset.materialSolid = solid_id;
+      }
+    }
+
+    card.addEventListener("mouseenter", function() {
+      if (solid_id > 0) {
+        material_highlight_solid(solid_id, false);
+      }
+    });
+    card.addEventListener("mouseleave", function() {
+      material_clear_highlight();
+    });
+    card.addEventListener("focusin", function() {
+      if (solid_id > 0) {
+        material_highlight_solid(solid_id, false);
+      }
+    });
+    card.addEventListener("focusout", function() {
+      material_clear_highlight();
+    });
+
+    if (solid_id > 0) {
+      const badge = card.querySelector(".material-solid-color");
+      if (badge != null) {
+        const rgb = material_solid_color(solid_id);
+        badge.style.backgroundColor = "rgb(" + Math.round(255*rgb[0]) + "," + Math.round(255*rgb[1]) + "," + Math.round(255*rgb[2]) + ")";
+      }
+    }
+  }
+
+  cad_update_colors();
 }
   
 
@@ -753,7 +954,8 @@ function cad_update_colors() {
     let face_bc = bc_groups_get(i, 2);
     const matface = document.getElementById("cad__matface"+i);
     if (matface != null) {
-      matface.diffuseColor = (face_bc == 0) ? color["base"] : color["bc_" + face_bc];
+      const rgb = (face_bc == 0) ? cad_face_default_color(i) : color["bc_" + face_bc];
+      material_set_face_color(matface, material_rgb_to_string(rgb));
     }  
   }
   for (let i = 1; i <= n_edges; i++) {
@@ -763,6 +965,8 @@ function cad_update_colors() {
       matedge.emissiveColor = (edge_bc == 0) ? "0 0 0" : color["bc_" + edge_bc];
     }
   }
+
+  material_apply_overlay();
 }
 
 function bc_groups_get(id, dim = 0) {
@@ -848,7 +1052,7 @@ function face_out(id) {
     canvas.runtime.getCanvas().style.cursor = "";
     var face_bc = bc_groups_get(id, 2);
     if (face_bc == 0) {
-      c = color["base"];
+      c = cad_face_default_color(id);
     } else {
       // TODO: named clash
       c = color["bc_" + face_bc];
@@ -869,6 +1073,11 @@ function face_click(face_id) {
     } else {
       c = [1, 0, 0];
       document.getElementById("cad__matface"+id).diffuseColor = c[0] + ' ' + c[1] + ' ' + c[2];
+    }
+  } else if (material_solid_mode) {
+    const solids = material_face_solids(face_id);
+    if (solids.length > 0) {
+      material_highlight_solid(parseInt(solids[0], 10), true);
     }
   }
 }

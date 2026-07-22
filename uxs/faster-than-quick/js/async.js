@@ -260,6 +260,9 @@ async function ajax_change_step() {
     }
     try {
       set_current_step(ajax_step);
+      if (typeof material_solid_setup_cards === "function") {
+        material_solid_setup_cards();
+      }
     } catch (exception) {
       theseus_log(exception);
       html_leftcol.innerHTML = '<div class="alert alert-dismissible alert-danger">Error 4, see console.</div>';

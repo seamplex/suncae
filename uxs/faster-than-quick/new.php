@@ -25,6 +25,46 @@ $default_solver = "feenox";
 var csrf_token = "<?=htmlspecialchars(suncae_csrf_token())?>";
 var uploaded_cad_hash = "";
 var uploaded_cad_solids = 0;
+var preview_faces = 0;
+var preview_solid_colors = [];
+var preview_face_to_solids = {};
+
+function preview_face_primary_solid(face_id) {
+  if (preview_face_to_solids == null) {
+    return 0;
+  }
+  if (typeof preview_face_to_solids[face_id] === "undefined") {
+    return 0;
+  }
+  if (Array.isArray(preview_face_to_solids[face_id]) && preview_face_to_solids[face_id].length > 0) {
+    return parseInt(preview_face_to_solids[face_id][0], 10);
+  }
+  return 0;
+}
+
+function preview_apply_solid_colors(try_count = 0) {
+  if (uploaded_cad_solids <= 1 || preview_faces <= 0 || Object.keys(preview_face_to_solids).length == 0) {
+    return;
+  }
+
+  let applied = 0;
+  for (let face = 1; face <= preview_faces; face++) {
+    let matface = document.getElementById("model__matface" + face);
+    if (matface == null) {
+      continue;
+    }
+    const solid_id = preview_face_primary_solid(face);
+    if (solid_id > 0 && typeof preview_solid_colors[solid_id] !== "undefined") {
+      const rgb = preview_solid_colors[solid_id];
+      matface.diffuseColor = rgb[0] + " " + rgb[1] + " " + rgb[2];
+      applied++;
+    }
+  }
+
+  if (applied == 0 && try_count < 30) {
+    setTimeout(function() { preview_apply_solid_colors(try_count + 1); }, 100);
+  }
+}
 
 function bootstrap_hide(id) {
   document.getElementById(id).classList.remove("d-block");
@@ -118,6 +158,9 @@ function process_cad(cad) {
           } else {
             bootstrap_hide("div_disjoint_warning");
           }
+          preview_faces = (typeof result["faces"] !== "undefined") ? parseInt(result["faces"]) : 0;
+          preview_solid_colors = (typeof result["solid_colors"] !== "undefined") ? result["solid_colors"] : [];
+          preview_face_to_solids = (typeof result["face_to_solids"] !== "undefined") ? result["face_to_solids"] : {};
           var processed_hash = (typeof result["cad_hash"] !== "undefined") ? result["cad_hash"] : cad;
           show_preview(processed_hash, result["position"], result["orientation"], result["centerOfRotation"], result["fieldOfView"]);
         } else {
@@ -155,6 +198,7 @@ function show_preview(md5_sum, position, orientation, centerOfRotation, fieldOfV
   badge_cad.classList.add("text-bg-success");
 
   setTimeout(function() { canvas.runtime.fitAll(); }, 1000);
+  preview_apply_solid_colors(0);
 
   enable_btn_start();
 }
@@ -163,6 +207,9 @@ function choose_another_cad() {
   reset_error();
   uploaded_cad_hash = "";
   uploaded_cad_solids = 0;
+  preview_faces = 0;
+  preview_solid_colors = [];
+  preview_face_to_solids = {};
   cad_hash.value = "";
   select_treatment_mode.value = "single_material";
   bootstrap_hide("div_treatment");

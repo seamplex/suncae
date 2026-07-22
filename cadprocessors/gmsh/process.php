@@ -198,6 +198,68 @@ if (file_exists("cad.json")) {
   $response["orientation"] = $cad["orientation"];
   $response["centerOfRotation"] = $cad["centerOfRotation"];
   $response["fieldOfView"] = $cad["fieldOfView"];
+  $response["faces"] = isset($cad["faces"]) ? intval($cad["faces"]) : 0;
+  $response["solid_colors"] = isset($cad["color"]) ? $cad["color"] : array();
+
+  $response["face_to_solids"] = array();
+  if (file_exists("entities.json")) {
+    $entities = json_decode(file_get_contents("entities.json"), true);
+    if (is_array($entities)) {
+      $face_tag_to_index = array();
+      if (isset($entities[2]) && is_array($entities[2])) {
+        $face_index = 1;
+        foreach ($entities[2] as $face_entity) {
+          if (is_array($face_entity) && isset($face_entity["tag"])) {
+            $face_tag_to_index[abs(intval($face_entity["tag"]))] = $face_index;
+          }
+          $face_index++;
+        }
+      }
+
+      $solid_tag_to_index = array();
+      if (isset($entities[3]) && is_array($entities[3])) {
+        $solid_index = 1;
+        foreach ($entities[3] as $solid_entity) {
+          if (is_array($solid_entity) && isset($solid_entity["tag"])) {
+            $solid_tag_to_index[intval($solid_entity["tag"])] = $solid_index;
+          }
+          $solid_index++;
+        }
+      }
+
+      if (isset($entities[3]) && is_array($entities[3])) {
+      foreach ($entities[3] as $solid_entity) {
+        if (is_array($solid_entity) == false || isset($solid_entity["tag"]) == false) {
+          continue;
+        }
+        $solid_tag = intval($solid_entity["tag"]);
+        if ($solid_tag <= 0 || isset($solid_entity["boundary"]) == false || is_array($solid_entity["boundary"]) == false) {
+          continue;
+        }
+        $solid_index = isset($solid_tag_to_index[$solid_tag]) ? intval($solid_tag_to_index[$solid_tag]) : $solid_tag;
+        foreach ($solid_entity["boundary"] as $boundary_entity) {
+          if (is_array($boundary_entity) == false || count($boundary_entity) < 2) {
+            continue;
+          }
+          if (intval($boundary_entity[0]) !== 2) {
+            continue;
+          }
+          $face_tag = abs(intval($boundary_entity[1]));
+          if ($face_tag <= 0) {
+            continue;
+          }
+          $face_index = isset($face_tag_to_index[$face_tag]) ? intval($face_tag_to_index[$face_tag]) : $face_tag;
+          if (isset($response["face_to_solids"][$face_index]) == false) {
+            $response["face_to_solids"][$face_index] = array();
+          }
+          if (in_array($solid_index, $response["face_to_solids"][$face_index], true) == false) {
+            $response["face_to_solids"][$face_index][] = $solid_index;
+          }
+        }
+      }
+      }
+    }
+  }
   
 } else {
   return_error_json("cannot create CAD json");  

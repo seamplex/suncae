@@ -523,14 +523,32 @@ push_accordion_item("materialproperties", "problem", "Material properties", fals
     </div>
 <?php
   foreach ($material_labels as $material_label_name) {
+    $material_solid_number = 0;
+    if (preg_match('/^solid([0-9]+)$/', $material_label_name, $material_label_matches) === 1) {
+      $material_solid_number = intval($material_label_matches[1]);
+    }
+
+    $material_color_style = "background-color: transparent;";
+    if ($material_solid_number > 0 &&
+        isset($cad_json["color"]) &&
+        is_array($cad_json["color"]) &&
+        isset($cad_json["color"][$material_solid_number]) &&
+        is_array($cad_json["color"][$material_solid_number]) &&
+        count($cad_json["color"][$material_solid_number]) >= 3) {
+      $r = max(0, min(255, intval(round(255 * floatval($cad_json["color"][$material_solid_number][0])))));
+      $g = max(0, min(255, intval(round(255 * floatval($cad_json["color"][$material_solid_number][1])))));
+      $b = max(0, min(255, intval(round(255 * floatval($cad_json["color"][$material_solid_number][2])))));
+      $material_color_style = "background-color: rgb({$r}, {$g}, {$b});";
+    }
+
     $material_E = isset($material_by_label[$material_label_name]["E"]) ? mechanical_material_E_display_from_fee($material_by_label[$material_label_name]["E"]) : "";
     $material_nu = isset($material_by_label[$material_label_name]["nu"]) ? $material_by_label[$material_label_name]["nu"] : "";
 ?>
     <div class="row mt-3 mb-1">
-     <div class="col-12 border rounded p-2">
+     <div class="col-12 border rounded p-2 material-solid-card border-secondary-subtle" data-material-label="<?=htmlspecialchars($material_label_name)?>" data-material-solid="<?=$material_solid_number?>">
       <div class="row mb-2">
        <label class="col-4 col-form-label text-end">Material label</label>
-       <div class="col-8 pt-2"><span class="badge text-bg-light"><?=$material_label_name?></span></div>
+        <div class="col-8 pt-2"><span class="badge text-bg-light"><?=$material_label_name?></span><span class="material-solid-color border rounded ms-2 d-inline-block" style="width: 1rem; height: 1rem; <?=$material_color_style?>"></span></div>
       </div>
       <div class="row mb-2">
        <label class="col-4 col-form-label text-end">Mechanical model</label>
