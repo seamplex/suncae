@@ -63,9 +63,12 @@ if [ $? -eq 0 ]; then
   fi
   
   # we can have a partial mesh, though
-  # TODO: rewrite mesh_data in C++
   if [ -e ${dir}/meshes/${mesh_hash}.msh ]; then
-    ../../../../meshers/gmsh/mesh_data.py ${mesh_hash} ${dir}/meshes  > ${dir}/meshes/${mesh_hash}-data.log
+    if [ -x ../../../../meshers/gmsh/mesh_data_cpp ]; then
+      ../../../../meshers/gmsh/mesh_data_cpp ${mesh_hash} ${dir}/meshes > ${dir}/meshes/${mesh_hash}-data.log
+    else
+      python3 ../../../../meshers/gmsh/mesh_data.py ${mesh_hash} ${dir}/meshes > ${dir}/meshes/${mesh_hash}-data.log
+    fi
   fi
   
   # the metadata depends on whether the mesh worked or not

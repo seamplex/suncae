@@ -1,25 +1,62 @@
 #include <gmsh.h>
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <set>
-#include <array>
 #include <algorithm>
-#include <string>
+#include <array>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <map>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using Line2 = std::array<int, 2>;
 using Line3 = std::array<int, 3>;
 
-std::string format_nodes(const std::vector<double>& coords) {
+std::string escape_json(const std::string& input) {
     std::string out;
-    size_t n = coords.size() / 3;
-    for (size_t i = 0; i < n; ++i) {
-        out += std::to_string(coords[3*i+0]) + " " +
-               std::to_string(coords[3*i+1]) + " " +
-               std::to_string(coords[3*i+2]) + "  ";
+    out.reserve(input.size());
+    for (unsigned char c : input) {
+        switch (c) {
+            case '\\':
+                out += "\\\\";
+                break;
+            case '"':
+                out += "\\\"";
+                break;
+            case '\n':
+                out += "\\n";
+                break;
+            case '\r':
+                out += "\\r";
+                break;
+            case '\t':
+                out += "\\t";
+                break;
+            default:
+                if (c < 0x20) {
+                    std::ostringstream oss;
+                    oss << "\\u00" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(c);
+                    out += oss.str();
+                } else {
+                    out.push_back(static_cast<char>(c));
+                }
+                break;
+        }
     }
     return out;
+}
+
+std::string format_nodes(const std::vector<double>& coords) {
+    std::ostringstream out;
+    size_t n = coords.size() / 3;
+    for (size_t i = 0; i < n; ++i) {
+        out << std::setw(6) << std::setprecision(6) << std::defaultfloat
+            << coords[3 * i + 0] << " "
+            << coords[3 * i + 1] << " "
+            << coords[3 * i + 2] << "  ";
+    }
+    return out.str();
 }
 
 int main(int argc, char** argv) {
@@ -47,7 +84,6 @@ int main(int argc, char** argv) {
     std::vector<std::size_t> nodeTags;
     std::vector<double> nodeCoords, parametricCoords;
     gmsh::model::mesh::getNodes(nodeTags, nodeCoords, parametricCoords);
-
     mesh["nodes"] = format_nodes(nodeCoords);
 
     // Surface edges (lines)
@@ -64,14 +100,12 @@ int main(int argc, char** argv) {
     for (size_t i = 0; i < elementTypes.size(); ++i) {
         int type = elementTypes[i];
         const auto& nodes = elementNodeTags[i];
-        // 3-node triangles (type==2) or possibly 6-node (type==9)
         size_t j = 0;
         if (type == 2) {
-            // Linear triangle: 3 nodes per element
             for (size_t e = 0; e < elementTags[i].size(); ++e) {
-                std::array<int,2> l1 = {static_cast<int>(nodes[j+0])-1, static_cast<int>(nodes[j+1])-1};
-                std::array<int,2> l2 = {static_cast<int>(nodes[j+1])-1, static_cast<int>(nodes[j+2])-1};
-                std::array<int,2> l3 = {static_cast<int>(nodes[j+2])-1, static_cast<int>(nodes[j+0])-1};
+                std::array<int, 2> l1 = {static_cast<int>(nodes[j + 0]) - 1, static_cast<int>(nodes[j + 1]) - 1};
+                std::array<int, 2> l2 = {static_cast<int>(nodes[j + 1]) - 1, static_cast<int>(nodes[j + 2]) - 1};
+                std::array<int, 2> l3 = {static_cast<int>(nodes[j + 2]) - 1, static_cast<int>(nodes[j + 0]) - 1};
                 std::sort(l1.begin(), l1.end());
                 std::sort(l2.begin(), l2.end());
                 std::sort(l3.begin(), l3.end());
@@ -81,11 +115,10 @@ int main(int argc, char** argv) {
                 j += 3;
             }
         } else if (type == 9) {
-            // Quadratic triangle: 6 nodes per element
             for (size_t e = 0; e < elementTags[i].size(); ++e) {
-                std::array<int,3> l1 = {static_cast<int>(nodes[j+0])-1, static_cast<int>(nodes[j+3])-1, static_cast<int>(nodes[j+1])-1};
-                std::array<int,3> l2 = {static_cast<int>(nodes[j+1])-1, static_cast<int>(nodes[j+4])-1, static_cast<int>(nodes[j+2])-1};
-                std::array<int,3> l3 = {static_cast<int>(nodes[j+2])-1, static_cast<int>(nodes[j+5])-1, static_cast<int>(nodes[j+0])-1};
+                std::array<int, 3> l1 = {static_cast<int>(nodes[j + 0]) - 1, static_cast<int>(nodes[j + 3]) - 1, static_cast<int>(nodes[j + 1]) - 1};
+                std::array<int, 3> l2 = {static_cast<int>(nodes[j + 1]) - 1, static_cast<int>(nodes[j + 4]) - 1, static_cast<int>(nodes[j + 2]) - 1};
+                std::array<int, 3> l3 = {static_cast<int>(nodes[j + 2]) - 1, static_cast<int>(nodes[j + 5]) - 1, static_cast<int>(nodes[j + 0]) - 1};
                 std::sort(l1.begin(), l1.end());
                 std::sort(l2.begin(), l2.end());
                 std::sort(l3.begin(), l3.end());
@@ -109,7 +142,7 @@ int main(int argc, char** argv) {
 
     // Surface faces, one per each physical group
     std::map<int, std::string> surfaces_faces_set;
-    std::vector<std::pair<int,int>> physicals;
+    std::vector<std::pair<int, int>> physicals;
     gmsh::model::getPhysicalGroups(physicals);
 
     for (const auto& physical : physicals) {
@@ -127,24 +160,22 @@ int main(int argc, char** argv) {
                     int type = types[i];
                     for (size_t j = 0; j < tags[i].size(); ++j) {
                         if (type == 2) {
-                            // 3-node triangle
-                            faces += std::to_string(static_cast<int>(nodetags[i][j*3+0])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*3+1])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*3+2])-1) + " ";
+                            faces += std::to_string(static_cast<int>(nodetags[i][j * 3 + 0]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 3 + 1]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 3 + 2]) - 1) + " ";
                         } else if (type == 9) {
-                            // 6-node triangle
-                            faces += std::to_string(static_cast<int>(nodetags[i][j*6+0])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+3])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+5])-1) + " ";
-                            faces += std::to_string(static_cast<int>(nodetags[i][j*6+1])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+4])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+3])-1) + " ";
-                            faces += std::to_string(static_cast<int>(nodetags[i][j*6+2])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+5])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+4])-1) + " ";
-                            faces += std::to_string(static_cast<int>(nodetags[i][j*6+3])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+4])-1) + " " +
-                                     std::to_string(static_cast<int>(nodetags[i][j*6+5])-1) + " ";
+                            faces += std::to_string(static_cast<int>(nodetags[i][j * 6 + 0]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 3]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 5]) - 1) + " ";
+                            faces += std::to_string(static_cast<int>(nodetags[i][j * 6 + 1]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 4]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 3]) - 1) + " ";
+                            faces += std::to_string(static_cast<int>(nodetags[i][j * 6 + 2]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 5]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 4]) - 1) + " ";
+                            faces += std::to_string(static_cast<int>(nodetags[i][j * 6 + 3]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 4]) - 1) + " " +
+                                     std::to_string(static_cast<int>(nodetags[i][j * 6 + 5]) - 1) + " ";
                         }
                     }
                 }
@@ -153,22 +184,28 @@ int main(int argc, char** argv) {
         }
     }
 
-    mesh["surfaces_faces_set"] = "";
-    for (const auto& kv : surfaces_faces_set) {
-        mesh["surfaces_faces_set"] += "\"" + std::to_string(kv.first) + "\": \"" + kv.second + "\", ";
-    }
-
     std::cout << "3" << std::endl;
 
     gmsh::finalize();
 
-    // Output as JSON (simple, not using a JSON lib)
     std::ofstream out(std::string(argv[2]) + "/" + argv[1] + "-data.json");
     out << "{\n";
-    out << "\"nodes\": \"" << mesh["nodes"] << "\",\n";
-    out << "\"surfaces_edges_set\": \"" << mesh["surfaces_edges_set"] << "\",\n";
-    out << "\"surfaces_faces_set\": {" << mesh["surfaces_faces_set"] << "}\n";
-    out << "}" << std::endl;
+    out << "  \"nodes\": \"" << escape_json(mesh["nodes"]) << "\",\n";
+    out << "  \"surfaces_edges_set\": \"" << escape_json(mesh["surfaces_edges_set"]) << "\",\n";
+    out << "  \"surfaces_faces_set\": {";
+    bool first = true;
+    for (const auto& kv : surfaces_faces_set) {
+        if (!first) {
+            out << ",";
+        }
+        first = false;
+        out << "\n    \"" << kv.first << "\": \"" << escape_json(kv.second) << "\"";
+    }
+    if (!first) {
+        out << "\n";
+    }
+    out << "  }\n";
+    out << "}\n";
     out.close();
 
     return 0;
